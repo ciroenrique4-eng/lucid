@@ -512,7 +512,7 @@ Item {
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: Theme.radiusPill
+                        radius: Theme.pill(height)
                         color: chip.filled ? Theme.accent : Theme.withBlur(Theme.bgTile)
 
                         Behavior on color {
@@ -526,7 +526,7 @@ Item {
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: Theme.radiusPill
+                        radius: Theme.pill(height)
                         color: chip.armed ? chip.tone : (chip.filled ? Theme.fgAccent : Theme.text)
                         opacity: chip.armed ? Theme.stateFocus : (chipTap.pressed ? Theme.statePressed : (chipHover.hovered ? Theme.stateHover : 0))
 
