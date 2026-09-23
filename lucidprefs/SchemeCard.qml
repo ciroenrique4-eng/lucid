@@ -99,7 +99,7 @@ Rectangle {
         Rectangle {
             width: addLabel.implicitWidth + 16
             height: 24
-            radius: height / 2
+            radius: Theme.pill(height)
             visible: !card.added || card.busy
             color: card.c[2] || Theme.bgSunken
 
@@ -129,7 +129,7 @@ Rectangle {
         Rectangle {
             width: useLabel.implicitWidth + 16
             height: 24
-            radius: height / 2
+            radius: Theme.pill(height)
             visible: !card.busy
             color: card.c[13] || Theme.accent
 
