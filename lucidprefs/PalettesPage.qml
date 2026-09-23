@@ -472,7 +472,7 @@ Column {
                         Rectangle {
                             width: 34
                             height: 34
-                            radius: 17
+                            radius: Theme.rad(17)
                             anchors.verticalCenter: parent.verticalCenter
                             visible: page.addState === "done" && page.addResult !== null
                             color: page.addResult ? page.addResult.swatchBg : "transparent"
@@ -490,7 +490,7 @@ Column {
                         Rectangle {
                             width: 34
                             height: 34
-                            radius: 17
+                            radius: Theme.rad(17)
                             anchors.verticalCenter: parent.verticalCenter
                             visible: page.addState !== "done"
                             color: page.addState === "error" ? Theme.alpha(Theme.error, 0.18) : Theme.alpha(Theme.accent, 0.18)
