@@ -333,7 +333,7 @@ Column {
 
                 width: chipRow.implicitWidth + 20
                 height: 32
-                radius: height / 2
+                radius: Theme.pill(height)
                 color: editor.selected === chip.modelData ? Theme.bgHigh : (chipArea.containsMouse ? Theme.bgHigh : Theme.bgSunken)
                 border.width: editor.selected === chip.modelData ? 2 : 0
                 border.color: Theme.accent
