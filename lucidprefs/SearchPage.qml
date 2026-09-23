@@ -121,10 +121,10 @@ Column {
 
                 anchors.fill: parent
                 anchors.topMargin: item.isPage && item.index > 0 ? 20 : 0
-                topLeftRadius: item.isPage || item.groupFirst ? 26 : 6
-                topRightRadius: item.isPage || item.groupFirst ? 26 : 6
-                bottomLeftRadius: item.isPage || item.groupLast ? 26 : 6
-                bottomRightRadius: item.isPage || item.groupLast ? 26 : 6
+                topLeftRadius: item.isPage || item.groupFirst ? Theme.rad(26) : Theme.rad(6)
+                topRightRadius: item.isPage || item.groupFirst ? Theme.rad(26) : Theme.rad(6)
+                bottomLeftRadius: item.isPage || item.groupLast ? Theme.rad(26) : Theme.rad(6)
+                bottomRightRadius: item.isPage || item.groupLast ? Theme.rad(26) : Theme.rad(6)
                 color: item.selected ? Theme.secondaryContainer : (item.isPage ? "transparent" : Theme.withBlur(Theme.bgTile))
 
                 Behavior on color {
