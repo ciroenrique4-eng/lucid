@@ -65,7 +65,7 @@ Column {
 
                 width: chipRow.implicitWidth + 20
                 height: 34
-                radius: height / 2
+                radius: Theme.pill(height)
                 color: chipArea.containsMouse ? Theme.bgHigh : Theme.bgSunken
 
                 Row {

@@ -1201,7 +1201,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         width: parent.width
                         height: cell.lit ? st.trackH : st.railHeight
-                        radius: height / 2
+                        radius: Theme.pill(height)
                         color: cell.lit ? Theme.accent : Theme.withBlur(Theme.bgHigh)
 
                         Behavior on height {
