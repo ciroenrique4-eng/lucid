@@ -107,7 +107,7 @@ Column {
 
                 width: 34
                 height: 34
-                radius: height / 2
+                radius: Theme.pill(height)
                 color: preset.modelData
                 border.width: preset.current ? 3 : (presetArea.containsMouse ? 2 : 0)
                 border.color: Theme.text
