@@ -62,7 +62,7 @@ Item {
                 anchors.centerIn: parent
                 width: Math.min(parent.width, sample.implicitWidth + 24)
                 height: Math.min(34, Prefs.barHeight)
-                radius: height / 2
+                radius: Theme.pill(height)
                 color: Theme.bg
             }
 
@@ -118,7 +118,7 @@ Item {
             anchors.margins: 8
             width: 20
             height: 20
-            radius: height / 2
+            radius: Theme.pill(height)
             color: Theme.accent
             opacity: tile.picked ? 1 : 0
             scale: tile.picked ? 1 : 0.6

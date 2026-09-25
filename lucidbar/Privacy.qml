@@ -283,7 +283,7 @@ BarPill {
                     anchors.verticalCenter: parent.verticalCenter
                     width: 26
                     height: 22
-                    radius: 11
+                    radius: Theme.pill(height)
                     color: Theme.alpha(root.colourOf(mark.modelData.kind), 0.2)
 
                     NotifIcon {
@@ -368,7 +368,7 @@ BarPill {
                         anchors.verticalCenter: parent.verticalCenter
                         width: 34
                         height: 34
-                        radius: 17
+                        radius: Theme.pill(height)
                         color: Theme.alpha(root.colourOf(useRow.modelData.kind), 0.18)
 
                         NotifIcon {
@@ -422,7 +422,7 @@ BarPill {
                         anchors.verticalCenter: parent.verticalCenter
                         width: stopLabel.implicitWidth + 24
                         height: 32
-                        radius: 16
+                        radius: Theme.pill(height)
                         color: stopArea.containsMouse ? Theme.error : Theme.alpha(Theme.error, 0.85)
 
                         Text {
