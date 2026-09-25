@@ -128,7 +128,7 @@ Item {
             Rectangle {
                 width: accentTime.implicitWidth + 16
                 height: 24
-                radius: height / 2
+                radius: Theme.pill(height)
                 color: Theme.accent
 
                 BarText {
@@ -362,7 +362,7 @@ Item {
 
                     width: index === 0 ? 24 : 10
                     height: 10
-                    radius: height / 2
+                    radius: Theme.pill(height)
                     color: index === 0 ? Theme.accent : Theme.withBlur(Theme._darken(Theme.subtext, 0.45))
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -387,7 +387,7 @@ Item {
 
                     width: index === 0 ? 30 : 20
                     height: 20
-                    radius: height / 2
+                    radius: Theme.pill(height)
                     color: index === 0 ? Theme.accent : "transparent"
                     anchors.verticalCenter: parent.verticalCenter
 
@@ -420,7 +420,7 @@ Item {
             Rectangle {
                 width: 16
                 height: 16
-                radius: height / 2
+                radius: Theme.pill(height)
                 color: Theme.accent
                 anchors.verticalCenter: parent.verticalCenter
 
@@ -463,7 +463,7 @@ Item {
         Rectangle {
             implicitWidth: chipRow.implicitWidth + 14
             implicitHeight: 24
-            radius: height / 2
+            radius: Theme.pill(height)
             color: Theme.accent
 
             Row {
@@ -661,7 +661,7 @@ Item {
             Rectangle {
                 width: 16
                 height: 16
-                radius: height / 2
+                radius: Theme.pill(height)
                 color: Theme.accent
                 anchors.verticalCenter: parent.verticalCenter
 
@@ -723,7 +723,7 @@ Item {
 
                     width: 26
                     height: 22
-                    radius: height / 2
+                    radius: Theme.pill(height)
                     color: Theme.alpha(modelData.ink, 0.2)
 
                     MiniGlyph {
@@ -769,7 +769,7 @@ Item {
         Rectangle {
             implicitWidth: 24
             implicitHeight: 24
-            radius: height / 2
+            radius: Theme.pill(height)
             color: Theme.accent
 
             MiniGlyph {
@@ -804,7 +804,7 @@ Item {
                         Rectangle {
                             width: 11
                             height: 11
-                            radius: height / 2
+                            radius: Theme.pill(height)
                             color: index > 2 ? Theme.errorContainer : Theme.accentContainer
                         }
 
@@ -849,7 +849,7 @@ Item {
                         Rectangle {
                             width: 20
                             height: 20
-                            radius: height / 2
+                            radius: Theme.pill(height)
                             color: index > 3 ? Theme.errorContainer : Theme.accentContainer
                         }
 
@@ -903,7 +903,7 @@ Item {
         Rectangle {
             implicitWidth: chipRow.implicitWidth + (Prefs.windowModuleText === "icon" ? 12 : 18)
             implicitHeight: 26
-            radius: height / 2
+            radius: Theme.pill(height)
             color: Theme.accentContainer
 
             Row {
@@ -960,7 +960,7 @@ Item {
     component MiniPlay: Rectangle {
         width: 22
         height: 22
-        radius: height / 2
+        radius: Theme.pill(height)
         color: Theme.accent
 
         Canvas {
