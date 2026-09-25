@@ -342,7 +342,7 @@ Item {
 
             width: chip.slot.w
             height: editor.chipHeight
-            radius: Theme.shapeFull
+            radius: Theme.pill(height)
             z: chipDrag.active ? 10 : 1
             scale: chipDrag.active ? 1.05 : 1
             color: chipDrag.active ? Theme.accentContainer : (chip.picked ? Theme.accent : (chip.activeFocus ? Theme.accentContainer : (chip.away ? "transparent" : Theme.bgActive)))
