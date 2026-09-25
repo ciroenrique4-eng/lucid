@@ -208,7 +208,7 @@ BarPill {
 
         width: buttonLabel.implicitWidth + 28
         height: 36
-        radius: 18
+        radius: Theme.pill(height)
         color: {
             if (button.danger)
                 return buttonArea.containsMouse ? Theme.error : Theme.errorContainer;
@@ -263,7 +263,7 @@ BarPill {
             anchors.centerIn: compactRow
             width: compactRow.width + (root.iconOnly ? 12 : 18)
             height: Math.min(26, parent.height - 6)
-            radius: height / 2
+            radius: Theme.pill(height)
             color: Theme.accentContainer
         },
         Row {
@@ -437,7 +437,7 @@ BarPill {
 
                         width: (wsGrid.width - wsGrid.spacing * 4) / 5
                         height: 34
-                        radius: 17
+                        radius: Theme.pill(height)
                         color: wsChip.current ? Theme.accent : (wsArea.containsMouse ? Theme.withBlur(Theme.bgHover) : Theme.withBlur(Theme.bgActive))
 
                         Text {
