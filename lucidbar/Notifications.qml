@@ -161,7 +161,7 @@ BarPill {
             anchors.centerIn: compactRow
             width: compactRow.width + 14
             height: Math.min(24, parent.height - 6)
-            radius: height / 2
+            radius: Theme.pill(height)
             color: root.badgeColor
             opacity: root.chipFace ? 1 : 0
             visible: opacity > 0.01
