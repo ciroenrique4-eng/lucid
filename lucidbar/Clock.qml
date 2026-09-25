@@ -414,7 +414,7 @@ BarPill {
             y: compactRow.y + timeRow.y + (timeRow.height - height) / 2
             width: timeRow.width + 16
             height: Math.min(24, parent.height - 6)
-            radius: height / 2
+            radius: Theme.pill(height)
             color: Theme.accent
         },
         // one line, or the time over the date
