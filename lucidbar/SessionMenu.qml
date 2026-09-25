@@ -145,7 +145,7 @@ BarPill {
             anchors.centerIn: parent
             width: 24
             height: 24
-            radius: height / 2
+            radius: Theme.pill(height)
             color: Theme.accent
             visible: root.accentFace
         },
@@ -187,7 +187,7 @@ BarPill {
                     anchors.verticalCenter: parent.verticalCenter
                     width: uptimeLabel.implicitWidth + 20
                     height: 26
-                    radius: 13
+                    radius: Theme.pill(height)
                     color: Theme.accentContainer
 
                     Text {
@@ -232,7 +232,7 @@ BarPill {
                             y: root.gridPanel ? 12 : (parent.height - height) / 2
                             width: 34
                             height: 34
-                            radius: 17
+                            radius: Theme.pill(height)
                             color: actionRow.isArmed ? Theme.alpha(Theme.fgError, 0.18) : (actionRow.danger ? Theme.errorContainer : Theme.accentContainer)
 
                             NotifIcon {
