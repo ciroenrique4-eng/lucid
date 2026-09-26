@@ -92,6 +92,8 @@ Item {
     // pill promotes it to an ordinary clicked-open panel, grab and all.
     readonly property bool hoverOpens: Prefs.barHoverOpen && pill.shown
     property bool hoverOpen: false
+    // false where the panel's own top row answers a right click (the tray's items)
+    property bool headerOpensSettings: true
     readonly property bool surfaceHovered: pill.compactHovered || shellHover.hovered || pillHover.hovered
 
     function openOnHover() {
@@ -365,12 +367,27 @@ Item {
             z: 1000
 
             PointHandler {
+                id: shellPress
+
                 enabled: pill.hoverOpen
                 acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 onActiveChanged: {
-                    if (active)
-                        pill.hoverOpen = false;
+                    if (!active)
+                        return ;
 
+                    // opened by hover, the compact face is gone before a right
+                    // click lands: one on the strip where it sat still opens
+                    // this module's card in Settings
+                    if ((shellPress.point.pressedButtons & Qt.RightButton) && shellPress.point.position.y < pill.compactHeight && pill.headerOpensSettings) {
+                        const id = pill.moduleId();
+                        if (id !== "") {
+                            // the panel folds away, as it would have unopened
+                            pill.closeHoverOpen();
+                            Prefs.openBarModule(id);
+                            return ;
+                        }
+                    }
+                    pill.hoverOpen = false;
                 }
             }
 
