@@ -9,6 +9,9 @@ import qs
 BarPill {
     id: root
 
+    // its items take the right click for their own menus
+    headerOpensSettings: false
+
     readonly property var hiddenKeywords: ["blueman"]
     // the ones picked away on the module's card, by their id
     readonly property var hiddenIds: String(Prefs.trayHidden).split(",").filter((id) => {
