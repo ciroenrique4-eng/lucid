@@ -449,7 +449,7 @@ Item {
                         visible: netItem.canShare
                         width: 30
                         height: 30
-                        radius: 999
+                        radius: Theme.pill(height)
                         color: netItem.sharing ? Theme.accentContainer : (shareArea.containsMouse ? Theme.withBlur(Theme.outlineStrong) : "transparent")
                         border.width: netItem.sharing ? 0 : 1
                         border.color: Theme.outlineStrong
