@@ -55,7 +55,7 @@ Item {
     component QrTile: Rectangle {
         width: share.qrSize
         height: share.qrSize
-        radius: Math.round(share.qrSize * 0.09)
+        radius: Theme.rad(Math.round(share.qrSize * 0.09))
         color: share.paper
 
         Canvas {
