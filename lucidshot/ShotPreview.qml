@@ -331,7 +331,7 @@ PanelWindow {
                     anchors.centerIn: parent
                     width: 46
                     height: 46
-                    radius: 23
+                    radius: Theme.pill(46)
                     visible: preview.kind === "video"
                     color: Theme.alpha("#000000", 0.45)
 
@@ -396,7 +396,7 @@ PanelWindow {
                     anchors.margins: 6
                     width: 26
                     height: 26
-                    radius: 13
+                    radius: Theme.pill(26)
                     opacity: preview.hovered ? 1 : 0
                     color: closeArea.containsMouse ? Theme.alpha("#000000", 0.7) : Theme.alpha("#000000", 0.5)
 
@@ -579,7 +579,7 @@ PanelWindow {
 
         width: 34
         height: 34
-        radius: 17
+        radius: Theme.pill(34)
         color: btn.armed ? Theme.alpha(Theme.error, 0.18) : (btnArea.containsMouse ? Theme.alpha(Theme.text, Theme.stateHover) : "transparent")
 
         Glyph {
