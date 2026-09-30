@@ -31,6 +31,71 @@ your wallpaper.
 
 ---
 
+> [!NOTE]
+> **This is a fork.** Lucid is [Sn3akyy1's project](https://github.com/Sn3akyy1/lucid);
+> this fork is what I run every day: upstream Lucid plus every change I have
+> sent it as a pull request, merged together. Everything here is offered
+> upstream first, and anything that lands there simply drops off this list.
+
+## About this fork
+
+The `integrated` branch — the default here — is upstream's latest `main`, with
+each of my open pull requests merged on top, the conflicts between them
+resolved, and a few small commits that only make sense once they are all in
+(mostly corner rounding for controls that come from different pull requests).
+It is rebuilt whenever upstream moves or a pull request changes, so it never
+drifts far from Lucid itself.
+
+To install it instead of upstream, clone this branch; the rest of this README
+applies as it is:
+
+```sh
+git clone --branch integrated https://github.com/ciroenrique4-eng/lucid.git
+cd lucid
+./install.sh
+```
+
+Updating is the same `git pull` and `./install.sh`. The update notice in
+Settings still follows upstream's releases, and this branch follows them too.
+
+| | What it adds | Pull request |
+| --- | --- | --- |
+| **Bar** | Arrange the modules in three groups, by dragging | [#44](https://github.com/Sn3akyy1/lucid/pull/44) |
+|  | New modules — privacy, power, active window — and looks and options for every module | [#50](https://github.com/Sn3akyy1/lucid/pull/50) |
+|  | A full-width style, opening on hover, and auto-hide | [#16](https://github.com/Sn3akyy1/lucid/pull/16) |
+|  | A bar on every display | [#14](https://github.com/Sn3akyy1/lucid/pull/14) |
+| **Launcher** | One ranking for windows, apps, commands and the web; power buttons of your choice | [#17](https://github.com/Sn3akyy1/lucid/pull/17) |
+|  | Favourite and hidden applications, and a page of its own in Settings | [#32](https://github.com/Sn3akyy1/lucid/pull/32) |
+|  | A preview pane for the clipboard, entry kinds, clearing from the keyboard | [#10](https://github.com/Sn3akyy1/lucid/pull/10) |
+| **Settings** | Search every page from the rail | [#34](https://github.com/Sn3akyy1/lucid/pull/34) |
+|  | A Windows page for Hyprland — look, tiling and behaviour | [#46](https://github.com/Sn3akyy1/lucid/pull/46) |
+|  | An Input page — keyboard layouts, mouse and touchpad, gestures | [#47](https://github.com/Sn3akyy1/lucid/pull/47) |
+|  | Special workspaces: blur behind, a margin like a card, and your own | [#45](https://github.com/Sn3akyy1/lucid/pull/45) |
+|  | One dial for how round the whole shell is | [#18](https://github.com/Sn3akyy1/lucid/pull/18) |
+|  | Sound: level meters, balance, a channel test, WirePlumber's settings, a click per volume step | [#11](https://github.com/Sn3akyy1/lucid/pull/11) |
+| **Colour** | Templates follow every palette, not just the wallpaper, rendered one at a time with a record | [#36](https://github.com/Sn3akyy1/lucid/pull/36) |
+|  | A Colours page: generated palettes and the app templates | [#38](https://github.com/Sn3akyy1/lucid/pull/38) |
+|  | A Palettes page: a gallery of base16/base24 schemes, themes from a file, an editor and export | [#40](https://github.com/Sn3akyy1/lucid/pull/40) |
+| **Everyday** | Night light through hyprsunset, by hand or on a schedule | [#53](https://github.com/Sn3akyy1/lucid/pull/53) |
+|  | A preview card in the corner after each screenshot or recording | [#52](https://github.com/Sn3akyy1/lucid/pull/52) |
+|  | Share a saved Wi-Fi network as a QR code | [#51](https://github.com/Sn3akyy1/lucid/pull/51) |
+|  | OSD: a notch style, a draggable level, the keyboard backlight, lock keys as toasts | [#22](https://github.com/Sn3akyy1/lucid/pull/22) |
+|  | Phone widget: browse its files, plugin-aware buttons and a second phone | [#15](https://github.com/Sn3akyy1/lucid/pull/15) |
+|  | Receive files over Bluetooth, with Accept and Decline in a notification | this fork only |
+|  | Pinned windows wear a border of their own, a pin tab in the corner that unpins them, and a ripple when pinned | this fork only |
+| **Fixes** | Screenshots and recordings from the display you are on | [#8](https://github.com/Sn3akyy1/lucid/pull/8) |
+|  | Bluetooth pairing keeps its key (pairable held on while pairing) | [#9](https://github.com/Sn3akyy1/lucid/pull/9) |
+|  | The charger and low-battery toasts fire, and Preview runs | [#25](https://github.com/Sn3akyy1/lucid/pull/25) |
+|  | The disk card counts LVM and LUKS volumes | [#27](https://github.com/Sn3akyy1/lucid/pull/27) |
+|  | The 12-hour clock shows AM/PM once outside English | [#29](https://github.com/Sn3akyy1/lucid/pull/29) |
+|  | Log out works on a Lua Hyprland config | [#30](https://github.com/Sn3akyy1/lucid/pull/30) |
+|  | The installer only offers a restart when the shell is really running | [#7](https://github.com/Sn3akyy1/lucid/pull/7) |
+
+Found a bug in one of these? Open an issue here. For anything else, it belongs
+[upstream](https://github.com/Sn3akyy1/lucid/issues).
+
+---
+
 > **v1.1.0 — lock screen, polkit, accounts and light mode.** It's what I use
 > daily. Everything that landed in it, and in every version before it, is in the
 > [changelog](CHANGELOG.md). Rough edges are still possible and bug reports are
@@ -47,7 +112,7 @@ Lucid installs to `~/.config/quickshell` and needs **Arch Linux** and
 **Hyprland**. Three commands:
 
 ```sh
-git clone https://github.com/Sn3akyy1/lucid.git
+git clone --branch integrated https://github.com/ciroenrique4-eng/lucid.git
 cd lucid
 ./install.sh
 ```
