@@ -159,6 +159,8 @@ Item {
     readonly property int openWidth: pill.altOpen ? pill.altWidth : (pill.expanded ? pill.panelWidth : pill.compactWidth)
     readonly property int openHeight: pill.altOpen ? pill.altHeight : (pill.expanded ? pill.panelHeight : pill.compactHeight)
     readonly property int cornerRadius: pill.popupMode ? Math.min(pill.expandedRadius, Math.round(shell.height / 2)) : (pill.anyOpen ? pill.expandedRadius : Prefs.barPillRadius)
+    // "top" is the side against the screen edge: the bottom one on a bottom bar
+    readonly property bool atBottom: Prefs.barBottom
     readonly property int topRadius: Prefs.barFlush && !pill.popupMode ? 0 : pill.cornerRadius
     readonly property int pillTopRadius: Prefs.barFlush ? 0 : Prefs.barPillRadius
     // on the full bar the strip behind already paints the resting pill, so the
@@ -197,13 +199,22 @@ Item {
         return 0;
     }
     readonly property bool popupExpanding: pill.popupMode && pill.anyOpen
-    readonly property bool popupOpen: pill.shown && pill.popupMode && shell.y > 0.5
+    readonly property bool popupOpen: pill.shown && pill.popupMode && Math.abs(shell.y) > 0.5
     readonly property Item popupItem: shell
 
     readonly property real surfaceX: -pill.hoverGrow
     readonly property real surfaceY: 0
     readonly property real surfaceWidth: (pill.popupMode ? pill.compactWidth : pill.width) + pill.hoverGrow * 2
     readonly property real surfaceHeight: pill.popupMode ? pill.compactHeight : pill.height
+    // how far the surface the pill is wearing reaches from the bar's edge side
+    readonly property real surfaceReach: pill.atBottom ? pill.height - pill.popupItem.y : pill.popupItem.y + pill.popupItem.height
+
+    // the y, in overlay coordinates, of something h tall that sits reach px out
+    // from the bar's edge side of the pill: below it on a top bar, above it on a
+    // bottom one
+    function overlayEdgeY(reach, h) {
+        return pill.atBottom ? overlayHolder.height - reach - h : reach;
+    }
 
     implicitWidth: !pill.shown ? 0 : (pill.popupMode ? pill.compactWidth : pill.openWidth)
     implicitHeight: !pill.shown ? 0 : (pill.popupMode ? pill.compactHeight : pill.openHeight)
@@ -260,10 +271,16 @@ Item {
     Item {
         id: overlayHolder
 
+        // from the pill to the far side of the window: down on a top bar, up on
+        // a bottom one. Up, it always reaches the window's top, so what sits in it
+        // keeps its place on screen while the pill under it grows or shrinks
+        readonly property bool reaching: pill.overlayOpen && pill.hostWindow !== null
+        readonly property bool reachingUp: pill.atBottom && pill.hostWindow !== null
+
         x: 0
-        y: 0
-        width: (pill.overlayOpen && pill.hostWindow) ? Math.max(pill.width, pill.hostWindow.width - pill.x) : pill.width
-        height: (pill.overlayOpen && pill.hostWindow) ? Math.max(pill.height, pill.hostWindow.height - pill.y) : pill.height
+        y: overlayHolder.reachingUp ? Math.min(0, -pill.y) : 0
+        width: overlayHolder.reaching ? Math.max(pill.width, pill.hostWindow.width - pill.x) : pill.width
+        height: overlayHolder.reachingUp ? Math.max(pill.height, pill.y + pill.height) : (overlayHolder.reaching ? Math.max(pill.height, pill.hostWindow.height - pill.y) : pill.height)
         z: 200
     }
 
@@ -297,8 +314,10 @@ Item {
         color: pill.restingColor
         clip: true
         radius: Prefs.barPillRadius
-        topLeftRadius: pill.pillTopRadius
-        topRightRadius: pill.pillTopRadius
+        topLeftRadius: pill.atBottom ? Prefs.barPillRadius : pill.pillTopRadius
+        topRightRadius: pill.atBottom ? Prefs.barPillRadius : pill.pillTopRadius
+        bottomLeftRadius: pill.atBottom ? pill.pillTopRadius : Prefs.barPillRadius
+        bottomRightRadius: pill.atBottom ? pill.pillTopRadius : Prefs.barPillRadius
 
         HoverHandler {
             id: pillHover
@@ -341,12 +360,14 @@ Item {
         width: pill.popupMode ? (pill.anyOpen ? pill.popupWidth : pill.compactWidth + pill.hoverGrow * 2) : pill.width + pill.hoverGrow * 2
         height: pill.popupMode ? (pill.anyOpen ? pill.popupHeight : pill.compactHeight) : pill.height
         x: pill.popupMode && pill.anyOpen ? pill.popupX : pill.surfaceX
-        y: pill.popupMode && pill.anyOpen ? pill.compactHeight + Prefs.barPopupGap : pill.surfaceY
-        visible: !pill.popupMode || shell.y > 0.5
+        y: pill.popupMode && pill.anyOpen ? (pill.atBottom ? -(pill.popupHeight + Prefs.barPopupGap) : pill.compactHeight + Prefs.barPopupGap) : pill.surfaceY
+        visible: !pill.popupMode || Math.abs(shell.y) > 0.5
         color: (pill.popupMode || pill.surfaceOpen) ? Theme.bg : pill.restingColor
         radius: pill.cornerRadius
-        topLeftRadius: pill.topRadius
-        topRightRadius: pill.topRadius
+        topLeftRadius: pill.atBottom ? shell.radius : pill.topRadius
+        topRightRadius: pill.atBottom ? shell.radius : pill.topRadius
+        bottomLeftRadius: pill.atBottom ? pill.topRadius : shell.radius
+        bottomRightRadius: pill.atBottom ? pill.topRadius : shell.radius
         clip: true
         layer.enabled: pill.surfaceLayered
         layer.samples: 4
@@ -378,7 +399,9 @@ Item {
                     // opened by hover, the compact face is gone before a right
                     // click lands: one on the strip where it sat still opens
                     // this module's card in Settings
-                    if ((shellPress.point.pressedButtons & Qt.RightButton) && shellPress.point.position.y < pill.compactHeight && pill.headerOpensSettings) {
+                    const y = shellPress.point.position.y;
+                    const onStrip = pill.atBottom ? y > shell.height - pill.compactHeight : y < pill.compactHeight;
+                    if ((shellPress.point.pressedButtons & Qt.RightButton) && onStrip && pill.headerOpensSettings) {
                         const id = pill.moduleId();
                         if (id !== "") {
                             // the panel folds away, as it would have unopened
