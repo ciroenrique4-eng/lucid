@@ -40,7 +40,9 @@ Item {
         "power/panel/list": powerPanelList,
         "power/panel/grid": powerPanelGrid,
         "window/plain": windowPlain,
-        "window/chip": windowChip
+        "window/chip": windowChip,
+        "apps/icons": appsIcons,
+        "apps/names": appsNames
     })
     readonly property string powerPath: "M11 3h2v10h-2V3Zm6.36 2.64 1.42-1.42A9.96 9.96 0 0 1 22 12c0 5.52-4.48 10-10 10S2 17.52 2 12c0-2.76 1.12-5.26 2.93-7.07l1.42 1.42A7.96 7.96 0 0 0 4 12c0 4.42 3.58 8 8 8s8-3.58 8-8c0-2.21-.9-4.21-2.64-5.36Z"
     readonly property string micPath: "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
@@ -865,6 +867,122 @@ Item {
 
                 }
 
+            }
+
+        }
+
+    }
+
+    // three apps, the middle one in focus, the last one only pinned
+    component MiniApp: Item {
+        id: miniApp
+
+        property bool named: false
+        property string label: ""
+        property int windows: 0
+        property bool focused: false
+        property color tint: Theme.accentContainer
+
+        implicitWidth: miniApp.named ? 17 + 8 + miniLabel.implicitWidth + 16 : 30
+        implicitHeight: 28
+
+        Rectangle {
+            anchors.fill: parent
+            radius: Theme.pill(height)
+            color: miniApp.focused ? Theme.alpha(Theme.accent, 0.16) : "transparent"
+        }
+
+        Rectangle {
+            id: miniIcon
+
+            x: miniApp.named ? 8 : (parent.width - width) / 2
+            anchors.verticalCenter: parent.verticalCenter
+            width: 17
+            height: 17
+            radius: 4
+            color: miniApp.tint
+            opacity: miniApp.windows > 0 ? 1 : 0.72
+        }
+
+        BarText {
+            id: miniLabel
+
+            visible: miniApp.named
+            x: miniIcon.x + miniIcon.width + 8
+            anchors.verticalCenter: parent.verticalCenter
+            text: miniApp.label
+            color: miniApp.windows > 0 ? Theme.text : Theme.subtext
+            font.pixelSize: Theme.fontLabelLg
+            font.weight: miniApp.focused ? Font.DemiBold : Font.Medium
+            font.bold: false
+        }
+
+        Row {
+            anchors.horizontalCenter: miniIcon.horizontalCenter
+            y: Prefs.barBottom ? parent.height - 3 : 0
+            spacing: 3
+            visible: miniApp.windows > 0
+
+            Repeater {
+                model: miniApp.focused ? 1 : miniApp.windows
+
+                Rectangle {
+                    width: miniApp.focused ? 14 : 4
+                    height: 3
+                    radius: height / 2
+                    color: miniApp.focused ? Theme.accent : Theme.subtext
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: appsIcons
+
+        Row {
+            spacing: 2
+
+            MiniApp {
+                windows: 2
+                tint: Theme.tertiaryContainer
+            }
+
+            MiniApp {
+                windows: 1
+                focused: true
+                tint: Theme.accent
+            }
+
+            MiniApp {
+                tint: Theme.secondaryContainer
+            }
+
+        }
+
+    }
+
+    Component {
+        id: appsNames
+
+        Row {
+            spacing: 2
+
+            MiniApp {
+                named: true
+                label: "Files"
+                windows: 2
+                tint: Theme.tertiaryContainer
+            }
+
+            MiniApp {
+                named: true
+                label: "Browser"
+                windows: 1
+                focused: true
+                tint: Theme.accent
             }
 
         }

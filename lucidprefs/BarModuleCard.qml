@@ -23,7 +23,8 @@ SettingCard {
     readonly property var pageNames: ({
         "workspaces": "Workspaces",
         "datetime": "Date & Time",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "dock": "Dock"
     })
     readonly property bool barOn: Prefs.barEnabled
     readonly property bool away: !!card.mod && !!card.mod.when && Prefs.barModulesAway.indexOf(card.moduleId) !== -1
@@ -855,6 +856,114 @@ SettingCard {
             checked: Prefs.windowModuleMiddleClose
             onToggled: (v) => {
                 return Prefs.windowModuleMiddleClose = v;
+            }
+        }
+
+    }
+
+    // apps
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Pinned apps"
+        resetKey: "appsModulePinned"
+        description: "The dock's pinned apps stay in place even with no window open, for a click to start them. Off, only apps with a window show."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.appsModulePinned
+            onToggled: (v) => {
+                return Prefs.appsModulePinned = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Windows from"
+        resetKey: "appsModuleScope"
+        description: "Which windows count: every workspace's, or only those on the one in view."
+        stacked: true
+        showDivider: false
+
+        M3Segmented {
+            width: Math.min(parent.width, 360)
+            current: Prefs.appsModuleScope
+            options: [{
+                "key": "all",
+                "label": "All workspaces"
+            }, {
+                "key": "workspace",
+                "label": "This workspace"
+            }]
+            onChosen: (key) => {
+                return Prefs.appsModuleScope = key;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Clicking an app with several windows"
+        resetKey: "appsModuleClick"
+        description: "Lists them to pick one, or moves the focus to the next one each time. An app with one window always goes straight to it."
+        stacked: true
+        showDivider: false
+
+        M3Segmented {
+            width: Math.min(parent.width, 360)
+            current: Prefs.appsModuleClick
+            options: [{
+                "key": "list",
+                "label": "List them"
+            }, {
+                "key": "cycle",
+                "label": "Next one"
+            }]
+            onChosen: (key) => {
+                return Prefs.appsModuleClick = key;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Scroll through an app's windows"
+        resetKey: "appsModuleWheel"
+        description: "The wheel over an app's icon moves the focus through its windows."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.appsModuleWheel
+            onToggled: (v) => {
+                return Prefs.appsModuleWheel = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Longest a name gets"
+        resetKey: "appsModuleNameWidth"
+        description: "In the Names look, a longer name is cut short with an ellipsis."
+        enabled: Prefs.appsModuleStyle === "names"
+        disabledReason: "Only the Names look shows the names."
+        stacked: true
+        showDivider: false
+
+        M3Slider {
+            width: parent.width
+            enabled: Prefs.appsModuleStyle === "names"
+            from: 60
+            to: 240
+            stepSize: 10
+            suffix: " px"
+            value: Prefs.appsModuleNameWidth
+            onMoved: (v) => {
+                return Prefs.appsModuleNameWidth = Math.round(v);
             }
         }
 
