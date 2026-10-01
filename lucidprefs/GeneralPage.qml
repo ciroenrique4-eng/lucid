@@ -13,7 +13,7 @@ Column {
 
         SettingRow {
             title: "Bar style"
-            description: "Islands float free of the screen edge. Notches sit flush against it, squaring off the corners that meet it. Full bar joins every module on one continuous strip across the top."
+            description: "Islands float free of the screen edge. Notches sit flush against it, squaring off the corners that meet it. Full bar joins every module on one continuous strip across the screen edge the bar sits on."
 
             M3Segmented {
                 width: 360
