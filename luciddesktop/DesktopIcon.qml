@@ -818,6 +818,23 @@ Item {
         height: label.height
         visible: DesktopIcons.renaming !== tile.key
 
+        // on the wallpaper, a cloud of shade behind the name, blurred until
+        // it has no edge at all: no box, yet it reads on a white sky
+        Rectangle {
+            anchors.centerIn: label
+            width: label.contentWidth + 14
+            height: label.contentHeight + 6
+            radius: height / 2
+            color: Qt.rgba(0, 0, 0, 0.5)
+            visible: tile.look !== "glass" && !tile.selected
+            layer.enabled: visible
+            layer.effect: MultiEffect {
+                blurEnabled: true
+                blur: 1
+                blurMax: 20
+            }
+        }
+
         // selected, the name sits on the accent in every look
         Rectangle {
             anchors.centerIn: label
