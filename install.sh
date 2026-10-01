@@ -336,6 +336,18 @@ else
     warn "support/lucid/launch-shell.sh missing, autostart will run quickshell directly"
 fi
 
+# Settings as an application: a name and an icon for its window in docks and
+# taskbars (the shell's windows carry the "lucid" app id), and an entry the
+# launcher lists
+APPS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+ICON_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor/scalable/apps"
+if [[ -f "$SRC/support/lucid/lucid.desktop" ]]; then
+    mkdir -p "$APPS_DIR" "$ICON_DIR"
+    install -m644 "$SRC/support/lucid/lucid.desktop" "$APPS_DIR/lucid.desktop"
+    install -m644 "$SRC/support/lucid/lucid.svg" "$ICON_DIR/lucid.svg"
+    say "  Lucid Settings entry -> $APPS_DIR/lucid.desktop"
+fi
+
 # state files. a re-run keeps your settings: anything already in place wins,
 # then whatever the previous install left in the backup, and only failing both
 # does the shipped default get written
