@@ -770,6 +770,23 @@ SettingCard {
 
     }
 
+    // system
+    SettingRow {
+        visible: card.moduleId === "system"
+        title: "Your picture"
+        resetKey: "systemPanelAvatar"
+        description: "Your account picture and name at the top of the control centre; a click opens your account."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.systemPanelAvatar
+            onToggled: (v) => {
+                return Prefs.systemPanelAvatar = v;
+            }
+        }
+
+    }
+
     // active window
     SettingRow {
         id: windowText

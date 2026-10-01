@@ -221,6 +221,9 @@ PanelWindow {
     }
 
     function showVolume() {
+        if (Prefs.controlCentreOpen)
+            return ;
+
         osdWindow.oscType = "volume";
         osdWindow.levelValue = osdWindow.volumePercent;
         osdWindow.levelMuted = osdWindow.volMuted;
@@ -228,6 +231,9 @@ PanelWindow {
     }
 
     function showBrightness() {
+        if (Prefs.controlCentreOpen)
+            return ;
+
         osdWindow.oscType = "brightness";
         osdWindow.levelValue = osdWindow.brightnessPercent;
         osdWindow.levelMuted = false;
