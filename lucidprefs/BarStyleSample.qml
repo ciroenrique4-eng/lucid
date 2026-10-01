@@ -43,6 +43,8 @@ Item {
         "window/chip": windowChip,
         "apps/icons": appsIcons,
         "apps/names": appsNames,
+        "system/panel/stacked": systemPanelStacked,
+        "system/panel/wide": systemPanelWide,
         "start/logo": startLogo,
         "start/grid": startGrid,
         "desktop/sliver": desktopSliver,
@@ -935,6 +937,114 @@ Item {
                     height: 3
                     radius: height / 2
                     color: miniApp.focused ? Theme.accent : Theme.subtext
+                }
+
+            }
+
+        }
+
+    }
+
+    // the control centre, in miniature: tiles, sliders and figures
+    component MiniTiles: Grid {
+        columns: 2
+        spacing: 3
+
+        Repeater {
+            model: 4
+
+            Rectangle {
+                width: 22
+                height: 9
+                radius: 3
+                color: index === 0 ? Theme.accent : Theme.bgActive
+            }
+
+        }
+
+    }
+
+    component MiniFigures: Row {
+        spacing: 3
+
+        Repeater {
+            model: 3
+
+            Rectangle {
+                width: 13
+                height: 14
+                radius: 3
+                color: Theme.bgActive
+            }
+
+        }
+
+    }
+
+    Component {
+        id: systemPanelStacked
+
+        Column {
+            spacing: 4
+
+            MiniTiles {
+            }
+
+            Rectangle {
+                width: 47
+                height: 4
+                radius: 2
+                color: Theme.accent
+            }
+
+            Rectangle {
+                width: 47
+                height: 4
+                radius: 2
+                color: Theme.bgActive
+            }
+
+            MiniFigures {
+            }
+
+        }
+
+    }
+
+    Component {
+        id: systemPanelWide
+
+        Row {
+            spacing: 5
+
+            MiniFigures {
+            }
+
+            MiniTiles {
+            }
+
+            Row {
+                spacing: 3
+
+                Repeater {
+                    model: 2
+
+                    Rectangle {
+                        width: 6
+                        height: 33
+                        radius: 3
+                        color: Theme.bgActive
+
+                        Rectangle {
+                            anchors.bottom: parent.bottom
+                            width: parent.width
+                            height: parent.height * (index === 0 ? 0.65 : 0.85)
+                            radius: 3
+                            color: Theme.accent
+                        }
+
+                    }
+
                 }
 
             }
