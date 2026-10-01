@@ -76,6 +76,21 @@ Item {
             "divider": true
         });
 
+        // put away and back, the way the widgets are; Settings keeps the switch
+        // that turns the icons off altogether
+        if (Prefs.desktopIcons)
+            arr.push(Prefs.desktopIconsShown ? {
+            "id": "hideIcons",
+            "label": "Hide Icons",
+            "glyph": DockIcons.hidden,
+            "divider": !Prefs.widgetsEnabled && Widgets.count === 0
+        } : {
+            "id": "showIcons",
+            "label": "Show Icons",
+            "glyph": DockIcons.visible,
+            "divider": !Prefs.widgetsEnabled && Widgets.count === 0
+        });
+
         arr.push({
             "id": "screenshot",
             "label": "Take a Screenshot",
