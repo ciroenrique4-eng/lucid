@@ -66,6 +66,59 @@ Column {
         width: parent.width
     }
 
+    // whole-bar looks: its edge, its style, its modules and where they sit
+    SettingCard {
+        title: "PRESETS"
+
+        SettingRow {
+            title: "Start from a preset"
+            description: "Sets the bar's edge, style, modules and their places, and a few looks, in one go; everything stays yours to change afterwards."
+            stacked: true
+            showDivider: false
+
+            Flow {
+                width: parent.width
+                spacing: 10
+
+                Repeater {
+                    model: Prefs.barPresets
+
+                    BarPresetTile {
+                        required property var modelData
+
+                        presetId: modelData.id
+                    }
+
+                }
+
+            }
+
+        }
+
+        SettingRow {
+            readonly property var undo: {
+                try {
+                    return Prefs.barPresetUndo !== "" ? JSON.parse(Prefs.barPresetUndo) : null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            visible: undo !== null
+            title: undo ? "Applied " + undo.name : ""
+            description: "What it replaced is kept: undo puts the bar back as it was before."
+            showDivider: false
+
+            M3Button {
+                text: "Undo"
+                variant: "tonal"
+                onClicked: Prefs.undoBarPreset()
+            }
+
+        }
+
+    }
+
     SettingCard {
         title: "OPENING BEHAVIOUR"
 

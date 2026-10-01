@@ -361,6 +361,190 @@ Singleton {
     readonly property bool anyBarModuleEnabled: root.barModules.some((m) => {
         return root[m.key] === true;
     })
+    // whole-bar looks, offered at the top of the Bar page. a preset sets the
+    // prefs in its values; "all" takes every one in barPresetKeys as Lucid
+    // ships it. barPresetUndo keeps what the last one replaced, so it can be
+    // put back
+    readonly property var barPresetKeys: ["barPosition", "barStyle", "barLayout", "showWorkspaces", "showMedia", "showTray", "showClock", "showNotifications", "showSystem", "showPrivacy", "showPower", "showWindow", "showApps", "showStart", "showDesktop", "clockStyle", "appsModuleStyle", "startModuleStyle", "desktopModuleStyle", "barModuleBackgrounds", "dockEnabled"]
+    readonly property var barPresets: [
+        {
+            "id": "lucid",
+            "name": "Lucid",
+            "blurb": "How Lucid ships: islands along the top, the dock below",
+            "all": true
+        },
+        {
+            "id": "centred",
+            "name": "Centred taskbar",
+            "blurb": "At the bottom: Start and your apps in the middle, the system on the right",
+            "values": {
+                "barPosition": "bottom",
+                "barStyle": "full",
+                "barLayout": "{\"left\":[\"workspaces\"],\"center\":[\"start\",\"apps\"],\"right\":[\"privacy\",\"tray\",\"system\",\"clock\",\"notifications\",\"desktop\"]}",
+                "clockStyle": "stacked",
+                "appsModuleStyle": "icons",
+                "startModuleStyle": "logo",
+                "desktopModuleStyle": "sliver",
+                "barModuleBackgrounds": false,
+                "showWorkspaces": true,
+                "showMedia": false,
+                "showTray": true,
+                "showClock": true,
+                "showNotifications": true,
+                "showSystem": true,
+                "showPrivacy": true,
+                "showPower": false,
+                "showWindow": false,
+                "showApps": true,
+                "showStart": true,
+                "showDesktop": true
+            }
+        },
+        {
+            "id": "classic",
+            "name": "Classic taskbar",
+            "blurb": "At the bottom: Start on the left, apps with their names, the clock in the corner",
+            "values": {
+                "barPosition": "bottom",
+                "barStyle": "full",
+                "barLayout": "{\"left\":[\"start\",\"workspaces\",\"apps\"],\"center\":[],\"right\":[\"privacy\",\"tray\",\"media\",\"system\",\"clock\",\"notifications\",\"desktop\"]}",
+                "clockStyle": "stacked",
+                "appsModuleStyle": "names",
+                "startModuleStyle": "grid",
+                "desktopModuleStyle": "sliver",
+                "barModuleBackgrounds": false,
+                "showWorkspaces": true,
+                "showMedia": true,
+                "showTray": true,
+                "showClock": true,
+                "showNotifications": true,
+                "showSystem": true,
+                "showPrivacy": true,
+                "showPower": false,
+                "showWindow": false,
+                "showApps": true,
+                "showStart": true,
+                "showDesktop": true
+            }
+        },
+        {
+            "id": "topdock",
+            "name": "Top bar and dock",
+            "blurb": "A full bar along the top for the system and the window in focus; the dock for apps",
+            "values": {
+                "barPosition": "top",
+                "barStyle": "full",
+                "barLayout": "{\"left\":[\"start\",\"workspaces\",\"window\"],\"center\":[\"clock\"],\"right\":[\"privacy\",\"tray\",\"media\",\"system\",\"notifications\",\"power\"]}",
+                "clockStyle": "inline",
+                "startModuleStyle": "logo",
+                "barModuleBackgrounds": false,
+                "dockEnabled": true,
+                "showWorkspaces": true,
+                "showMedia": true,
+                "showTray": true,
+                "showClock": true,
+                "showNotifications": true,
+                "showSystem": true,
+                "showPrivacy": true,
+                "showPower": true,
+                "showWindow": true,
+                "showApps": false,
+                "showStart": true,
+                "showDesktop": false
+            }
+        },
+        {
+            "id": "minimal",
+            "name": "Minimal",
+            "blurb": "The workspaces, the time and the system, floating at the top",
+            "values": {
+                "barPosition": "top",
+                "barStyle": "island",
+                "barLayout": "{\"left\":[\"workspaces\"],\"center\":[\"clock\"],\"right\":[\"system\"]}",
+                "clockStyle": "inline",
+                "barModuleBackgrounds": false,
+                "showWorkspaces": true,
+                "showMedia": false,
+                "showTray": false,
+                "showClock": true,
+                "showNotifications": false,
+                "showSystem": true,
+                "showPrivacy": false,
+                "showPower": false,
+                "showWindow": false,
+                "showApps": false,
+                "showStart": false,
+                "showDesktop": false
+            }
+        }
+    ]
+
+    function barPresetById(id) {
+        return root.barPresets.find((p) => {
+            return p.id === id;
+        }) || null;
+    }
+
+    function barPresetValues(p) {
+        if (!p)
+            return ({});
+
+        if (!p.all)
+            return p.values;
+
+        const out = {};
+        for (const k of root.barPresetKeys)
+            out[k] = root.defaults[k];
+        return out;
+    }
+
+    // the bar as it stands matches the preset: every pref it sets, and the
+    // arrangement compared group by group
+    function barPresetActive(id) {
+        const v = root.barPresetValues(root.barPresetById(id));
+        for (const k in v) {
+            if (k === "barLayout") {
+                if (JSON.stringify(root.parseBarLayout(root.barLayout)) !== JSON.stringify(root.parseBarLayout(v[k])))
+                    return false;
+
+            } else if (root[k] !== v[k]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function applyBarPreset(id) {
+        const p = root.barPresetById(id);
+        if (!p)
+            return ;
+
+        const v = root.barPresetValues(p);
+        const before = {};
+        for (const k in v)
+            before[k] = root[k];
+        root.barPresetUndo = JSON.stringify({
+            "name": p.name,
+            "values": before
+        });
+        for (const k in v)
+            root.set(k, v[k]);
+    }
+
+    function undoBarPreset() {
+        let u = null;
+        try {
+            u = JSON.parse(root.barPresetUndo);
+        } catch (e) {
+        }
+        root.barPresetUndo = "";
+        if (!u || !u.values)
+            return ;
+
+        for (const k in u.values)
+            root.set(k, u.values[k]);
+    }
+
     readonly property var barModuleKeys: root.barModules.map((m) => {
         return m.key;
     })
@@ -402,6 +586,7 @@ Singleton {
     property alias barModuleBackgrounds: s.barModuleBackgrounds
     property alias barGroups: s.barGroups
     property alias barGroupDividers: s.barGroupDividers
+    property alias barPresetUndo: s.barPresetUndo
     property alias dockStyle: s.dockStyle
     property alias accentPunch: s.accentPunch
     property alias surfaceDarkness: s.surfaceDarkness
@@ -1359,6 +1544,7 @@ Singleton {
             property bool barModuleBackgrounds: false
             property string barGroups: ""
             property bool barGroupDividers: true
+            property string barPresetUndo: ""
             property string dockStyle: "island"
             property real accentPunch: 1
             property real surfaceDarkness: -1
