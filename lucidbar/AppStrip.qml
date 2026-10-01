@@ -230,6 +230,8 @@ BarPill {
 
     // its own row of things to click: hovering must not open the panel over it
     opensOnHover: false
+    // each icon lights up on its own
+    tintsOnHover: false
     compactInteractive: false
     compactHovered: faceArea.containsMouse
     shown: Prefs.showApps && root.apps.length > 0
