@@ -210,7 +210,7 @@ Singleton {
         "desc": "Battery, volume, brightness and quick settings",
         "more": "Its tiles and the keyboard layout sign are in System module, further down this page.",
         "page": "",
-        "options": ["systemIndicators"],
+        "options": ["systemIndicators", "systemPanelAvatar"],
         "style": "systemStyle",
         "styles": [{
             "key": "values",
@@ -486,6 +486,18 @@ Singleton {
     property alias showSystem: s.showSystem
     property alias systemStyle: s.systemStyle
     property alias systemPanelStyle: s.systemPanelStyle
+    property alias systemPanelAvatar: s.systemPanelAvatar
+    // the screens whose control centre is open on its main view: its sliders
+    // already show volume and brightness there, so the OSD stays down
+    property var controlCentreOpenOn: []
+    readonly property bool controlCentreOpen: root.controlCentreOpenOn.length > 0
+
+    function noteControlCentre(screen, open) {
+        const rest = root.controlCentreOpenOn.filter((s) => {
+            return s !== screen;
+        });
+        root.controlCentreOpenOn = open ? rest.concat([screen]) : rest;
+    }
     property alias systemIndicators: s.systemIndicators
     property alias showPrivacy: s.showPrivacy
     property alias privacyWatch: s.privacyWatch
@@ -808,6 +820,7 @@ Singleton {
         "showSystem": true,
         "systemStyle": "values",
         "systemPanelStyle": "stacked",
+        "systemPanelAvatar": true,
         "systemIndicators": "wifi,bluetooth,volume,mic,battery",
         "showPrivacy": false,
         "privacyWatch": "mic,camera,screen",
@@ -1397,6 +1410,7 @@ Singleton {
             property bool showSystem: true
             property string systemStyle: "values"
             property string systemPanelStyle: "stacked"
+            property bool systemPanelAvatar: true
             property string systemIndicators: "wifi,bluetooth,volume,mic,battery"
             property bool showPrivacy: false
             property string privacyWatch: "mic,camera,screen"
