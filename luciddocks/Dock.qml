@@ -77,7 +77,7 @@ PanelWindow {
             dockWindow.launcherClosing = true;
             launcherCloseTimer.restart();
             // no dock to morph back into: fade the whole surface as it shrinks
-            if (!Prefs.dockEnabled)
+            if (!Prefs.dockShown)
                 shellFadeOut.restart();
 
         }
@@ -1530,7 +1530,7 @@ PanelWindow {
     // unplugged one is remapped rather than staying gone until a reload
     visible: Monitors.surfacesUp
     margins.bottom: 0
-    exclusiveZone: (!Prefs.loaded || !Prefs.dockEnabled || Prefs.dockAutoHide) ? 0 : (shell.implicitHeight + Prefs.effectiveDockBottomMargin)
+    exclusiveZone: (!Prefs.loaded || !Prefs.dockShown || Prefs.dockAutoHide) ? 0 : (shell.implicitHeight + Prefs.effectiveDockBottomMargin)
     WlrLayershell.keyboardFocus: dockWindow.menuOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     WlrLayershell.layer: dockWindow.menuOpen ? WlrLayer.Overlay : WlrLayer.Top
     color: "transparent"
@@ -1713,8 +1713,8 @@ PanelWindow {
         height: dockWindow.dockRevealed ? dockWindow.placementMargin + 3 : 3
         hoverEnabled: true
         acceptedButtons: Qt.NoButton
-        enabled: Prefs.dockAutoHide
-        visible: Prefs.dockAutoHide
+        enabled: Prefs.dockAutoHide && Prefs.dockShown
+        visible: Prefs.dockAutoHide && Prefs.dockShown
     }
 
     StackPopup {
@@ -2080,7 +2080,7 @@ PanelWindow {
         property bool dropActive: false
         property bool shellReady: false
 
-        visible: Prefs.dockEnabled || dockWindow.menuOpen || dockWindow.launcherClosing
+        visible: Prefs.dockShown || dockWindow.menuOpen || dockWindow.launcherClosing
         clip: dockWindow.menuOpen || dockWindow.morphing
         anchors.bottom: parent.bottom
         anchors.bottomMargin: dockWindow.hiddenOffset + dockWindow.placementMargin
@@ -2144,7 +2144,7 @@ PanelWindow {
         DropArea {
             anchors.fill: parent
             keys: ["text/uri-list"]
-            enabled: !dockWindow.menuOpen && Prefs.dockEnabled
+            enabled: !dockWindow.menuOpen && Prefs.dockShown
 
             onEntered: (drag) => {
                 if (dockWindow.localPaths(drag.urls).length === 0) {
@@ -2439,7 +2439,7 @@ PanelWindow {
         height: dockWindow.dragging ? dockWindow.height : shell.height
 
         Region {
-            item: Prefs.dockAutoHide ? revealArea : null
+            item: Prefs.dockAutoHide && Prefs.dockShown ? revealArea : null
         }
 
     }
