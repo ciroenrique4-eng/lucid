@@ -187,6 +187,9 @@ Singleton {
     property alias specialDim: s.specialDim
     // Hyprland options set from Settings > Windows, as JSON { "general.gaps_in": 8, ... }
     property alias hyprOptions: s.hyprOptions
+    property alias pinBorder: s.pinBorder
+    property alias pinBadge: s.pinBadge
+    property alias pinPulse: s.pinPulse
 
     property alias glassApps: s.glassApps
     property alias glassValues: s.glassValues
@@ -436,6 +439,9 @@ Singleton {
         "specialHideOnSwitch": false,
         "specialDim": 0.2,
         "hyprOptions": "{}",
+        "pinBorder": "tertiary",
+        "pinBadge": "top-right",
+        "pinPulse": true,
         "glassApps": "vscodium",
         "glassValues": "vscodium=0.9",
         "monitorSetups": "{}",
@@ -863,6 +869,9 @@ Singleton {
             property bool specialHideOnSwitch: false
             property real specialDim: 0.2
             property string hyprOptions: "{}"
+            property string pinBorder: "tertiary"
+            property string pinBadge: "top-right"
+            property bool pinPulse: true
             // the apps on the Glass page, and the ones given their own value
             property string glassApps: "vscodium"
             property string glassValues: "vscodium=0.9"
