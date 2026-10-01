@@ -25,6 +25,8 @@ Variants {
                 Prefs.settingsRequested("");
             else if (id === "keyboard")
                 Prefs.keyboardRequested();
+            else if (id === "hideIcons" || id === "showIcons")
+                Prefs.desktopIconsShown = id === "showIcons";
             else if (id === "hideWidgets" || id === "showWidgets")
                 Prefs.widgetsEnabled = !Prefs.widgetsEnabled;
             else

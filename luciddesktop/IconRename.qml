@@ -52,9 +52,9 @@ PanelWindow {
     Rectangle {
         id: box
 
-        x: layer.spot ? DesktopIcons.cellX(layer.spot.c) - 10 : 0
-        y: layer.spot ? DesktopIcons.cellY(layer.spot.r) + DesktopIcons.iconPx + 10 : 0
-        width: DesktopIcons.cellW + 24
+        x: layer.spot ? DesktopIcons.tileX(layer.spot.c) - 10 : 0
+        y: layer.spot ? DesktopIcons.tileY(layer.spot.r) + DesktopIcons.iconPx + 10 : 0
+        width: DesktopIcons.tileW + 24
         height: field.contentHeight + 10
         radius: 6
         color: Theme.bg
