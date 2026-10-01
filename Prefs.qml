@@ -229,7 +229,15 @@ Singleton {
         }, {
             "key": "wide",
             "name": "Wide",
-            "blurb": "Three side by side, the sliders standing up (on screens 900 px or wider)"
+            "blurb": "The figures, the tiles and two tall sliders side by side (on screens 820 px or wider)"
+        }, {
+            "key": "compact",
+            "name": "Compact",
+            "blurb": "Square tiles, four to a row, and the figures as chips"
+        }, {
+            "key": "minimal",
+            "name": "Minimal",
+            "blurb": "Only the square tiles and the sliders"
         }]
     }, {
         "id": "privacy",
