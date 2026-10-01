@@ -325,6 +325,7 @@ else
         --exclude='./lucidmoji/state.json' \
         --exclude='./lucidkeys/state.json' \
         --exclude='./lucidwidgets/widgets.json' \
+        --exclude='./luciddesktop/icons.json' \
         . | tar -C "$SHELL_DIR" -xf -
     say "  shell files -> $SHELL_DIR"
 fi
