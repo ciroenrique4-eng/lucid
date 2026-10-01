@@ -10,6 +10,26 @@ Column {
         width: parent.width
     }
 
+    // a bottom bar takes the dock's edge
+    SettingCard {
+        title: "HIDDEN WHILE THE BAR IS AT THE BOTTOM"
+        visible: Prefs.barBottom && Prefs.dockEnabled
+
+        SettingRow {
+            title: "The bar is on the dock's edge"
+            description: "With the bar at the bottom of the screen the dock stays away, so the two never pile up. The launcher still works, and these settings are kept for when the bar goes back to the top."
+            showDivider: false
+
+            M3Button {
+                text: "Move the bar up"
+                variant: "tonal"
+                onClicked: Prefs.barPosition = "top"
+            }
+
+        }
+
+    }
+
     SettingCard {
         title: "SIZE & PLACEMENT"
 

@@ -84,7 +84,7 @@ ClippingRectangle {
             required property var modelData
 
             x: thumb.width * modelData[0]
-            y: Prefs.effectiveBarTopMargin * thumb.fit
+            y: Prefs.barBottom ? thumb.height - height - Prefs.effectiveBarTopMargin * thumb.fit : Prefs.effectiveBarTopMargin * thumb.fit
             width: thumb.width * modelData[1]
             height: Math.max(2, Prefs.barHeight * thumb.fit)
             radius: Theme.pill(height)
@@ -101,7 +101,7 @@ ClippingRectangle {
         height: Math.max(3, (Prefs.dockIconSize + 20) * thumb.fit)
         radius: height * 0.3 * Theme.radiusScale
         color: Theme.bgOpaque
-        visible: Prefs.dockEnabled && !Prefs.dockAutoHide
+        visible: Prefs.dockShown && !Prefs.dockAutoHide
     }
 
 }
