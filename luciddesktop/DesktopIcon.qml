@@ -49,10 +49,15 @@ Item {
     // own icon, which is how people find it
     readonly property bool tinted: !tile.hasThumb && tile.kind !== "app" && (Prefs.desktopIconTint === "all" || (Prefs.desktopIconTint === "folders" && tile.isFolder))
     // each kind wears a palette role: folders the accent, apps the secondary,
-    // files and the trash the tertiary
-    readonly property color role: tile.isFolder ? Theme.cPrimary : (tile.kind === "app" ? Theme.cSecondary : Theme.cTertiary)
-    readonly property color container: tile.isFolder ? Theme.accentContainer : (tile.kind === "app" ? Theme.secondaryContainer : Theme.tertiaryContainer)
-    readonly property color onContainer: tile.isFolder ? Theme.fgAccentContainer : (tile.kind === "app" ? Theme.fgSecondaryContainer : Theme.fgTertiaryContainer)
+    // files and the trash a quiet surface with a breath of the accent. Never
+    // the tertiary: on most wallpapers it is the one colour that looks foreign
+    readonly property color role: tile.isFolder ? Theme.cPrimary : (tile.kind === "app" ? Theme.cSecondary : Theme.withSat(Theme.cPrimary, 0.45))
+    readonly property color container: tile.isFolder ? Theme.accentContainer : (tile.kind === "app" ? Theme.secondaryContainer : Qt.tint(Theme.bgHigh, Theme.alpha(Theme.accent, 0.12)))
+    readonly property color onContainer: tile.isFolder ? Theme.fgAccentContainer : (tile.kind === "app" ? Theme.fgSecondaryContainer : Theme.text)
+    // squares that follow the shell's corners, or the expressive shapes
+    readonly property bool squares: Prefs.desktopIconShape !== "expressive"
+    // the print's border: a pale paper in the wallpaper's own hue
+    readonly property color paper: Theme.atTone(Theme.withSat(Theme.cPrimary, 0.5), Theme.isLight ? 95 : 88)
     // a saturated tone of the role: colourising keeps the icon's own light and
     // shade, so a mid tone gives a dark icon its colour without going muddy
     readonly property color tintColor: Theme.atTone(tile.role, Theme.isLight ? 45 : 72)
@@ -456,23 +461,68 @@ Item {
             }
         ]
 
-        // shapes: each kind sits on an expressive shape in its palette role,
-        // which deepens and turns under the pointer, with a light the tilt
-        // slides across it and a shadow it lifts off
+        // or one of the expressive shapes, which deepens and turns under the
+        // pointer and lifts off its shadow
+        // a square with the shell's own corners, which round out a little
+        // more under the pointer, as if it took a breath
+        Rectangle {
+            id: square
+
+            readonly property real rest: Theme.rad(Math.round(tile.px * 0.3))
+
+            anchors.fill: parent
+            anchors.margins: Math.round(tile.px * 0.04)
+            visible: tile.look === "shapes" && tile.squares && !tile.hasThumb
+            radius: Math.min(width / 2, (tile.hovered || tile.dropTarget) ? square.rest * 1.35 + Theme.rad(4) : square.rest)
+            color: (tile.selected || tile.dropTarget) ? Theme.accent : tile.container
+            antialiasing: true
+            scale: tile.hovered ? 1.06 : 1
+            layer.enabled: visible
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowBlur: 0.7
+                shadowColor: Qt.rgba(0, 0, 0, tile.hovered ? 0.5 : 0.3)
+                shadowHorizontalOffset: -tile.ptrX * 4
+                shadowVerticalOffset: tile.hovered ? 6 - tile.ptrY * 3 : 2
+            }
+
+            Behavior on radius {
+                NumberAnimation {
+                    duration: Theme.durMedium
+                    easing.type: Easing.OutBack
+                    easing.overshoot: 2.2
+                }
+
+            }
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: Theme.durShort
+                    easing.type: Easing.OutBack
+                }
+
+            }
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: Theme.durShort
+                }
+
+            }
+
+        }
+
         IconShape {
             id: shape
 
             anchors.fill: parent
-            visible: tile.look === "shapes" && !tile.hasThumb
+            visible: tile.look === "shapes" && !tile.squares && !tile.hasThumb
             form: tile.shapeSpec.form
             lobes: tile.shapeSpec.lobes
             depth: tile.shapeSpec.depth * (tile.hovered || tile.dropTarget ? 1.8 : 1)
             round: tile.shapeSpec.round * (tile.hovered || tile.dropTarget ? 1.4 : 1)
             spin: tile.shapeSpec.spin + (tile.hovered || tile.dropTarget ? tile.shapeSpec.turn : 0)
             fill: (tile.selected || tile.dropTarget) ? Theme.accent : tile.container
-            sheen: tile.tilting ? 1 : 0.35
-            sheenX: 0.5 - tile.ptrX * 0.45
-            sheenY: 0.35 - tile.ptrY * 0.45
             scale: tile.hovered ? 1.06 : 1
             layer.enabled: visible
             layer.effect: MultiEffect {
@@ -523,13 +573,6 @@ Item {
 
             }
 
-            Behavior on sheen {
-                NumberAnimation {
-                    duration: Theme.durShort
-                }
-
-            }
-
         }
 
         // a theme with nothing for it still gets a shape, never a blank
@@ -570,7 +613,8 @@ Item {
             }
         }
 
-        // a picture: a print with a white border, set down slightly askew,
+        // a picture: a print with a border of pale paper in the wallpaper's
+        // hue, set down slightly askew,
         // that straightens up under the pointer (shapes); a plain preview with
         // a hairline edge otherwise, so a white picture still reads
         Item {
@@ -595,22 +639,10 @@ Item {
 
             Rectangle {
                 anchors.fill: parent
-                anchors.topMargin: tile.hovered ? 5 : 2
-                anchors.leftMargin: 1
-                anchors.rightMargin: -1
-                anchors.bottomMargin: tile.hovered ? -6 : -2
-                radius: 2
-                color: Qt.rgba(0, 0, 0, tile.hovered ? 0.3 : 0.35)
-                visible: photo.framed
-                antialiasing: true
-            }
-
-            Rectangle {
-                anchors.fill: parent
                 anchors.margins: photo.framed ? 0 : -1
                 radius: photo.framed ? 2 : 4
                 antialiasing: true
-                color: photo.framed ? (tile.selected ? Theme.accent : "#f4f1ea") : "transparent"
+                color: photo.framed ? (tile.selected ? Theme.accent : tile.paper) : "transparent"
                 border.width: photo.framed ? 0 : (tile.selected ? 2 : 1)
                 border.color: tile.selected ? Theme.accent : Qt.rgba(0, 0, 0, 0.25)
             }
