@@ -67,6 +67,22 @@ Singleton {
     // ---- history ---------------------------------------------------------
     property var entries: []
     readonly property int count: root.entries.length
+    // how many are waiting from each app, for the badges on the bar's apps
+    // module: keyed by desktop entry and by app name, both lower case
+    readonly property var countsByApp: {
+        const out = {};
+        for (const n of root.entries) {
+            const a = String(n.desktopEntry || "").toLowerCase();
+            const b = String(n.appName || "").toLowerCase();
+            if (a !== "")
+                out[a] = (out[a] || 0) + 1;
+
+            if (b !== "" && b !== a)
+                out[b] = (out[b] || 0) + 1;
+
+        }
+        return out;
+    }
     readonly property int criticalCount: {
         var c = 0;
         for (var i = 0; i < root.entries.length; i++) {
