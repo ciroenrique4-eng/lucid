@@ -170,7 +170,9 @@ Item {
     readonly property int pillTopRadius: Prefs.barFlush ? 0 : Prefs.barPillRadius
     // on the full bar the strip behind already paints the resting pill, so the
     // pill itself only shows a hover tint
-    readonly property color restingColor: Prefs.barFull ? Theme.alpha(Theme.text, pill.compactHovered ? 0.08 : 0) : Theme.bg
+    // (with module backgrounds the layer behind draws that tint, to their shape)
+    property bool tintsOnHover: true
+    readonly property color restingColor: Prefs.barFull ? Theme.alpha(Theme.text, pill.compactHovered && pill.tintsOnHover && !Prefs.barGrouping ? 0.08 : 0) : Theme.bg
     // still taller than the pill: a closing panel keeps its colour until it has
     // folded away, or on the full bar its fading contents float over the desktop
     readonly property bool surfaceOpen: pill.anyOpen || pill.height > pill.compactHeight + 0.5
