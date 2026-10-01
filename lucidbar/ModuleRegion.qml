@@ -13,6 +13,9 @@ Region {
     readonly property real bw: reg.mod ? (reg.mod.surfaceWidth !== undefined ? reg.mod.surfaceWidth : reg.mod.width) : 0
     readonly property real bh: reg.mod ? (reg.mod.surfaceHeight !== undefined ? reg.mod.surfaceHeight : reg.mod.height) : 0
     readonly property int rad: reg.mod ? reg.mod.barRadius : 0
+    // the corners against the screen edge: the bottom ones on a bottom bar
+    readonly property bool atBottom: Prefs.barBottom
+    readonly property real edgeRad: (reg.mod && reg.mod.barTopRadius > 0) ? reg.mod.barTopRadius - reg.inset : 0
 
     function lo(v) {
         return Math.ceil(v - 0.002);
@@ -28,8 +31,10 @@ Region {
         width: Math.max(0, reg.hi(reg.bx + reg.bw - reg.inset) - reg.lo(reg.bx + reg.inset))
         height: Math.max(0, reg.hi(reg.by + reg.bh - reg.inset) - reg.lo(reg.by + reg.inset))
         radius: Math.max(0, reg.rad - reg.inset)
-        topLeftRadius: (reg.mod && reg.mod.barTopRadius > 0) ? reg.mod.barTopRadius - reg.inset : 0
-        topRightRadius: (reg.mod && reg.mod.barTopRadius > 0) ? reg.mod.barTopRadius - reg.inset : 0
+        topLeftRadius: reg.atBottom ? Math.max(0, reg.rad - reg.inset) : reg.edgeRad
+        topRightRadius: reg.atBottom ? Math.max(0, reg.rad - reg.inset) : reg.edgeRad
+        bottomLeftRadius: reg.atBottom ? reg.edgeRad : Math.max(0, reg.rad - reg.inset)
+        bottomRightRadius: reg.atBottom ? reg.edgeRad : Math.max(0, reg.rad - reg.inset)
     }
 
     Region {
@@ -61,8 +66,10 @@ Region {
         width: reg.pop ? Math.max(0, reg.hi(reg.px + reg.pop.width) - reg.lo(reg.px)) : 0
         height: reg.pop ? Math.max(0, reg.hi(reg.py + reg.pop.height) - reg.lo(reg.py)) : 0
         radius: reg.mod ? reg.mod.cornerRadius : 0
-        topLeftRadius: reg.mod ? reg.mod.topRadius : 0
-        topRightRadius: reg.mod ? reg.mod.topRadius : 0
+        topLeftRadius: reg.mod ? (reg.atBottom ? reg.mod.cornerRadius : reg.mod.topRadius) : 0
+        topRightRadius: reg.mod ? (reg.atBottom ? reg.mod.cornerRadius : reg.mod.topRadius) : 0
+        bottomLeftRadius: reg.mod ? (reg.atBottom ? reg.mod.topRadius : reg.mod.cornerRadius) : 0
+        bottomRightRadius: reg.mod ? (reg.atBottom ? reg.mod.topRadius : reg.mod.cornerRadius) : 0
     }
 
 }
