@@ -804,7 +804,7 @@ Item {
     readonly property int topRadius: Prefs.barFlush && !root.popupMode ? 0 : root.cornerRadius
     readonly property int pillTopRadius: Prefs.barFlush ? 0 : Prefs.barPillRadius
     // on the full bar the strip behind already paints the resting pill
-    readonly property color restingColor: Prefs.barFull ? Theme.alpha(Theme.text, root.compactHovered ? 0.08 : 0) : Theme.bg
+    readonly property color restingColor: Prefs.barFull ? Theme.alpha(Theme.text, root.compactHovered && !Prefs.barGrouping ? 0.08 : 0) : Theme.bg
     readonly property bool popupExpanding: root.popupMode && root.expanded
     readonly property bool popupOpen: root.shown && root.popupMode && Math.abs(shell.y) > 0.5
     // the side against the screen edge is the bottom one on a bottom bar

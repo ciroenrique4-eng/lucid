@@ -300,6 +300,127 @@ ShellRoot {
                 z: -2
             }
 
+            // module backgrounds on the full bar: the modules of each group, in
+            // the arrangement's order, split wherever two neighbours are not
+            // joined; one switched off or away keeps a chain through it
+            readonly property var clusters: {
+                if (!Prefs.barGrouping)
+                    return [];
+
+                const g = Prefs.barLayoutGroups;
+                const out = [];
+                for (const side of ["left", "center", "right"]) {
+                    const ids = g[side];
+                    let run = [];
+                    const flush = () => {
+                        const shown = run.filter((id) => {
+                            const m = bar.moduleById[id];
+                            return m && m.visible && m.width > 0.5;
+                        });
+                        if (shown.length > 0)
+                            out.push(shown);
+
+                        run = [];
+                    };
+                    for (let i = 0; i < ids.length; i++) {
+                        if (i > 0 && !Prefs.barJoined(ids[i - 1], ids[i]))
+                            flush();
+
+                        run.push(ids[i]);
+                    }
+                    flush();
+                }
+                return out;
+            }
+            // as tall as the apps module's own highlights, so they line up; and
+            // short of each end, so two groups stay apart with no bar spacing
+            readonly property int groupInset: 4
+            readonly property int groupEndInset: 3
+
+            // repeated by count: the list is rebuilt as the pills change width
+            Repeater {
+                model: bar.clusters.length
+
+                Item {
+                    id: group
+
+                    required property int index
+
+                    readonly property var mods: (bar.clusters[group.index] || []).map((id) => {
+                        return bar.moduleById[id];
+                    })
+                    readonly property real x0: group.mods.length > 0 ? Math.min.apply(null, group.mods.map((m) => {
+                        return m.x;
+                    })) + bar.groupEndInset : 0
+                    readonly property real x1: group.mods.length > 0 ? Math.max.apply(null, group.mods.map((m) => {
+                        return m.x + m.width;
+                    })) - bar.groupEndInset : 0
+                    readonly property real y0: bar.edgeY(Prefs.barHeight) + bar.groupInset
+                    readonly property real tall: Math.max(0, Prefs.barHeight - bar.groupInset * 2)
+
+                    anchors.fill: parent
+                    z: -1
+
+                    Rectangle {
+                        x: group.x0
+                        y: group.y0
+                        width: Math.max(0, group.x1 - group.x0)
+                        height: group.tall
+                        radius: Theme.pill(height)
+                        color: Theme.alpha(Theme.text, 0.07)
+                    }
+
+                    // each module's hover, to the background's shape
+                    Repeater {
+                        model: group.mods.length
+
+                        Rectangle {
+                            required property int index
+
+                            readonly property var mod: group.mods[index]
+                            readonly property bool lit: !!mod && (mod.compactHovered === true) && mod.tintsOnHover !== false && !(mod.anyOpen === true)
+
+                            x: mod ? Math.max(mod.x, group.x0) : 0
+                            y: group.y0
+                            width: mod ? Math.max(0, Math.min(mod.x + mod.width, group.x1) - x) : 0
+                            height: group.tall
+                            radius: Theme.pill(height)
+                            color: Theme.alpha(Theme.text, lit ? 0.07 : 0)
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: Theme.barMs(150)
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    // a line between joined neighbours
+                    Repeater {
+                        model: Prefs.barGroupDividers ? Math.max(0, group.mods.length - 1) : 0
+
+                        Rectangle {
+                            required property int index
+
+                            readonly property var a: group.mods[index]
+                            readonly property var b: group.mods[index + 1]
+
+                            x: Math.round(((a.x + a.width) + b.x) / 2)
+                            y: Math.round(group.y0 + group.tall * 0.25)
+                            width: 1
+                            height: Math.round(group.tall * 0.5)
+                            color: Theme.alpha(Theme.text, 0.22)
+                        }
+
+                    }
+
+                }
+
+            }
+
             // full bar: an open panel hangs off the strip, so round the two concave
             // corners where its sides meet the strip's inner edge. They grow with
             // the panel's height, so a folding panel takes them with it
