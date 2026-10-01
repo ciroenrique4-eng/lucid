@@ -104,10 +104,10 @@ Item {
             readonly property int r: (ghost.from && ghost.anchorSpot) ? Math.max(0, Math.min(DesktopIcons.rows - 1, ghost.from.r + ghost.to.r - ghost.anchorSpot.r)) : 0
 
             visible: ghost.from !== null && ghost.anchorSpot !== null
-            x: DesktopIcons.cellX(ghost.c) + 4
-            y: DesktopIcons.cellY(ghost.r) + 2
-            width: DesktopIcons.cellW - 8
-            height: DesktopIcons.cellH - 4
+            x: DesktopIcons.tileX(ghost.c) + 4
+            y: DesktopIcons.tileY(ghost.r) + 2
+            width: DesktopIcons.tileW - 8
+            height: DesktopIcons.tileH - 4
             radius: Theme.radiusSm
             color: Theme.alpha(Theme.accent, 0.12)
             border.width: 1.5
