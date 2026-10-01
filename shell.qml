@@ -58,7 +58,7 @@ ShellRoot {
 
             visible: Prefs.loaded && Prefs.barEnabled && Monitors.surfacesUp
             property bool laidOut: false
-            readonly property bool anyModuleShown: bar.leftGroupWidth + clockMod.width + bar.rightGroupWidth > 0.5
+            readonly property bool anyModuleShown: bar.leftGroupWidth + bar.centerGroupWidth + bar.rightGroupWidth > 0.5
             function placeGroup(widths, originX) {
                 const gap = Prefs.barSpacing;
                 const out = [];
@@ -77,15 +77,89 @@ ShellRoot {
             }
 
             property real wsCollapse: (workspacesMod.expanded && !Prefs.barPopupMode) ? 0 : 1
-            readonly property var leftWidths: [workspacesMod.width * bar.wsCollapse, mprisMod.width, sysTrayMod.width]
-            readonly property var rightWidths: [notifMod.width, systemMod.width]
-            readonly property var modules: [workspacesMod, mprisMod, sysTrayMod, clockMod, notifMod, systemMod]
-            readonly property real leftGroupWidth: bar.placeGroup(bar.leftWidths, 0)[bar.leftWidths.length]
-            readonly property real rightGroupWidth: bar.placeGroup(bar.rightWidths, 0)[bar.rightWidths.length]
-            readonly property real leftOriginX: bar.sideMargin
-            readonly property real rightOriginX: bar.width - bar.rightGroupWidth - bar.sideMargin
-            readonly property var leftPlaces: bar.placeGroup(bar.leftWidths, bar.leftOriginX)
-            readonly property var rightPlaces: bar.placeGroup(bar.rightWidths, bar.rightOriginX)
+            // the pill for each id in Prefs.barModules
+            readonly property var moduleById: ({
+                "workspaces": workspacesMod,
+                "media": mprisMod,
+                "tray": sysTrayMod,
+                "clock": clockMod,
+                "notifications": notifMod,
+                "system": systemMod
+            })
+            readonly property var modules: Prefs.barModules.map((m) => {
+                return bar.moduleById[m.id];
+            })
+
+            // which modules switched on have left the bar for now, for the Bar
+            // page's arrangement
+            Binding {
+                target: Prefs
+                property: "barModulesAway"
+                value: Prefs.barModules.filter((m) => {
+                    const mod = bar.moduleById[m.id];
+                    return Prefs[m.key] === true && mod && !mod.shown;
+                }).map((m) => {
+                    return m.id;
+                })
+            }
+
+            // the least room kept between the centre group and either side group
+            readonly property int centerGap: 28
+            // every module's x and each group's width, worked out in one pass from
+            // the pref and the pills' own widths, so a new layout never meets the
+            // places of the old one halfway through
+            readonly property var placement: {
+                const g = Prefs.barLayoutGroups;
+                const lw = g.left.map((id) => {
+                    return bar.widthOf(id);
+                });
+                const cw = g.center.map((id) => {
+                    return bar.widthOf(id);
+                });
+                const rw = g.right.map((id) => {
+                    return bar.widthOf(id);
+                });
+                const left = bar.placeGroup(lw, 0)[lw.length];
+                const center = bar.placeGroup(cw, 0)[cw.length];
+                const right = bar.placeGroup(rw, 0)[rw.length];
+                // centred on the screen, but kept clear of the side groups
+                const centerX = Math.min(Math.max((bar.width - center) / 2, bar.sideMargin + left + bar.centerGap), bar.width - right - bar.sideMargin - center - bar.centerGap);
+                const out = {
+                    "left": left,
+                    "center": center,
+                    "right": right,
+                    "x": {}
+                };
+                const put = (ids, places) => {
+                    for (let i = 0; i < ids.length; i++) out.x[ids[i]] = places[i]
+                };
+                put(g.left, bar.placeGroup(lw, bar.sideMargin));
+                put(g.center, bar.placeGroup(cw, centerX));
+                put(g.right, bar.placeGroup(rw, bar.width - right - bar.sideMargin));
+                return out;
+            }
+            readonly property real leftGroupWidth: bar.placement.left
+            readonly property real centerGroupWidth: bar.placement.center
+            readonly property real rightGroupWidth: bar.placement.right
+
+            // the workspaces pill folds out of its group while the overview is open
+            function widthOf(id) {
+                const mod = bar.moduleById[id];
+                return mod === workspacesMod ? mod.width * bar.wsCollapse : mod.width;
+            }
+
+            function xOf(id) {
+                return bar.placement.x[id];
+            }
+
+            // a pop-up opens away from the edge its group sits against
+            function alignOf(id) {
+                const g = Prefs.barLayoutGroups;
+                if (g.left.indexOf(id) >= 0)
+                    return "left";
+
+                return g.center.indexOf(id) >= 0 ? "center" : "right";
+            }
 
             Behavior on wsCollapse {
                 NumberAnimation {
@@ -246,10 +320,10 @@ ShellRoot {
             Mpris {
                 id: mprisMod
 
-                popupAlign: "left"
+                popupAlign: bar.alignOf("media")
 
                 hostWindow: bar
-                x: bar.leftPlaces[1]
+                x: bar.xOf("media")
                 anchors.top: parent.top
                 anchors.topMargin: bar.hiddenOffset
 
@@ -258,10 +332,10 @@ ShellRoot {
             SysTray {
                 id: sysTrayMod
 
-                popupAlign: "left"
+                popupAlign: bar.alignOf("tray")
 
                 hostWindow: bar
-                x: bar.leftPlaces[2]
+                x: bar.xOf("tray")
                 anchors.top: parent.top
                 anchors.topMargin: bar.hiddenOffset
 
@@ -270,25 +344,23 @@ ShellRoot {
             Clock {
                 id: clockMod
 
-                popupAlign: "center"
-
-                readonly property int sideGap: 28
+                popupAlign: bar.alignOf("clock")
 
                 hostWindow: bar
                 anchors.top: parent.top
                 anchors.topMargin: bar.hiddenOffset
-                x: Math.min(Math.max((parent.width - width) / 2, bar.sideMargin + bar.leftGroupWidth + sideGap), bar.width - bar.rightGroupWidth - bar.sideMargin - width - sideGap)
+                x: bar.xOf("clock")
 
             }
 
             Notifications {
                 id: notifMod
 
-                popupAlign: "right"
+                popupAlign: bar.alignOf("notifications")
                 showsPopups: !Monitors.barEverywhere || bar.screen === Monitors.popupScreen
 
                 hostWindow: bar
-                x: bar.rightPlaces[0]
+                x: bar.xOf("notifications")
                 anchors.top: parent.top
                 anchors.topMargin: bar.hiddenOffset
 
@@ -297,15 +369,18 @@ ShellRoot {
             System {
                 id: systemMod
 
-                popupAlign: "right"
+                popupAlign: bar.alignOf("system")
 
                 hostWindow: bar
                 mprisMod: mprisMod
-                x: bar.rightPlaces[1]
+                x: bar.xOf("system")
                 anchors.top: parent.top
                 anchors.topMargin: bar.hiddenOffset
 
             }
+
+
+
 
             Repeater {
                 model: Prefs.barNotch ? bar.modules : []
@@ -369,7 +444,7 @@ ShellRoot {
 
                 hostWindow: bar
                 dockMod: dock
-                restX: bar.leftPlaces[0]
+                restX: bar.xOf("workspaces")
                 restY: bar.hiddenOffset
 
             }
@@ -419,6 +494,9 @@ ShellRoot {
                 ModuleRegion {
                     mod: systemMod
                 }
+
+
+
 
                 Region {
                     item: Prefs.barAutoHide ? revealArea : null
@@ -481,6 +559,9 @@ ShellRoot {
                     blur: true
                     mod: systemMod
                 }
+
+
+
 
             }
 
