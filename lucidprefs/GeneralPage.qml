@@ -325,12 +325,66 @@ Column {
         SettingRow {
             title: "Show icons"
             resetKey: "desktopIcons"
-            description: "What is in your Desktop folder sits on the wallpaper, sharing it with the widgets. A widget always keeps its space: an icon it covers steps to the nearest free cell, and goes back when the widget moves away. Drag icons around, into a folder, onto the trash or out into any app; drop files from a file manager or a browser to put them here."
+            description: "What is in your Desktop folder sits on the wallpaper, sharing it with the widgets. A widget always keeps its space: an icon it covers steps to the nearest free cell, and goes back when the widget moves away. Drag icons around, into a folder, onto the trash or out into any app; drop files from a file manager or a browser to put them here. Right-click the desktop to hide them for a while."
 
             M3Switch {
                 checked: Prefs.desktopIcons
                 onToggled: (v) => {
                     return Prefs.desktopIcons = v;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Look"
+            resetKey: "desktopIconStyle"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: Prefs.desktopIconStyle === "shapes" ? "Each kind sits on one of Material's expressive shapes in a colour of the palette \u2014 folders, apps and files apart at a glance \u2014 that turns a little under the pointer. Pictures are prints, set down slightly askew." : (Prefs.desktopIconStyle === "glass" ? "Every icon on a frosted card of its own, the material the widgets are made of." : "The icons straight on the wallpaper, their names in white.")
+
+            M3Segmented {
+                width: 260
+                current: Prefs.desktopIconStyle
+                options: [{
+                    "key": "shapes",
+                    "label": "Shapes"
+                }, {
+                    "key": "glass",
+                    "label": "Glass"
+                }, {
+                    "key": "classic",
+                    "label": "Classic"
+                }]
+                onChosen: (key) => {
+                    return Prefs.desktopIconStyle = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Shell colours"
+            resetKey: "desktopIconTint"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: "Recolour the icon theme's folders, or its file icons too, in the palette, keeping their light and shade. Apps keep their own colours, and pictures are never touched."
+
+            M3Segmented {
+                width: 300
+                current: Prefs.desktopIconTint
+                options: [{
+                    "key": "off",
+                    "label": "Off"
+                }, {
+                    "key": "folders",
+                    "label": "Folders"
+                }, {
+                    "key": "all",
+                    "label": "Folders and files"
+                }]
+                onChosen: (key) => {
+                    return Prefs.desktopIconTint = key;
                 }
             }
 
