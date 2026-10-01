@@ -1437,16 +1437,23 @@ BarPill {
                         // wide: the figures, then what is playing or the quick actions,
                         // on the left; the tiles in the middle
                         readonly property real leftHeight: systemSection.height + root.sp5 + (mediaSection.visible ? mediaSection.height : quickActions.height)
+                        // wide: the tiles line up with the figures' cards, top and
+                        // bottom - they start under the SYSTEM line and grow to end
+                        // with the left column
+                        readonly property real tilesTop: root.wideMain ? sysOverline.height + systemSection.spacing : 0
+                        readonly property int tileRows: Math.max(1, Math.ceil(tilesGrid.visibleChildren.length / tilesGrid.columns))
+                        readonly property real wideTileHeight: Math.max(56, Math.floor((mainColumn.leftHeight - mainColumn.tilesTop - tilesGrid.rowSpacing * (mainColumn.tileRows - 1)) / mainColumn.tileRows))
                         // the last section down, for the one-column looks
                         readonly property Item lastDown: systemSection.visible ? systemSection : (mediaSection.visible ? mediaSection : soundSection)
 
                         width: scrollArea.width
-                        implicitHeight: root.wideMain ? Math.max(mainColumn.leftHeight, tilesGrid.height) : mainColumn.lastDown.y + mainColumn.lastDown.height
+                        implicitHeight: root.wideMain ? Math.max(mainColumn.leftHeight, tilesGrid.y + tilesGrid.height) : mainColumn.lastDown.y + mainColumn.lastDown.height
 
                         Grid {
                             id: tilesGrid
 
                             x: root.wideMain ? root.sysColWidth + root.sp5 : 0
+                            y: mainColumn.tilesTop
                             width: root.tilesColWidth
                             columns: root.iconTiles ? 4 : 2
                             columnSpacing: root.sp2
@@ -1805,6 +1812,8 @@ BarPill {
                             spacing: root.sp2
 
                             Overline {
+                                id: sysOverline
+
                                 text: "SYSTEM"
                             }
 
@@ -2078,8 +2087,9 @@ BarPill {
 
                             visible: root.wideMain
                             x: mainColumn.width - width
+                            y: mainColumn.tilesTop
                             width: root.sliderColWidth
-                            height: mainColumn.height
+                            height: mainColumn.height - mainColumn.tilesTop
                             spacing: root.sp2
 
                             VSlider {
@@ -3497,7 +3507,7 @@ BarPill {
         signal expandRequested()
 
         width: tile.square ? (root.tilesColWidth - root.sp2 * 3) / 4 : (root.tilesColWidth - root.sp2) / 2
-        height: tile.square ? 52 + 20 : 56
+        height: tile.square ? 52 + 20 : (root.wideMain ? mainColumn.wideTileHeight : 56)
 
         Rectangle {
             id: tileFace
