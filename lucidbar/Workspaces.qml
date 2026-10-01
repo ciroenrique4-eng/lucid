@@ -806,7 +806,9 @@ Item {
     // on the full bar the strip behind already paints the resting pill
     readonly property color restingColor: Prefs.barFull ? Theme.alpha(Theme.text, root.compactHovered ? 0.08 : 0) : Theme.bg
     readonly property bool popupExpanding: root.popupMode && root.expanded
-    readonly property bool popupOpen: root.shown && root.popupMode && shell.y > 0.5
+    readonly property bool popupOpen: root.shown && root.popupMode && Math.abs(shell.y) > 0.5
+    // the side against the screen edge is the bottom one on a bottom bar
+    readonly property bool atBottom: Prefs.barBottom
     readonly property int barRadius: root.popupMode ? Prefs.barPillRadius : root.cornerRadius
     readonly property int barTopRadius: root.popupMode ? root.pillTopRadius : root.topRadius
     readonly property Item popupItem: shell
@@ -943,8 +945,10 @@ Item {
 
         clip: true
         radius: Prefs.barPillRadius
-        topLeftRadius: root.pillTopRadius
-        topRightRadius: root.pillTopRadius
+        topLeftRadius: root.atBottom ? Prefs.barPillRadius : root.pillTopRadius
+        topRightRadius: root.atBottom ? Prefs.barPillRadius : root.pillTopRadius
+        bottomLeftRadius: root.atBottom ? root.pillTopRadius : Prefs.barPillRadius
+        bottomRightRadius: root.atBottom ? root.pillTopRadius : Prefs.barPillRadius
     }
 
     Rectangle {
@@ -957,11 +961,13 @@ Item {
         height: root.popupMode ? (root.expanded ? root.cardHeight : root.compactHeight) : root.height
         x: root.popupMode && root.expanded ? shell.cardX - root.x : 0
         y: root.popupMode && root.expanded ? shell.cardY - root.y : 0
-        visible: !root.popupMode || shell.y > 0.5
+        visible: !root.popupMode || Math.abs(shell.y) > 0.5
         color: (root.popupMode || root.expanded) ? Theme.bg : root.restingColor
         radius: root.cornerRadius
-        topLeftRadius: root.topRadius
-        topRightRadius: root.topRadius
+        topLeftRadius: root.atBottom ? shell.radius : root.topRadius
+        topRightRadius: root.atBottom ? shell.radius : root.topRadius
+        bottomLeftRadius: root.atBottom ? root.topRadius : shell.radius
+        bottomRightRadius: root.atBottom ? root.topRadius : shell.radius
         clip: !root.dragging
 
         Behavior on x {
