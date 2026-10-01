@@ -71,7 +71,8 @@ Item {
     readonly property var specialList: {
         const out = [];
         for (const w of Hyprland.workspaces.values) {
-            if (w.id < 0 && w.name.indexOf("special:") === 0)
+            // show desktop's hiding place is not a workspace anyone opens
+            if (w.id < 0 && w.name.indexOf("special:") === 0 && w.name !== ShowDesktop.stash)
                 out.push(w);
 
         }
