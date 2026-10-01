@@ -92,7 +92,10 @@ Item {
     // skips the focus grab — that pulls the keyboard off the focused window, and
     // merely passing over the bar must not do that — so a click anywhere on the
     // pill promotes it to an ordinary clicked-open panel, grab and all.
-    readonly property bool hoverOpens: Prefs.barHoverOpen && pill.shown
+    // off for a module whose face is itself a row of things to click (the apps):
+    // its panel would cover them as soon as the pointer rests there
+    property bool opensOnHover: true
+    readonly property bool hoverOpens: Prefs.barHoverOpen && pill.shown && pill.opensOnHover
     property bool hoverOpen: false
     // false where the panel's own top row answers a right click (the tray's items)
     property bool headerOpensSettings: true
