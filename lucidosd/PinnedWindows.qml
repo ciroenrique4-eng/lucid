@@ -286,7 +286,7 @@ Scope {
                     readonly property bool shown: pin.appeared && pin.settled && !pin.covered
                     readonly property bool open: hover.hovered
                     readonly property real outer: root.rounding + badgeWindow.bs
-                    readonly property real inner: height / 2
+                    readonly property real inner: Theme.pill(height)
                     readonly property bool r: root.cornerRight
                     readonly property bool b: root.cornerBottom
 
