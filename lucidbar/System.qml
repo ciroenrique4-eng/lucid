@@ -73,6 +73,15 @@ BarPill {
     readonly property int maxPanelHeight: Math.min(820, Math.max(200, root.screenH - 40))
     readonly property int panelPad: root.sp4
     readonly property int contentWidth: root.panelWidth - root.panelPad * 2
+    // the wide panel: the system figures on the left, the tiles (and what is
+    // playing) in the middle, brightness and volume as two tall sliders on the
+    // right. only where the screen has the room, and only for the main view:
+    // the sub-views (Wi-Fi, Bluetooth...) keep the usual width
+    readonly property bool wideFits: root.screenW - 34 >= 900
+    readonly property bool wideMain: Prefs.systemPanelStyle === "wide" && root.wideFits && !root.inSubView
+    readonly property int sysColWidth: root.wideMain ? 330 : root.contentWidth
+    readonly property int sliderColWidth: root.wideMain ? 48 * 2 + root.sp2 : 0
+    readonly property int tilesColWidth: root.wideMain ? root.contentWidth - root.sysColWidth - root.sliderColWidth - root.sp5 * 2 : root.contentWidth
     readonly property int headerHeight: 44
     readonly property int subHeaderHeight: 44
     // header top margin + header + gap + body + bottom padding
@@ -548,7 +557,7 @@ BarPill {
     shown: Prefs.showSystem
 
     compactWidth: content.implicitWidth + root.horizontalPadding * 2
-    panelWidth: Math.min(400, root.screenW - 34)
+    panelWidth: root.wideMain ? Math.min(980, root.screenW - 34) : Math.min(400, root.screenW - 34)
     panelHeight: Math.min(root.maxPanelHeight, root.viewContentHeight)
     expandedRadius: Theme.shapeXl
     compactCollapseScale: 0.94
@@ -1331,14 +1340,20 @@ BarPill {
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
 
-                    Column {
+                    // laid out by hand: one column, or three side by side when wide
+                    Item {
                         id: mainColumn
 
+                        readonly property real middleHeight: tilesGrid.height + (mediaSection.visible ? root.sp5 + mediaSection.height : 0)
+
                         width: scrollArea.width
-                        spacing: root.sp5
+                        implicitHeight: root.wideMain ? Math.max(systemSection.height, mainColumn.middleHeight, 300) : systemSection.y + systemSection.height
 
                         Grid {
-                            width: root.contentWidth
+                            id: tilesGrid
+
+                            x: root.wideMain ? root.sysColWidth + root.sp5 : 0
+                            width: root.tilesColWidth
                             columns: 2
                             columnSpacing: root.sp2
                             rowSpacing: root.sp2
@@ -1448,6 +1463,11 @@ BarPill {
                         }
 
                         Column {
+                            id: soundSection
+
+                            // tall sliders take its place when wide
+                            visible: !root.wideMain
+                            y: tilesGrid.height + root.sp5
                             width: root.contentWidth
                             spacing: root.sp2
 
@@ -1492,9 +1512,13 @@ BarPill {
                         }
 
                         Column {
-                            width: root.contentWidth
+                            id: mediaSection
+
+                            x: tilesGrid.x
+                            y: root.wideMain ? tilesGrid.height + root.sp5 : soundSection.y + soundSection.height + root.sp5
+                            width: root.tilesColWidth
                             spacing: root.sp2
-                            visible: root.mprisMod && root.mprisMod.player
+                            visible: !!(root.mprisMod && root.mprisMod.player)
 
                             Overline {
                                 text: "NOW PLAYING"
@@ -1506,7 +1530,7 @@ BarPill {
                                 readonly property var mprisPlayer: root.mprisMod ? root.mprisMod.player : null
                                 readonly property real progress: (root.mprisMod && root.mprisMod.lenSec > 0) ? Math.max(0, Math.min(1, root.mprisMod.posSec / root.mprisMod.lenSec)) : 0
 
-                                width: root.contentWidth
+                                width: root.tilesColWidth
                                 height: 72
                                 radius: Theme.shapeLg
                                 color: Theme.withBlur(Theme.bgTile)
@@ -1679,7 +1703,10 @@ BarPill {
                         }
 
                         Column {
-                            width: root.contentWidth
+                            id: systemSection
+
+                            y: root.wideMain ? 0 : (mediaSection.visible ? mediaSection.y + mediaSection.height : soundSection.y + soundSection.height) + root.sp5
+                            width: root.sysColWidth
                             spacing: root.sp2
 
                             Overline {
@@ -1691,7 +1718,7 @@ BarPill {
                                 spacing: root.sp2
 
                                 StatCard {
-                                    width: (root.contentWidth - root.sp2 * 2) / 3
+                                    width: (root.sysColWidth - root.sp2 * 2) / 3
                                     label: "CPU"
                                     valueText: root.cpuHistory.length > 0 ? Math.round(root.cpuPercent) + "%" : "—"
                                     detailText: root.cpuTemp > 0 ? Math.round(root.cpuTemp) + " °C" : ""
@@ -1700,7 +1727,7 @@ BarPill {
                                 }
 
                                 StatCard {
-                                    width: (root.contentWidth - root.sp2 * 2) / 3
+                                    width: (root.sysColWidth - root.sp2 * 2) / 3
                                     label: "RAM"
                                     valueText: root.ramHistory.length > 0 ? Math.round(root.ramPercent) + "%" : "—"
                                     detailText: root.ramTotalGB > 0 ? root.ramUsedGB.toFixed(1) + " / " + Math.round(root.ramTotalGB) + " GB" : ""
@@ -1709,7 +1736,7 @@ BarPill {
                                 }
 
                                 StatCard {
-                                    width: (root.contentWidth - root.sp2 * 2) / 3
+                                    width: (root.sysColWidth - root.sp2 * 2) / 3
                                     label: "BATTERY"
                                     valueText: root.batteryPresent ? root.batteryPercent + "%" : "N/A"
                                     detailText: root.batteryDetail
@@ -1736,7 +1763,7 @@ BarPill {
                                 readonly property real usedPct: (selectedDiskInfo && selectedDiskInfo.size > 0) ? (selectedDiskInfo.used / selectedDiskInfo.size * 100) : 0
                                 readonly property bool unmounted: diskCard.selectedDiskInfo !== null && !diskCard.selectedDiskInfo.mounted
 
-                                width: root.contentWidth
+                                width: root.sysColWidth
                                 height: diskColumn.implicitHeight + root.sp3 * 2
                                 radius: Theme.shapeMd
                                 color: Theme.withBlur(Theme.bgTile)
@@ -1871,6 +1898,47 @@ BarPill {
 
                                 }
 
+                            }
+
+                        }
+
+                        // wide: brightness and volume, standing up at the right
+                        Row {
+                            id: tallSliders
+
+                            visible: root.wideMain
+                            x: mainColumn.width - width
+                            width: root.sliderColWidth
+                            height: mainColumn.height
+                            spacing: root.sp2
+
+                            VSlider {
+                                height: parent.height
+                                iconLevels: root.brightnessIconLevels
+                                value: root.brightnessPercent
+                                showToggle: true
+                                togglePath: root.moonPath
+                                toggleOn: NightLight.active
+                                showPicker: true
+                                onMoved: (v) => {
+                                    return root.setBrightness(v);
+                                }
+                                onToggleClicked: NightLight.toggle()
+                                onPickerRequested: root.showView("nightlight")
+                            }
+
+                            VSlider {
+                                height: parent.height
+                                iconLevels: root.volumeIconLevels
+                                value: root.volumePercent
+                                muted: root.volMuted
+                                showMute: true
+                                showPicker: true
+                                onMoved: (v) => {
+                                    return root.setVolume(v);
+                                }
+                                onMuteToggled: root.toggleVolMute()
+                                onPickerRequested: root.showView("output")
                             }
 
                         }
@@ -2797,6 +2865,176 @@ BarPill {
 
     }
 
+    // a slider standing up, for the wide panel: the picker and the toggle at
+    // the top, the reading, a tall track filling from the bottom, and the
+    // level icon (the mute button, for volume) at its foot
+    component VSlider: Item {
+        id: vSlider
+
+        property var iconLevels: []
+        property real value: 0
+        property bool muted: false
+        property bool showMute: false
+        property bool showPicker: false
+        property bool showToggle: false
+        property string togglePath: ""
+        property bool toggleOn: false
+        property real dragValue: -1
+        readonly property real shownValue: vSlider.dragValue >= 0 ? vSlider.dragValue : vSlider.value
+
+        signal moved(real v)
+        signal muteToggled()
+        signal pickerRequested()
+        signal toggleClicked()
+
+        width: 48
+
+        Column {
+            id: vTop
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: root.sp1
+
+            IconButton {
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: vSlider.showPicker
+                path: root.chevronPath
+                tint: Theme.subtext
+                diameter: 28
+                iconSize: 13
+                rotation: -90
+                onTapped: vSlider.pickerRequested()
+            }
+
+            // kept in place when absent, so both tracks start level
+            IconButton {
+                anchors.horizontalCenter: parent.horizontalCenter
+                opacity: vSlider.showToggle ? 1 : 0
+                enabled: vSlider.showToggle
+                path: vSlider.togglePath
+                bg: vSlider.toggleOn ? Theme.accent : "transparent"
+                tint: vSlider.toggleOn ? Theme.fgAccent : Theme.subtext
+                layerTint: vSlider.toggleOn ? Theme.fgAccent : Theme.text
+                diameter: 28
+                iconSize: 15
+                onTapped: vSlider.toggleClicked()
+            }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: Math.round(vSlider.shownValue) + "%"
+                color: vSlider.muted ? Theme.subtextDim : Theme.text
+                font.family: Theme.fontFamily
+                font.bold: true
+                font.pixelSize: Theme.fontLabelMd
+            }
+
+        }
+
+        Rectangle {
+            id: vTrack
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: vTop.bottom
+            anchors.topMargin: root.sp2
+            anchors.bottom: vFoot.top
+            anchors.bottomMargin: root.sp2
+            width: 32
+            radius: Theme.pill(width)
+            color: Theme.withBlur(Theme.bgTile)
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: Math.max(parent.radius * 2, parent.height * Math.max(0, Math.min(1, vSlider.shownValue / 100)))
+                radius: parent.radius
+                color: vSlider.muted ? Theme.subtextDim : Theme.accent
+
+                Behavior on height {
+                    enabled: vSlider.dragValue < 0
+
+                    NumberAnimation {
+                        duration: Theme.barMs(160)
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+            }
+
+            MouseArea {
+                function valueAt(my) {
+                    return Math.round(Math.max(0, Math.min(100, (1 - my / vTrack.height) * 100)));
+                }
+
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                preventStealing: true
+                onPressed: (mouse) => {
+                    vSlider.dragValue = valueAt(mouse.y);
+                    vSlider.moved(vSlider.dragValue);
+                }
+                onPositionChanged: (mouse) => {
+                    if (!pressed)
+                        return ;
+
+                    vSlider.dragValue = valueAt(mouse.y);
+                    vSlider.moved(vSlider.dragValue);
+                }
+                onReleased: vSlider.dragValue = -1
+                onCanceled: vSlider.dragValue = -1
+                onWheel: (wheel) => {
+                    vSlider.moved(Math.max(0, Math.min(100, vSlider.value + (wheel.angleDelta.y > 0 ? 5 : -5))));
+                }
+            }
+
+        }
+
+        Item {
+            id: vFoot
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            width: 32
+            height: 32
+
+            StateLayer {
+                hovered: vSlider.showMute && vFootArea.containsMouse
+                pressed: vSlider.showMute && vFootArea.pressed
+            }
+
+            MorphIcon {
+                anchors.centerIn: parent
+                levels: vSlider.iconLevels
+                value: vSlider.shownValue
+                tint: vSlider.muted ? Theme.error : Theme.subtext
+                iconSize: 18
+            }
+
+            Rectangle {
+                visible: vSlider.muted
+                anchors.centerIn: parent
+                width: 22
+                height: 1.5
+                rotation: 45
+                color: Theme.error
+            }
+
+            MouseArea {
+                id: vFootArea
+
+                anchors.fill: parent
+                enabled: vSlider.showMute
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: vSlider.muteToggled()
+            }
+
+        }
+
+    }
+
     // the output/input picker body
     component DeviceList: Column {
         id: devList
@@ -3084,7 +3322,7 @@ BarPill {
         signal toggled()
         signal expandRequested()
 
-        width: (root.contentWidth - root.sp2) / 2
+        width: (root.tilesColWidth - root.sp2) / 2
         height: 56
         radius: Theme.shapeLg
         color: tile.checked ? Theme.accent : Theme.withBlur(Theme.bgTile)
