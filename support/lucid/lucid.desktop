@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Lucid Settings
+GenericName=Desktop Settings
+Comment=Set up the bar, the dock, the look and the rest of the desktop
+Icon=lucid
+Exec=qs ipc call settings open
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=lucid;settings;preferences;bar;dock;theme;wallpaper;control;
+StartupWMClass=lucid

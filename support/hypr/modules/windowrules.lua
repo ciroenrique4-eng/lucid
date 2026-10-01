@@ -35,7 +35,9 @@ hl.window_rule({
 
 hl.window_rule({
     name  = "float-lucid-settings",
-    match = { class = "org.quickshell", title = "Lucid Settings" },
+    -- the shell's windows are "lucid" (shell.qml's AppId pragma); a shell
+    -- started from an older config is still quickshell's own id
+    match = { class = "^(lucid|org\\.quickshell)$", title = "Lucid Settings" },
 
     float  = true,
     size   = "1180 800",
