@@ -30,6 +30,10 @@ if [[ -d "$SHELL_DIR" ]]; then
     fi
 fi
 
+# the Lucid Settings entry and its icon go with the shell, whatever else stays
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
+rm -f "$DATA_DIR/applications/lucid.desktop" "$DATA_DIR/icons/hicolor/scalable/apps/lucid.svg"
+
 if [[ -d "$LUCID_DIR" ]] && ask "Remove the theming layer at $LUCID_DIR?"; then
     rm -rf "$LUCID_DIR"
     [[ -f "$WALL_SCRIPT" ]] && rm -f "$WALL_SCRIPT"
