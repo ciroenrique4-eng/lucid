@@ -34,6 +34,31 @@ Singleton {
     readonly property bool barFlush: root.barNotch || root.barFull
     // the edge the bar lives on; everything that opens off it opens away from it
     readonly property bool barBottom: root.barPosition === "bottom"
+    // module backgrounds on the full bar, one behind each run of modules joined
+    // in the arrangement (barGroups: "a+b" for each pair of neighbours joined)
+    readonly property bool barGrouping: root.barFull && root.barModuleBackgrounds
+    readonly property var barGroupSet: root.setOfList(root.splitList(root.barGroups))
+
+    function setOfList(list) {
+        const out = {};
+        for (const k of list)
+            out[k] = true;
+        return out;
+    }
+
+    function barJoined(a, b) {
+        return root.barGroupSet[a + "+" + b] === true || root.barGroupSet[b + "+" + a] === true;
+    }
+
+    function setBarJoined(a, b, on) {
+        const keep = root.splitList(root.barGroups).filter((k) => {
+            return k !== a + "+" + b && k !== b + "+" + a;
+        });
+        if (on)
+            keep.push(a + "+" + b);
+
+        root.barGroups = keep.join(",");
+    }
     // the dock and a bottom bar would want the same edge, and its reveal strip
     // would sit on the bar: while the bar is down there the dock stays away,
     // and dockEnabled keeps what was chosen for when the bar goes back up
@@ -321,6 +346,9 @@ Singleton {
 
     property alias barStyle: s.barStyle
     property alias barPosition: s.barPosition
+    property alias barModuleBackgrounds: s.barModuleBackgrounds
+    property alias barGroups: s.barGroups
+    property alias barGroupDividers: s.barGroupDividers
     property alias dockStyle: s.dockStyle
     property alias accentPunch: s.accentPunch
     property alias surfaceDarkness: s.surfaceDarkness
@@ -667,6 +695,9 @@ Singleton {
     readonly property var defaults: ({
         "barStyle": "island",
         "barPosition": "top",
+        "barModuleBackgrounds": false,
+        "barGroups": "",
+        "barGroupDividers": true,
         "dockStyle": "island",
         "accentPunch": 1,
         "surfaceDarkness": -1,
@@ -1241,6 +1272,9 @@ Singleton {
 
             property string barStyle: "island"
             property string barPosition: "top"
+            property bool barModuleBackgrounds: false
+            property string barGroups: ""
+            property bool barGroupDividers: true
             property string dockStyle: "island"
             property real accentPunch: 1
             property real surfaceDarkness: -1
