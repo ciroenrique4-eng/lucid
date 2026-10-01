@@ -289,11 +289,11 @@ Singleton {
         "key": "showApps",
         "home": "left",
         "name": "Apps",
-        "desc": "The dock's pinned apps and every open one, an icon each: click to switch to it, middle-click for a new window, right-click for its windows and what to do with them",
+        "desc": "The dock's pinned apps and every open one, an icon each: click to switch to it, middle-click for a new window, right-click for its windows and what to do with them, drag to reorder (or, dropped among the pinned, to pin)",
         "when": "while an app is pinned or open",
         "more": "The pinned apps are the dock's: pin and unpin here or there, and both change.",
         "page": "dock",
-        "options": ["appsModulePinned", "appsModuleScope", "appsModuleClick", "appsModuleWheel", "appsModuleNameWidth"],
+        "options": ["appsModulePinned", "appsModuleScope", "appsModuleClick", "appsModuleWheel", "appsModuleBadges", "appsModuleNameWidth"],
         "style": "appsModuleStyle",
         "styles": [{
             "key": "icons",
@@ -456,6 +456,7 @@ Singleton {
     property alias appsModuleScope: s.appsModuleScope
     property alias appsModuleClick: s.appsModuleClick
     property alias appsModuleWheel: s.appsModuleWheel
+    property alias appsModuleBadges: s.appsModuleBadges
     property alias appsModuleNameWidth: s.appsModuleNameWidth
     property alias clock24h: s.clock24h
     property alias clockShowDate: s.clockShowDate
@@ -772,6 +773,7 @@ Singleton {
         "appsModuleScope": "all",
         "appsModuleClick": "list",
         "appsModuleWheel": true,
+        "appsModuleBadges": true,
         "appsModuleNameWidth": 120,
         "clock24h": false,
         "clockShowDate": true,
@@ -1349,6 +1351,7 @@ Singleton {
             property string appsModuleScope: "all"
             property string appsModuleClick: "list"
             property bool appsModuleWheel: true
+            property bool appsModuleBadges: true
             property int appsModuleNameWidth: 120
             property bool clock24h: false
             property bool clockShowDate: true
