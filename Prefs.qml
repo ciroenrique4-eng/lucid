@@ -259,6 +259,26 @@ Singleton {
             "name": "Chip",
             "blurb": "The same on a chip tinted with the accent"
         }]
+    }, {
+        "id": "apps",
+        "key": "showApps",
+        "home": "left",
+        "name": "Apps",
+        "desc": "The dock's pinned apps and every open one, an icon each: click to switch to it, middle-click for a new window, right-click for its windows and what to do with them",
+        "when": "while an app is pinned or open",
+        "more": "The pinned apps are the dock's: pin and unpin here or there, and both change.",
+        "page": "dock",
+        "options": ["appsModulePinned", "appsModuleScope", "appsModuleClick", "appsModuleWheel", "appsModuleNameWidth"],
+        "style": "appsModuleStyle",
+        "styles": [{
+            "key": "icons",
+            "name": "Icons",
+            "blurb": "Only each app's icon, marked when it has windows"
+        }, {
+            "key": "names",
+            "name": "Names",
+            "blurb": "The icon and the app's name beside it"
+        }]
     }]
     readonly property bool anyBarModuleEnabled: root.barModules.some((m) => {
         return root[m.key] === true;
@@ -402,6 +422,13 @@ Singleton {
     property alias windowModuleScroll: s.windowModuleScroll
     property alias windowModuleMiddleClose: s.windowModuleMiddleClose
     property alias windowModuleStyle: s.windowModuleStyle
+    property alias showApps: s.showApps
+    property alias appsModuleStyle: s.appsModuleStyle
+    property alias appsModulePinned: s.appsModulePinned
+    property alias appsModuleScope: s.appsModuleScope
+    property alias appsModuleClick: s.appsModuleClick
+    property alias appsModuleWheel: s.appsModuleWheel
+    property alias appsModuleNameWidth: s.appsModuleNameWidth
     property alias clock24h: s.clock24h
     property alias clockShowDate: s.clockShowDate
     property alias clockStyle: s.clockStyle
@@ -708,6 +735,13 @@ Singleton {
         "windowModuleScroll": true,
         "windowModuleMiddleClose": false,
         "windowModuleStyle": "plain",
+        "showApps": false,
+        "appsModuleStyle": "icons",
+        "appsModulePinned": true,
+        "appsModuleScope": "all",
+        "appsModuleClick": "list",
+        "appsModuleWheel": true,
+        "appsModuleNameWidth": 120,
         "clock24h": false,
         "clockShowDate": true,
         "clockStyle": "inline",
@@ -1275,6 +1309,13 @@ Singleton {
             property bool windowModuleScroll: true
             property bool windowModuleMiddleClose: false
             property string windowModuleStyle: "plain"
+            property bool showApps: false
+            property string appsModuleStyle: "icons"
+            property bool appsModulePinned: true
+            property string appsModuleScope: "all"
+            property string appsModuleClick: "list"
+            property bool appsModuleWheel: true
+            property int appsModuleNameWidth: 120
             property bool clock24h: false
             property bool clockShowDate: true
             property string clockStyle: "inline"

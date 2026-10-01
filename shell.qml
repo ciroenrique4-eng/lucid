@@ -94,7 +94,8 @@ ShellRoot {
                 "system": systemMod,
                 "privacy": privacyMod,
                 "power": powerMod,
-                "window": windowMod
+                "window": windowMod,
+                "apps": appsMod
             })
             readonly property var modules: Prefs.barModules.map((m) => {
                 return bar.moduleById[m.id];
@@ -303,7 +304,7 @@ ShellRoot {
             // corners where its sides meet the strip's inner edge. They grow with
             // the panel's height, so a folding panel takes them with it
             Repeater {
-                model: (Prefs.barFull && !Prefs.barPopupMode) ? [mprisMod, sysTrayMod, clockMod, notifMod, systemMod] : []
+                model: (Prefs.barFull && !Prefs.barPopupMode) ? [mprisMod, sysTrayMod, clockMod, notifMod, systemMod, appsMod] : []
 
                 Item {
                     id: panelFlares
@@ -423,6 +424,18 @@ ShellRoot {
                 hostWindow: bar
                 x: bar.xOf("power")
                 y: bar.edgeY(powerMod.height)
+
+            }
+
+            AppStrip {
+                id: appsMod
+
+                popupAlign: bar.alignOf("apps")
+
+                hostWindow: bar
+                dockMod: dock
+                x: bar.xOf("apps")
+                y: bar.edgeY(appsMod.height)
 
             }
 
@@ -564,6 +577,10 @@ ShellRoot {
                     mod: windowMod
                 }
 
+                ModuleRegion {
+                    mod: appsMod
+                }
+
                 Region {
                     item: Prefs.barAutoHide ? revealArea : null
                 }
@@ -639,6 +656,11 @@ ShellRoot {
                 ModuleRegion {
                     blur: true
                     mod: windowMod
+                }
+
+                ModuleRegion {
+                    blur: true
+                    mod: appsMod
                 }
 
             }
