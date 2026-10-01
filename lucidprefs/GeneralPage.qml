@@ -291,7 +291,7 @@ Column {
         SettingRow {
             title: "Selection box"
             resetKey: "desktopSelection"
-            description: "Drag across empty desktop and a translucent box follows the cursor, the way it does on Windows and macOS. It is decoration only \u2014 nothing gets selected, and dragging inside a window or on a widget is untouched."
+            description: Prefs.desktopIcons ? "Drag across empty desktop and a translucent box follows the cursor and selects the icons it touches. Hold Ctrl or Shift to add to what is already selected." : "Drag across empty desktop and a translucent box follows the cursor, the way it does on Windows and macOS. Without desktop icons it is decoration only \u2014 nothing gets selected, and dragging inside a window or on a widget is untouched."
 
             M3Switch {
                 checked: Prefs.desktopSelection
@@ -313,6 +313,205 @@ Column {
                 onToggled: (v) => {
                     return Prefs.desktopMenu = v;
                 }
+            }
+
+        }
+
+    }
+
+    SettingCard {
+        title: "DESKTOP ICONS"
+
+        SettingRow {
+            title: "Show icons"
+            resetKey: "desktopIcons"
+            description: "What is in your Desktop folder sits on the wallpaper, sharing it with the widgets. A widget always keeps its space: an icon it covers steps to the nearest free cell, and goes back when the widget moves away. Drag icons around, into a folder, onto the trash or out into any app; drop files from a file manager or a browser to put them here."
+
+            M3Switch {
+                checked: Prefs.desktopIcons
+                onToggled: (v) => {
+                    return Prefs.desktopIcons = v;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Size"
+            resetKey: "desktopIconSize"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+
+            M3Segmented {
+                width: 240
+                current: Prefs.desktopIconSize
+                options: [{
+                    "key": "small",
+                    "label": "Small"
+                }, {
+                    "key": "medium",
+                    "label": "Medium"
+                }, {
+                    "key": "large",
+                    "label": "Large"
+                }]
+                onChosen: (key) => {
+                    return Prefs.desktopIconSize = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Start from"
+            resetKey: "desktopIconsCorner"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: "New icons fill the columns from this side of the screen, top to bottom."
+
+            M3Segmented {
+                width: 180
+                current: Prefs.desktopIconsCorner
+                options: [{
+                    "key": "left",
+                    "label": "Left"
+                }, {
+                    "key": "right",
+                    "label": "Right"
+                }]
+                onChosen: (key) => {
+                    return Prefs.desktopIconsCorner = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Arrange by"
+            resetKey: "desktopIconsSort"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: "The order new icons take, and the one Arrange Icons (right-click the desktop) puts everything back in. Folders come first."
+
+            M3Segmented {
+                width: 260
+                current: Prefs.desktopIconsSort
+                options: [{
+                    "key": "name",
+                    "label": "Name"
+                }, {
+                    "key": "type",
+                    "label": "Type"
+                }, {
+                    "key": "date",
+                    "label": "Modified"
+                }]
+                onChosen: (key) => {
+                    Prefs.desktopIconsSort = key;
+                    DesktopIcons.arrange();
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Open with"
+            resetKey: "desktopIconsOpen"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+
+            M3Segmented {
+                width: 240
+                current: Prefs.desktopIconsOpen
+                options: [{
+                    "key": "double",
+                    "label": "Double click"
+                }, {
+                    "key": "single",
+                    "label": "Single click"
+                }]
+                onChosen: (key) => {
+                    return Prefs.desktopIconsOpen = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Previews"
+            resetKey: "desktopIconsThumbs"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: "Pictures show themselves instead of a generic icon, and so do videos and documents a file manager has already made a thumbnail for."
+
+            M3Switch {
+                checked: Prefs.desktopIconsThumbs
+                onToggled: (v) => {
+                    return Prefs.desktopIconsThumbs = v;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Hidden files"
+            resetKey: "desktopIconsHidden"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: "Files whose name starts with a dot."
+
+            M3Switch {
+                checked: Prefs.desktopIconsHidden
+                onToggled: (v) => {
+                    return Prefs.desktopIconsHidden = v;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Home folder"
+            resetKey: "desktopIconsHome"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+
+            M3Switch {
+                checked: Prefs.desktopIconsHome
+                onToggled: (v) => {
+                    return Prefs.desktopIconsHome = v;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Trash"
+            resetKey: "desktopIconsTrash"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: "Drop files on it to throw them away; right-click it to empty it."
+
+            M3Switch {
+                checked: Prefs.desktopIconsTrash
+                onToggled: (v) => {
+                    return Prefs.desktopIconsTrash = v;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Add an app"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: "Puts a launcher for it on the desktop. Launchers that arrive any other way ask before they run the first time."
+            showDivider: false
+
+            M3Button {
+                text: "Choose\u2026"
+                variant: "tonal"
+                enabled: Prefs.desktopIcons
+                onClicked: Prefs.appPickerRequested("::desktop")
             }
 
         }
