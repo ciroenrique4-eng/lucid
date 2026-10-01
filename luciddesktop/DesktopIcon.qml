@@ -289,12 +289,13 @@ Item {
             height: themed.side
             visible: !tile.hasThumb && tile.themeIcon !== ""
             source: tile.themeIcon
-            sourceSize.width: tile.px * 2
-            sourceSize.height: tile.px * 2
+            // rendered at the size it is shown: an svg drawn large and then
+            // shrunk (mipmapped, too) comes out soft
+            sourceSize.width: themed.side
+            sourceSize.height: themed.side
             fillMode: Image.PreserveAspectFit
             asynchronous: true
             smooth: true
-            mipmap: true
             // the shell's colours on the icon, its light and shade kept
             layer.enabled: tile.tinted
             layer.effect: MultiEffect {
@@ -337,12 +338,14 @@ Item {
                 radius: 2
                 color: Qt.rgba(0, 0, 0, 0.35)
                 visible: photo.framed
+                antialiasing: true
             }
 
             Rectangle {
                 anchors.fill: parent
                 anchors.margins: photo.framed ? 0 : -1
                 radius: photo.framed ? 2 : 4
+                antialiasing: true
                 color: photo.framed ? (tile.selected ? Theme.accent : "#f4f1ea") : "transparent"
                 border.width: photo.framed ? 0 : (tile.selected ? 2 : 1)
                 border.color: tile.selected ? Theme.accent : Qt.rgba(0, 0, 0, 0.25)
@@ -369,17 +372,20 @@ Item {
         Image {
             id: thumb
 
-            x: (art.width - thumb.width) / 2
-            y: (art.height - thumb.height) / 2 - (photo.framed ? 2 + 2.5 : 0)
+            x: Math.round((art.width - thumb.width) / 2)
+            y: Math.round((art.height - thumb.height) / 2 - (photo.framed ? 4.5 : 0))
             width: art.width - (photo.framed ? 8 : 0)
             height: art.height - (photo.framed ? 13 : 0)
             source: tile.preview
-            sourceSize.width: tile.px * 2
-            sourceSize.height: tile.px * 2
+            // the decoder scales the picture down well; the GPU then only
+            // turns it, with smoothed edges so the tilt has no jaggies
+            sourceSize.width: thumb.width
+            sourceSize.height: thumb.height
             fillMode: Image.PreserveAspectFit
             asynchronous: true
             cache: false
             smooth: true
+            antialiasing: true
             rotation: photo.rotation
             scale: photo.scale
         }
