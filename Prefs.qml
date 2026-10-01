@@ -30,8 +30,14 @@ Singleton {
 
     readonly property bool barNotch: root.barStyle === "notch"
     readonly property bool barFull: root.barStyle === "full"
-    // notches and the full bar both sit flush against the top edge
+    // notches and the full bar both sit flush against the screen edge
     readonly property bool barFlush: root.barNotch || root.barFull
+    // the edge the bar lives on; everything that opens off it opens away from it
+    readonly property bool barBottom: root.barPosition === "bottom"
+    // the dock and a bottom bar would want the same edge, and its reveal strip
+    // would sit on the bar: while the bar is down there the dock stays away,
+    // and dockEnabled keeps what was chosen for when the bar goes back up
+    readonly property bool dockShown: root.dockEnabled && !root.barBottom
     readonly property bool dockNotch: root.dockStyle === "notch"
     readonly property int barPillRadius: Math.round(Math.min(18, Math.round(root.barHeight / 2)) * root.radiusScale)
     readonly property int effectiveBarTopMargin: root.barFlush ? 0 : root.barTopMargin
@@ -294,6 +300,7 @@ Singleton {
     readonly property var notifKeys: ["toastEnabled", "toastTimeout", "toastUseAppTimeout", "toastCriticalSticky", "toastShowBody", "toastShowActions", "toastBodyLines", "notifShowIcons", "notifMaxHistory", "doNotDisturb", "dndAllowCritical", "dndFullscreen", "quietHours", "quietFrom", "quietTo", "notifSound", "notifSoundName", "notifSoundVolume", "notifSoundUrgentOnly", "notifMutedApps", "notifGrouping", "notifTimestamps", "notifProgress", "notifInlineReply", "toastMaxVisible"]
 
     property alias barStyle: s.barStyle
+    property alias barPosition: s.barPosition
     property alias dockStyle: s.dockStyle
     property alias accentPunch: s.accentPunch
     property alias surfaceDarkness: s.surfaceDarkness
@@ -632,6 +639,7 @@ Singleton {
 
     readonly property var defaults: ({
         "barStyle": "island",
+        "barPosition": "top",
         "dockStyle": "island",
         "accentPunch": 1,
         "surfaceDarkness": -1,
@@ -1198,6 +1206,7 @@ Singleton {
             id: s
 
             property string barStyle: "island"
+            property string barPosition: "top"
             property string dockStyle: "island"
             property real accentPunch: 1
             property real surfaceDarkness: -1

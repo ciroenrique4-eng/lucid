@@ -24,6 +24,12 @@ Rectangle {
         color: Theme.bgSunken
         clip: true
 
+        // drawn for the top edge; a bottom bar is the same picture upside down
+        transform: Scale {
+            yScale: Prefs.barBottom ? -1 : 1
+            origin.y: screen.height / 2
+        }
+
         Rectangle {
             anchors.fill: parent
             gradient: Gradient {
@@ -280,12 +286,12 @@ Rectangle {
 
     }
 
+    // in the corner away from the bar
     Text {
         anchors.right: parent.right
         anchors.rightMargin: 22
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
-        text: (Prefs.barFull ? "Full bar" : Prefs.barNotch ? "Notches" : "Islands") + "  ·  " + (Prefs.barPopupMode ? "pop-up" : "morph") + (Prefs.barAutoHide ? "  ·  auto-hide" : "")
+        y: Prefs.barBottom ? 20 : parent.height - height - 20
+        text: (Prefs.barFull ? "Full bar" : Prefs.barNotch ? "Notches" : "Islands") + "  ·  " + (Prefs.barBottom ? "bottom" : "top") + "  ·  " + (Prefs.barPopupMode ? "pop-up" : "morph") + (Prefs.barAutoHide ? "  ·  auto-hide" : "")
         color: Theme.subtext
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontLabel

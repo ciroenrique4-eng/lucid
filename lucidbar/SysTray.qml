@@ -46,6 +46,8 @@ BarPill {
     property var menuItem: null
     property real menuX: 0
     property real menuY: 0
+    // the menu hangs up from menuY rather than down from it
+    property bool menuUp: false
     function resolveIconSource(raw) {
         if (!raw)
             return "";
@@ -145,10 +147,12 @@ BarPill {
                             if (mouse.button === Qt.RightButton) {
                                 // its menu, from the pill's own panel
                                 root.expanded = true;
-                                const p = menuLayer.mapFromItem(inline, 0, inline.height + 6);
+                                // under the icon, or over it on a bottom bar
+                                const p = menuLayer.mapFromItem(inline, 0, root.atBottom ? -6 : inline.height + 6);
                                 root.menuItem = inline.modelData;
                                 root.menuX = p.x;
                                 root.menuY = p.y;
+                                root.menuUp = root.atBottom;
                             } else if (mouse.button === Qt.MiddleButton) {
                                 inline.modelData.secondaryActivate();
                             } else {
@@ -320,6 +324,7 @@ BarPill {
                         root.menuItem = it;
                         root.menuX = p.x;
                         root.menuY = p.y;
+                        root.menuUp = false;
                     }
                 }
 
@@ -382,13 +387,15 @@ BarPill {
                 height: Math.min(menuSheet.wanted, root.screenH - 80)
                 // kept on screen, whichever side of the bar the tray sits on
                 x: Math.max(10 - root.x, Math.min(root.menuX, menuLayer.width - menuSheet.width - 10))
-                y: root.menuY
+                // and kept inside the window, so one opened low on a bottom bar
+                // goes up instead of off the screen
+                y: Math.max(10, Math.min(root.menuUp ? root.menuY - menuSheet.height : root.menuY, menuLayer.height - menuSheet.height - 10))
                 radius: Theme.radiusSm
                 color: Theme.bgOpaque
                 clip: true
                 opacity: root.menuItem !== null ? 1 : 0
                 scale: root.menuItem !== null ? 1 : 0.94
-                transformOrigin: Item.TopLeft
+                transformOrigin: root.menuUp ? Item.BottomLeft : Item.TopLeft
 
                 Behavior on opacity {
                     NumberAnimation {
