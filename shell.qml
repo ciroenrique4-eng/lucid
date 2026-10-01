@@ -190,9 +190,14 @@ ShellRoot {
             // busy: a panel is open somewhere on the bar, so it stays out
             // regardless of the pointer. held: the pointer is on the reveal
             // strip or already on a module - either keeps it from hiding
-            readonly property bool barBusy: workspacesMod.expanded || mprisMod.anyOpen || sysTrayMod.anyOpen || clockMod.anyOpen || notifMod.anyOpen || systemMod.anyOpen
+            // every module in Prefs.barModules counts, so a new one needs no entry here
+            readonly property bool barBusy: bar.modules.some((m) => {
+                return m && (m === workspacesMod ? m.expanded : m.anyOpen);
+            })
             property bool slidingAway: false
-            readonly property bool heldByPointer: revealArea.containsMouse || (!bar.slidingAway && (workspacesMod.compactHovered || mprisMod.surfaceHovered || sysTrayMod.surfaceHovered || clockMod.surfaceHovered || notifMod.surfaceHovered || systemMod.surfaceHovered))
+            readonly property bool heldByPointer: revealArea.containsMouse || (!bar.slidingAway && bar.modules.some((m) => {
+                return m && (m === workspacesMod ? m.compactHovered : m.surfaceHovered);
+            }))
             readonly property bool barRevealed: !Prefs.barAutoHide || bar.barBusy || bar.heldByPointer
             // how far the compact content sits off its resting place while
             // hidden - past the window's own edge, so it clips away for free
