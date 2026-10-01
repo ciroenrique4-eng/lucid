@@ -179,6 +179,13 @@ ShellRoot {
 
             }
             readonly property real sideMargin: Prefs.barSideMargin
+            readonly property bool atBottom: Prefs.barBottom
+
+            // the y of something h tall resting against the bar's edge: the top of
+            // the window, or its bottom on a bottom bar, less the auto-hide slide
+            function edgeY(h) {
+                return bar.atBottom ? bar.height - h - bar.hiddenOffset : bar.hiddenOffset;
+            }
 
             // busy: a panel is open somewhere on the bar, so it stays out
             // regardless of the pointer. held: the pointer is on the reveal
@@ -187,8 +194,8 @@ ShellRoot {
             property bool slidingAway: false
             readonly property bool heldByPointer: revealArea.containsMouse || (!bar.slidingAway && (workspacesMod.compactHovered || mprisMod.surfaceHovered || sysTrayMod.surfaceHovered || clockMod.surfaceHovered || notifMod.surfaceHovered || systemMod.surfaceHovered))
             readonly property bool barRevealed: !Prefs.barAutoHide || bar.barBusy || bar.heldByPointer
-            // how far the compact content sits above its resting y=0 while
-            // hidden - past the window's own top edge, so it clips away for free
+            // how far the compact content sits off its resting place while
+            // hidden - past the window's own edge, so it clips away for free
             property real hiddenOffset: bar.barRevealed ? 0 : -(Prefs.barHeight + Prefs.effectiveBarTopMargin + 4)
 
             Behavior on hiddenOffset {
@@ -231,23 +238,24 @@ ShellRoot {
             exclusiveZone: (Prefs.barEnabled && bar.anyModuleShown && !Prefs.barAutoHide) ? Prefs.barHeight : 0
 
             anchors {
-                top: true
-                bottom: false
+                top: !bar.atBottom
+                bottom: bar.atBottom
                 left: true
                 right: true
             }
 
             margins {
-                top: Prefs.effectiveBarTopMargin
+                top: bar.atBottom ? 0 : Prefs.effectiveBarTopMargin
+                bottom: bar.atBottom ? Prefs.effectiveBarTopMargin : 0
             }
 
-            // full bar: one strip across the whole top edge, under every module
+            // full bar: one strip across the whole edge, under every module
             Rectangle {
                 id: fullStrip
 
                 visible: Prefs.barFull && bar.anyModuleShown
                 x: 0
-                y: bar.hiddenOffset
+                y: bar.edgeY(Prefs.barHeight)
                 z: -2
                 width: bar.width
                 height: Prefs.barHeight
@@ -266,25 +274,28 @@ ShellRoot {
             }
 
             // rounded corners hanging off the strip where it meets the screen sides
+            // (standing on it, on a bottom bar)
             BarFlare {
                 visible: fullStrip.visible && size > 0
                 mirrored: true
+                flipped: bar.atBottom
                 size: Prefs.barFullCorner
                 x: 0
-                y: Prefs.barHeight + bar.hiddenOffset
+                y: bar.atBottom ? fullStrip.y - height : fullStrip.y + Prefs.barHeight
                 z: -2
             }
 
             BarFlare {
                 visible: fullStrip.visible && size > 0
+                flipped: bar.atBottom
                 size: Prefs.barFullCorner
                 x: bar.width - width
-                y: Prefs.barHeight + bar.hiddenOffset
+                y: bar.atBottom ? fullStrip.y - height : fullStrip.y + Prefs.barHeight
                 z: -2
             }
 
             // full bar: an open panel hangs off the strip, so round the two concave
-            // corners where its sides meet the strip's lower edge. They grow with
+            // corners where its sides meet the strip's inner edge. They grow with
             // the panel's height, so a folding panel takes them with it
             Repeater {
                 model: (Prefs.barFull && !Prefs.barPopupMode) ? [mprisMod, sysTrayMod, clockMod, notifMod, systemMod] : []
@@ -311,16 +322,18 @@ ShellRoot {
                     z: -1
 
                     BarFlare {
+                        flipped: bar.atBottom
                         size: panelFlares.sizeFor(true)
                         x: panelFlares.modelData.x - width + 0.5
-                        y: Prefs.barHeight
+                        y: bar.atBottom ? bar.height - Prefs.barHeight - height : Prefs.barHeight
                     }
 
                     BarFlare {
                         mirrored: true
+                        flipped: bar.atBottom
                         size: panelFlares.sizeFor(false)
                         x: panelFlares.modelData.x + panelFlares.modelData.width - 0.5
-                        y: Prefs.barHeight
+                        y: bar.atBottom ? bar.height - Prefs.barHeight - height : Prefs.barHeight
                     }
 
                 }
@@ -334,8 +347,7 @@ ShellRoot {
 
                 hostWindow: bar
                 x: bar.xOf("media")
-                anchors.top: parent.top
-                anchors.topMargin: bar.hiddenOffset
+                y: bar.edgeY(mprisMod.height)
 
             }
 
@@ -346,8 +358,7 @@ ShellRoot {
 
                 hostWindow: bar
                 x: bar.xOf("tray")
-                anchors.top: parent.top
-                anchors.topMargin: bar.hiddenOffset
+                y: bar.edgeY(sysTrayMod.height)
 
             }
 
@@ -357,8 +368,7 @@ ShellRoot {
                 popupAlign: bar.alignOf("clock")
 
                 hostWindow: bar
-                anchors.top: parent.top
-                anchors.topMargin: bar.hiddenOffset
+                y: bar.edgeY(clockMod.height)
                 x: bar.xOf("clock")
 
             }
@@ -371,8 +381,7 @@ ShellRoot {
 
                 hostWindow: bar
                 x: bar.xOf("notifications")
-                anchors.top: parent.top
-                anchors.topMargin: bar.hiddenOffset
+                y: bar.edgeY(notifMod.height)
 
             }
 
@@ -384,8 +393,7 @@ ShellRoot {
                 hostWindow: bar
                 mprisMod: mprisMod
                 x: bar.xOf("system")
-                anchors.top: parent.top
-                anchors.topMargin: bar.hiddenOffset
+                y: bar.edgeY(systemMod.height)
 
             }
 
@@ -398,8 +406,7 @@ ShellRoot {
                 toast: toastMod
                 recorder: snapMod
                 x: bar.xOf("privacy")
-                anchors.top: parent.top
-                anchors.topMargin: bar.hiddenOffset
+                y: bar.edgeY(privacyMod.height)
 
             }
 
@@ -410,8 +417,7 @@ ShellRoot {
 
                 hostWindow: bar
                 x: bar.xOf("power")
-                anchors.top: parent.top
-                anchors.topMargin: bar.hiddenOffset
+                y: bar.edgeY(powerMod.height)
 
             }
 
@@ -422,8 +428,7 @@ ShellRoot {
 
                 hostWindow: bar
                 x: bar.xOf("window")
-                anchors.top: parent.top
-                anchors.topMargin: bar.hiddenOffset
+                y: bar.edgeY(windowMod.height)
 
             }
 
@@ -467,17 +472,19 @@ ShellRoot {
 
                     BarFlare {
                         hovered: flares.modHovered
+                        flipped: bar.atBottom
                         size: flares.flareFor(true)
                         x: flares.modelData ? flares.modelData.x - width + flares.bite : 0
-                        y: bar.hiddenOffset
+                        y: bar.edgeY(height)
                     }
 
                     BarFlare {
                         hovered: flares.modHovered
                         mirrored: true
+                        flipped: bar.atBottom
                         size: flares.flareFor(false)
                         x: flares.modelData ? flares.modelData.x + flares.modelData.width - flares.bite : 0
-                        y: bar.hiddenOffset
+                        y: bar.edgeY(height)
                     }
 
                 }
@@ -490,7 +497,7 @@ ShellRoot {
                 hostWindow: bar
                 dockMod: dock
                 restX: bar.xOf("workspaces")
-                restY: bar.hiddenOffset
+                restY: bar.edgeY(workspacesMod.height)
 
             }
 
@@ -563,7 +570,7 @@ ShellRoot {
                 id: revealArea
 
                 x: 0
-                y: 0
+                y: bar.atBottom ? bar.height - height : 0
                 width: bar.width
                 height: 4
                 hoverEnabled: true
@@ -579,7 +586,7 @@ ShellRoot {
 
                 Region {
                     x: 0
-                    y: fullStrip.visible ? bar.hiddenOffset : 0
+                    y: fullStrip.visible ? fullStrip.y : 0
                     width: fullStrip.visible ? Math.round(bar.width) : 0
                     height: fullStrip.visible ? Prefs.barHeight : 0
                 }
