@@ -537,11 +537,13 @@ BarPill {
         // the strip where the pill sat, header included, answers the wheel and
         // the middle button as the pill does: opened by hover, the panel is
         // already over the pill when they come
+        // over the strip where the pill sat: the header, or on a bottom bar the
+        // panel's lower edge
         PillGestures {
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.top: parent.top
-            height: panelColumn.anchors.margins + headerRow.height
+            y: root.atBottom ? parent.height - height : 0
+            height: root.atBottom ? root.compactHeight : panelColumn.anchors.margins + headerRow.height
         }
     ]
 }

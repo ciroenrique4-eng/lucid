@@ -71,7 +71,7 @@ Column {
 
         SettingRow {
             title: "Auto-hide"
-            description: "The bar slides off the top of the screen and comes back when the pointer reaches the edge, or while one of its panels is open."
+            description: "The bar slides off its edge of the screen and comes back when the pointer reaches that edge, or while one of its panels is open."
 
             M3Switch {
                 checked: Prefs.barAutoHide
@@ -98,7 +98,7 @@ Column {
 
         SettingRow {
             title: "Pop-up mode"
-            description: "Modules stop morphing their own pill into a panel. The pill stays put in the bar and the panel appears below it as a detached pop-up."
+            description: "Modules stop morphing their own pill into a panel. The pill stays put in the bar and the panel appears " + (Prefs.barBottom ? "above" : "below") + " it as a detached pop-up."
 
             M3Switch {
                 checked: Prefs.barPopupMode
@@ -139,6 +139,28 @@ Column {
         title: "LAYOUT"
 
         SettingRow {
+            title: "Screen edge"
+            resetKey: "barPosition"
+            description: "Which edge of the screen the bar sits on. At the bottom, every panel, pop-up and menu opens upwards, new notifications stack above it, and the dock steps aside (the launcher stays)."
+
+            M3Segmented {
+                width: 220
+                current: Prefs.barPosition
+                options: [{
+                    "key": "top",
+                    "label": "Top"
+                }, {
+                    "key": "bottom",
+                    "label": "Bottom"
+                }]
+                onChosen: (key) => {
+                    return Prefs.barPosition = key;
+                }
+            }
+
+        }
+
+        SettingRow {
             title: "Bar height"
             resetKey: "barHeight"
             description: "How tall each module's resting pill is."
@@ -159,9 +181,9 @@ Column {
         }
 
         SettingRow {
-            title: "Distance from top"
+            title: "Distance from the edge"
             resetKey: "barTopMargin"
-            description: "How far the bar floats below the top edge of the screen."
+            description: Prefs.barBottom ? "How far the bar floats above the bottom edge of the screen." : "How far the bar floats below the top edge of the screen."
             enabled: !Prefs.barFlush
             disabledReason: "Notches and the full bar sit flush against the screen edge by definition - switch back to islands on the General page to float the bar."
             stacked: true
