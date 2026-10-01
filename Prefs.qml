@@ -890,6 +890,9 @@ Singleton {
     property alias desktopIconsHidden: s.desktopIconsHidden
     property alias desktopIconsHome: s.desktopIconsHome
     property alias desktopIconsTrash: s.desktopIconsTrash
+    property alias desktopIconStyle: s.desktopIconStyle
+    property alias desktopIconTint: s.desktopIconTint
+    property alias desktopIconsShown: s.desktopIconsShown
     property alias shotPreview: s.shotPreview
     property alias shotPreviewSeconds: s.shotPreviewSeconds
 
@@ -1176,6 +1179,9 @@ Singleton {
         "desktopIconsHidden": false,
         "desktopIconsHome": false,
         "desktopIconsTrash": false,
+        "desktopIconStyle": "shapes",
+        "desktopIconTint": "folders",
+        "desktopIconsShown": true,
         "shotPreview": "preview",
         "shotPreviewSeconds": 6,
         "envAdopted": false,
@@ -1777,6 +1783,9 @@ Singleton {
             property bool desktopIconsHidden: false
             property bool desktopIconsHome: false
             property bool desktopIconsTrash: false
+            property string desktopIconStyle: "shapes"
+            property string desktopIconTint: "folders"
+            property bool desktopIconsShown: true
             property string shotPreview: "preview"
             property int shotPreviewSeconds: 6
             property bool envAdopted: false
