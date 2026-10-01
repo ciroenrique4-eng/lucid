@@ -235,6 +235,10 @@ BarPill {
         if (!/^0x[0-9a-fA-F]+$/.test(address || ""))
             return ;
 
+        // put away by show desktop: back where it was first, the rest stay away
+        if (ShowDesktop.holds(address))
+            ShowDesktop.bringBack(address);
+
         Quickshell.execDetached(["hyprctl", "eval", "local nw = hl.get_config('cursor.no_warps') " + "hl.config({ cursor = { no_warps = true } }) " + "pcall(function() hl.dispatch(hl.dsp.focus({ window = 'address:" + address + "' })) end) " + "hl.config({ cursor = { no_warps = nw } })"]);
     }
 
@@ -296,6 +300,9 @@ BarPill {
 
     function workspaceLabel(c) {
         const name = c.workspace ? String(c.workspace.name || c.workspace.id) : "";
+        if (name === ShowDesktop.stash)
+            return "Put away · show desktop";
+
         if (name.indexOf("special:") === 0)
             return "Special · " + name.substring(8);
 
