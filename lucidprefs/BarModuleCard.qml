@@ -946,6 +946,22 @@ SettingCard {
 
     SettingRow {
         visible: card.moduleId === "apps"
+        title: "Notification counts"
+        resetKey: "appsModuleBadges"
+        description: "A small count on an app's icon while it has notifications waiting."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.appsModuleBadges
+            onToggled: (v) => {
+                return Prefs.appsModuleBadges = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
         title: "Longest a name gets"
         resetKey: "appsModuleNameWidth"
         description: "In the Names look, a longer name is cut short with an ellipsis."
