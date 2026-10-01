@@ -83,6 +83,7 @@
     "showSystem": true,
     "systemStyle": "values",
     "systemPanelStyle": "stacked",
+    "systemPanelAvatar": true,
     "systemIndicators": "wifi,bluetooth,volume,mic,battery",
     "showPrivacy": false,
     "privacyWatch": "mic,camera,screen",
