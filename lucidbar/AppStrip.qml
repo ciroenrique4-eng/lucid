@@ -29,11 +29,17 @@ BarPill {
         return !root.thisWorkspaceOnly || (!!c.workspace && c.workspace.id === root.currentWs);
     }
 
+    // where the open (unpinned) apps were dragged to, by key; for this session,
+    // since they come and go with their windows
+    property var runningOrder: []
+
     // each app once: the pinned first, in the dock's order, then the others in
-    // the order their first window opened. windows keeps Hyprland's order, which
-    // holds still while the focus moves around
+    // the order they were dragged to, or else their first window opened.
+    // windows keeps Hyprland's order, which holds still while the focus moves
+    // around. base is the desktop entry, which notifications name
     readonly property var apps: {
         const out = [];
+        const running = [];
         const byKey = {};
         const add = (app) => {
             byKey[app.key] = app;
@@ -45,9 +51,11 @@ BarPill {
                 if (key === "" || byKey[key])
                     continue;
 
+                const pe = root.dockMod.entryForClass(String(p.appId));
                 add({
                     "key": key,
                     "appId": p.appId,
+                    "base": pe ? String(pe.base).toLowerCase() : key,
                     "name": p.name || p.appId,
                     "icon": IconTheme.resolve(p.iconName),
                     "command": p.command || "",
@@ -67,22 +75,88 @@ BarPill {
                 app = {
                     "key": key,
                     "appId": c.class,
+                    "base": e ? String(e.base).toLowerCase() : key,
                     "name": e ? e.name : c.class,
                     "icon": root.dockMod ? root.dockMod.iconForClass(c.class) : "",
                     "command": e ? e.command : "",
                     "pinned": false,
                     "windows": []
                 };
-                add(app);
+                byKey[key] = app;
+                running.push(app);
             }
             app.windows.push(c);
         }
+        const rank = (a) => {
+            const i = root.runningOrder.indexOf(a.key);
+            return i < 0 ? 1e6 : i;
+        };
+        // a stable sort keeps the undragged ones in their opening order
+        const ranked = running.map((a, i) => {
+            return {
+                "a": a,
+                "i": i
+            };
+        }).sort((x, y) => {
+            return rank(x.a) - rank(y.a) || x.i - y.i;
+        });
+        for (const r of ranked)
+            out.push(r.a);
         return out;
+    }
+
+    readonly property int pinnedCount: root.apps.filter((a) => {
+        return a.pinned;
+    }).length
+
+    function dockIndexOf(app) {
+        if (!root.dockMod || !app)
+            return -1;
+
+        return root.dockMod.pinnedList.findIndex((p) => {
+            return String(p.appId || "").toLowerCase() === app.key;
+        });
+    }
+
+    // a drag along the strip ends: a pin moves among the pins, an open app
+    // moves among the open ones, or, dropped among the pins, is pinned there
+    function dropApp(from, to) {
+        const app = root.apps[from];
+        if (!app || from === to)
+            return ;
+
+        const pins = root.pinnedCount;
+        if (app.pinned) {
+            const target = root.apps[Math.min(to, pins - 1)];
+            root.dockMod.movePinned(root.dockIndexOf(app), root.dockIndexOf(target));
+            return ;
+        }
+        if (to < pins && app.command !== "" && root.dockMod) {
+            root.dockMod.pinRunningApp(app.appId, root.dockIndexOf(root.apps[to]));
+            return ;
+        }
+        const keys = root.apps.slice(pins).map((a) => {
+            return a.key;
+        }).filter((k) => {
+            return k !== app.key;
+        });
+        keys.splice(Math.max(0, to - pins), 0, app.key);
+        root.runningOrder = keys;
+    }
+
+    // waiting notifications from an app, by its desktop entry, name or class
+    function badgeOf(app) {
+        if (!Prefs.appsModuleBadges || !app || app.key === "")
+            return 0;
+
+        const c = Notifs.countsByApp;
+        return c[app.base] || c[String(app.name).toLowerCase()] || c[app.key] || 0;
     }
 
     readonly property var noApp: ({
         "key": "",
         "appId": "",
+        "base": "",
         "name": "",
         "icon": "",
         "command": "",
@@ -423,15 +497,53 @@ BarPill {
                         return t.urgent && t.wayland && t.wayland.appId && t.wayland.appId.toLowerCase() === tile.app.key;
                     })
 
+                    readonly property int badge: root.badgeOf(tile.app)
+                    readonly property bool lifted: faceArea.dragIndex === tile.index
+                    // while one is dragged: it follows the pointer, and the ones
+                    // between where it was and where it would land make room
+                    readonly property real shift: {
+                        const from = faceArea.dragIndex;
+                        const to = faceArea.dropIndex;
+                        if (from < 0)
+                            return 0;
+
+                        if (tile.lifted)
+                            return faceArea.dragDx;
+
+                        const room = faceArea.dragWidth + appRow.spacing;
+                        if (from < to && tile.index > from && tile.index <= to)
+                            return -room;
+
+                        if (from > to && tile.index >= to && tile.index < from)
+                            return room;
+
+                        return 0;
+                    }
+
                     width: root.namesFace ? nameText.width + root.iconSize + 26 : root.slotWidth
                     height: root.compactHeight
+                    z: tile.lifted ? 10 : 0
+                    transform: Translate {
+                        x: tile.shift
+
+                        Behavior on x {
+                            enabled: !tile.lifted
+
+                            NumberAnimation {
+                                duration: Theme.barMs(160)
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
+                    }
 
                     Rectangle {
                         anchors.centerIn: parent
                         width: parent.width
                         height: Math.max(0, root.compactHeight - 8)
                         radius: Theme.pill(height)
-                        color: tile.focused ? Theme.alpha(Theme.accent, faceArea.pressedIndex === tile.index ? 0.26 : 0.16) : Theme.alpha(Theme.text, faceArea.pressedIndex === tile.index ? 0.14 : (tile.hovered ? 0.08 : 0))
+                        color: tile.lifted ? Theme.alpha(Theme.text, 0.16) : (tile.focused ? Theme.alpha(Theme.accent, faceArea.pressedIndex === tile.index ? 0.26 : 0.16) : Theme.alpha(Theme.text, faceArea.pressedIndex === tile.index ? 0.14 : (tile.hovered ? 0.08 : 0)))
 
                         Behavior on color {
                             ColorAnimation {
@@ -476,6 +588,32 @@ BarPill {
                         font.pixelSize: Theme.fontLabelLg
                         font.weight: tile.focused ? Font.DemiBold : Font.Medium
                         elide: Text.ElideRight
+                    }
+
+                    // waiting notifications, on the icon's corner away from the edge
+                    Rectangle {
+                        visible: tile.badge > 0
+                        x: tileIcon.x + tileIcon.width - width / 2 - 1
+                        y: root.atBottom ? tileIcon.y - height / 2 + 2 : tileIcon.y + tileIcon.height - height / 2 - 2
+                        width: Math.max(height, badgeText.implicitWidth + 7)
+                        height: 14
+                        radius: Theme.pill(height)
+                        color: Theme.accent
+                        border.width: 1.5
+                        border.color: Theme.bg
+                        z: 2
+
+                        Text {
+                            id: badgeText
+
+                            anchors.centerIn: parent
+                            text: tile.badge > 9 ? "9+" : String(tile.badge)
+                            color: Theme.fgAccent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 9
+                            font.weight: Font.DemiBold
+                        }
+
                     }
 
                     // its windows, on the side against the screen edge: a bar for the
@@ -525,6 +663,37 @@ BarPill {
 
             property int hoverIndex: -1
             property int pressedIndex: -1
+            // a drag along the strip: which icon, how far, and where it would land
+            property int dragIndex: -1
+            property real pressX: 0
+            property real dragDx: 0
+            property real dragWidth: 0
+            property bool dragEnded: false
+            readonly property int dropIndex: {
+                if (faceArea.dragIndex < 0)
+                    return -1;
+
+                const tiles = [];
+                for (const c of appRow.children) {
+                    if (c.index !== undefined && c.width > 0)
+                        tiles.push(c);
+
+                }
+                const lifted = tiles.find((t) => {
+                    return t.index === faceArea.dragIndex;
+                });
+                if (!lifted)
+                    return faceArea.dragIndex;
+
+                const centre = lifted.x + lifted.width / 2 + faceArea.dragDx;
+                let to = 0;
+                for (const t of tiles) {
+                    if (t !== lifted && t.x + t.width / 2 < centre)
+                        to++;
+
+                }
+                return to;
+            }
 
             function indexAt(mx, my) {
                 const p = mapToItem(appRow, mx, my);
@@ -535,7 +704,7 @@ BarPill {
             anchors.fill: parent
             hoverEnabled: true
             acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
-            cursorShape: Qt.PointingHandCursor
+            cursorShape: faceArea.dragIndex >= 0 ? Qt.ClosedHandCursor : Qt.PointingHandCursor
             // on entering too: a pointer that lands on an icon in one jump sends
             // no move until it moves again
             function hoverAt(mx, my) {
@@ -558,6 +727,19 @@ BarPill {
 
             onEntered: faceArea.hoverAt(faceArea.mouseX, faceArea.mouseY)
             onPositionChanged: (mouse) => {
+                if (faceArea.pressed && faceArea.pressedIndex >= 0 && (mouse.buttons & Qt.LeftButton)) {
+                    const dx = mouse.x - faceArea.pressX;
+                    if (faceArea.dragIndex < 0 && Math.abs(dx) > 6) {
+                        const t = root.tileFor(faceArea.pressedIndex);
+                        faceArea.dragWidth = t ? t.width : root.slotWidth;
+                        faceArea.dragIndex = faceArea.pressedIndex;
+                        root.hidePreview();
+                    }
+                    if (faceArea.dragIndex >= 0) {
+                        faceArea.dragDx = dx;
+                        return ;
+                    }
+                }
                 return faceArea.hoverAt(mouse.x, mouse.y);
             }
             onExited: {
@@ -565,13 +747,35 @@ BarPill {
                 previewOpen.stop();
                 previewClose.restart();
             }
+            preventStealing: faceArea.dragIndex >= 0
             onPressed: (mouse) => {
                 root.hidePreview();
+                faceArea.pressX = mouse.x;
+                faceArea.dragEnded = false;
                 return faceArea.pressedIndex = faceArea.indexAt(mouse.x, mouse.y);
             }
-            onReleased: faceArea.pressedIndex = -1
-            onCanceled: faceArea.pressedIndex = -1
+            onReleased: {
+                if (faceArea.dragIndex >= 0) {
+                    const from = faceArea.dragIndex;
+                    const to = faceArea.dropIndex;
+                    faceArea.dragIndex = -1;
+                    faceArea.dragDx = 0;
+                    faceArea.dragEnded = true;
+                    root.dropApp(from, to);
+                }
+                faceArea.pressedIndex = -1;
+            }
+            onCanceled: {
+                faceArea.dragIndex = -1;
+                faceArea.dragDx = 0;
+                faceArea.pressedIndex = -1;
+            }
             onClicked: (mouse) => {
+                // the end of a drag is not a click
+                if (faceArea.dragEnded) {
+                    faceArea.dragEnded = false;
+                    return ;
+                }
                 const i = faceArea.indexAt(mouse.x, mouse.y);
                 const app = i >= 0 && i < root.apps.length ? root.apps[i] : null;
                 if (!app) {
