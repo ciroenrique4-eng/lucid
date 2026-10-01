@@ -304,6 +304,41 @@ Singleton {
             "name": "Names",
             "blurb": "The icon and the app's name beside it"
         }]
+    }, {
+        "id": "start",
+        "key": "showStart",
+        "home": "left",
+        "first": true,
+        "name": "Start",
+        "desc": "A button for the launcher, at the start of the bar: a click opens it or puts it away",
+        "options": [],
+        "style": "startModuleStyle",
+        "styles": [{
+            "key": "logo",
+            "name": "Logo",
+            "blurb": "Lucid's mark, as on the dock"
+        }, {
+            "key": "grid",
+            "name": "Grid",
+            "blurb": "Nine dots, the middle one in the accent"
+        }]
+    }, {
+        "id": "desktop",
+        "key": "showDesktop",
+        "home": "right",
+        "name": "Show desktop",
+        "desc": "A click sends every window on the workspace in view out of sight, and the next brings them back where they were; an app's icon in the apps module brings back just that one",
+        "options": [],
+        "style": "desktopModuleStyle",
+        "styles": [{
+            "key": "sliver",
+            "name": "Sliver",
+            "blurb": "A thin strip at the end of the bar"
+        }, {
+            "key": "icon",
+            "name": "Icon",
+            "blurb": "A small empty screen"
+        }]
     }]
     readonly property bool anyBarModuleEnabled: root.barModules.some((m) => {
         return root[m.key] === true;
@@ -457,6 +492,10 @@ Singleton {
     property alias appsModuleClick: s.appsModuleClick
     property alias appsModuleWheel: s.appsModuleWheel
     property alias appsModuleBadges: s.appsModuleBadges
+    property alias showStart: s.showStart
+    property alias startModuleStyle: s.startModuleStyle
+    property alias showDesktop: s.showDesktop
+    property alias desktopModuleStyle: s.desktopModuleStyle
     property alias appsModuleNameWidth: s.appsModuleNameWidth
     property alias clock24h: s.clock24h
     property alias clockShowDate: s.clockShowDate
@@ -774,6 +813,10 @@ Singleton {
         "appsModuleClick": "list",
         "appsModuleWheel": true,
         "appsModuleBadges": true,
+        "showStart": false,
+        "startModuleStyle": "logo",
+        "showDesktop": false,
+        "desktopModuleStyle": "sliver",
         "appsModuleNameWidth": 120,
         "clock24h": false,
         "clockShowDate": true,
@@ -1021,10 +1064,16 @@ Singleton {
                 out[side].push(id);
             }
         }
-        for (const id in root.barModuleHome) {
-            if (!seen[id])
-                out[root.barModuleHome[id]].push(id);
+        // one new to the arrangement goes to its home group: at the end, or at
+        // the start for one that belongs there (the start button)
+        for (const m of root.barModules) {
+            if (seen[m.id])
+                continue;
 
+            if (m.first)
+                out[m.home].unshift(m.id);
+            else
+                out[m.home].push(m.id);
         }
         return out;
     }
@@ -1352,6 +1401,10 @@ Singleton {
             property string appsModuleClick: "list"
             property bool appsModuleWheel: true
             property bool appsModuleBadges: true
+            property bool showStart: false
+            property string startModuleStyle: "logo"
+            property bool showDesktop: false
+            property string desktopModuleStyle: "sliver"
             property int appsModuleNameWidth: 120
             property bool clock24h: false
             property bool clockShowDate: true
