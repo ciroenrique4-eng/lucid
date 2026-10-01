@@ -904,6 +904,9 @@ ShellRoot {
     Desktop {
     }
 
+    IconRename {
+    }
+
     Osd {
         id: osdMod
     }
