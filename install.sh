@@ -11,10 +11,14 @@ set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # the VERSION file ships inside the shell tree, so the installed copy can tell
-# the update check which version it is. bump it to cut a release
+# the update check which Lucid version it is built on (FORK is the CirOShell
+# revision on top of it). bump FORK to cut a CirOShell release
 VERSION="unknown"
 if [[ -f "$SRC/VERSION" ]]; then
     VERSION="$(tr -d '[:space:]' < "$SRC/VERSION")"
+    if [[ -f "$SRC/FORK" ]]; then
+        VERSION="$VERSION-ciro.$(tr -d '[:space:]' < "$SRC/FORK")"
+    fi
 fi
 SHELL_DIR="$HOME/.config/quickshell"
 LUCID_DIR="$HOME/.config/lucid"
@@ -41,7 +45,7 @@ die()  { printf '%s error:%s %s\n' "$red" "$r" "$*" >&2; exit 1; }
 
 usage() {
     cat <<EOF
-${b}Lucid $VERSION installer${r}
+${b}CirOShell $VERSION installer${r}
 
   ./install.sh [options]
 
@@ -1159,7 +1163,7 @@ fi
 
 cat <<EOF
 
-  ${b}Lucid $VERSION${r} is installed.
+  ${b}CirOShell $VERSION${r} is installed.
 
   Start it:      ${b}qs${r}
   Settings:      ${b}qs ipc call -- settings open${r}
