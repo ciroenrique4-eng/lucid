@@ -234,6 +234,40 @@ Variants {
                 }
             }
 
+            // glass icons frost the wallpaper behind each card, like the widgets
+            BackgroundEffect.blurRegion: unit.glass ? glassBlur : null
+
+            Region {
+                id: glassBlur
+
+                regions: glassCards.instances
+            }
+
+        }
+
+        readonly property bool glass: unit.icons && Prefs.desktopIconStyle === "glass" && Theme.blurAmount > 0
+
+        Variants {
+            id: glassCards
+
+            model: unit.glass ? DesktopIcons.items.map((i) => {
+                return i.key;
+            }) : []
+
+            // the card's own rectangle, a hair inside it so the frosting's hard
+            // edge never shows past the card's rounded one
+            Region {
+                required property var modelData
+
+                readonly property var spot: DesktopIcons.placed[modelData] || null
+
+                x: spot ? DesktopIcons.tileX(spot.c) + 5 : 0
+                y: spot ? DesktopIcons.tileY(spot.r) + 3 : 0
+                width: spot ? DesktopIcons.tileW - 10 : 0
+                height: spot ? DesktopIcons.tileH - 6 : 0
+                radius: Math.max(0, Theme.radiusMd - 1)
+            }
+
         }
 
         // the icons ask for their menu through here, so there is one menu

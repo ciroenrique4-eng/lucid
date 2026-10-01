@@ -567,6 +567,81 @@ Singleton {
     property string pendingRename: ""
     property bool canPaste: false
 
+    // ---- arrivals and a quick look -----------------------------------------
+
+    // every name the folder has shown, and the ones that showed up after the
+    // first listing (a download finishing, a screenshot, a drop): those land
+    // with a little bounce. A rename of our own is not an arrival
+    property var known: ({})
+    property var arrivals: ({})
+    property var quiet: ({})
+    // a stand-in for a delegate whose row has just gone
+    readonly property var emptyItem: ({
+        "key": "",
+        "name": "",
+        "label": "",
+        "kind": "file",
+        "path": "",
+        "uri": "",
+        "mime": "",
+        "icons": [],
+        "thumb": "",
+        "exec": false,
+        "link": false,
+        "mtime": 0,
+        "size": 0
+    })
+
+    function noteArrivals(list) {
+        var now = {};
+        var fresh = {};
+        for (var i = 0; i < list.length; i++) {
+            var n = list[i].name;
+            now[n] = true;
+            if (root.listed && root.known[n] === undefined && !root.quiet[n])
+                fresh[n] = true;
+
+        }
+        root.known = now;
+        root.arrivals = fresh;
+        root.quiet = ({});
+    }
+
+    // Space on an icon: the file, large, grown out of its icon
+    property string lookKey: ""
+
+    function quickLook(key) {
+        var it = root.byKey[key];
+        if (!it || it.kind === "home" || it.kind === "trash" || it.kind === "app")
+            return ;
+
+        root.lookKey = key;
+    }
+
+    function closeLook() {
+        root.lookKey = "";
+    }
+
+    // the next file in grid order, either way, for the arrow keys
+    function lookStep(dir) {
+        var keys = Object.keys(root.placed).filter((k) => {
+            var it = root.byKey[k];
+            return it && it.kind !== "home" && it.kind !== "trash" && it.kind !== "app";
+        });
+        keys.sort((a, b) => {
+            var p = root.placed[a];
+            var q = root.placed[b];
+            return (p.c * root.rows + p.r) - (q.c * root.rows + q.r);
+        });
+        var i = keys.indexOf(root.lookKey);
+        if (i < 0 || keys.length === 0)
+            return ;
+
+        var next = keys[(i + dir + keys.length) % keys.length];
+        root.lookKey = next;
+        root.selectOnly(next);
+    }
+
     signal menuRequested(real x, real y, var actions)
 
     // ---- dragging ----------------------------------------------------------
@@ -801,6 +876,9 @@ Singleton {
                 root.selectOnly(name.trim());
 
         }
+        var qn = Object.assign({}, root.quiet);
+        qn[name.trim()] = true;
+        root.quiet = qn;
         root.run(["python3", root.script, "rename", it.path, name]);
     }
 
@@ -1044,6 +1122,7 @@ Singleton {
                 root.dir = d.dir;
                 root.dirExists = d.exists;
                 root.trashCount = d.trash;
+                root.noteArrivals(d.items);
                 root.files = d.items;
                 root.listed = true;
                 root.pruneHomes();
