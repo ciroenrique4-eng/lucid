@@ -341,7 +341,7 @@ Column {
             resetKey: "desktopIconStyle"
             enabled: Prefs.desktopIcons
             disabledReason: "Turn on Show icons first."
-            description: Prefs.desktopIconStyle === "shapes" ? "Each kind sits on one of Material's expressive shapes in a colour of the palette \u2014 folders, apps and files apart at a glance \u2014 that turns a little under the pointer. Pictures are prints, set down slightly askew." : (Prefs.desktopIconStyle === "glass" ? "Every icon on a frosted card of its own, the material the widgets are made of." : "The icons straight on the wallpaper, their names in white.")
+            description: Prefs.desktopIconStyle === "shapes" ? "Each icon sits on a shape in a colour of the palette \u2014 folders, apps and files apart at a glance \u2014 and tips toward the pointer. Pictures are prints on paper in the wallpaper's hue, set down slightly askew." : (Prefs.desktopIconStyle === "glass" ? "Every icon on a frosted card of its own, the material the widgets are made of." : "The icons straight on the wallpaper, their names in white.")
 
             M3Segmented {
                 width: 260
@@ -358,6 +358,30 @@ Column {
                 }]
                 onChosen: (key) => {
                     return Prefs.desktopIconStyle = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Shape"
+            resetKey: "desktopIconShape"
+            enabled: Prefs.desktopIcons && Prefs.desktopIconStyle === "shapes"
+            disabledReason: "For the Shapes look."
+            description: Prefs.desktopIconShape === "expressive" ? "Material's expressive shapes, one per kind: cookies for folders and the trash, the calendar's rounded pentagon for apps, a squircle for files." : "A square with the shell's own corners, the roundness dial included, that rounds out a little under the pointer."
+
+            M3Segmented {
+                width: 260
+                current: Prefs.desktopIconShape
+                options: [{
+                    "key": "square",
+                    "label": "Shell square"
+                }, {
+                    "key": "expressive",
+                    "label": "Expressive"
+                }]
+                onChosen: (key) => {
+                    return Prefs.desktopIconShape = key;
                 }
             }
 
