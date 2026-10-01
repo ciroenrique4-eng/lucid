@@ -106,6 +106,7 @@
     "appsModuleScope": "all",
     "appsModuleClick": "list",
     "appsModuleWheel": true,
+    "appsModuleBadges": true,
     "appsModuleNameWidth": 120,
     "showTray": true,
     "trayStyle": "collapsed",
