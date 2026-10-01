@@ -25,7 +25,11 @@ Item {
     readonly property int laneGap: 8
     readonly property int lanePad: 7
     readonly property int chipHeight: 34
-    readonly property int chipGap: 6
+    // with module backgrounds on, the gap between two neighbours holds the
+    // button that joins them onto one background. it overhangs the chips'
+    // padding rather than widening the gap, so a full lane keeps its names
+    readonly property bool linking: Prefs.barGrouping
+    readonly property int chipGap: editor.linking ? 10 : 6
     // grip, its gap and the padding either side of it and the name
     readonly property int chipChrome: 14 + 8 + 8 + 16
     readonly property real laneWidth: Math.max(0, editor.width - editor.labelWidth)
@@ -231,6 +235,25 @@ Item {
         const dest = g[editor.sides[t]];
         dest.splice(Math.min(pos, dest.length), 0, mid);
         Prefs.setBarLayout(g);
+    }
+
+    // neighbours in each lane, in order, for the join buttons
+    readonly property var pairs: {
+        void editor.revision;
+        if (!editor.linking)
+            return [];
+
+        const g = editor.groups();
+        const out = [];
+        for (const side of editor.sides) {
+            const ids = g[side];
+            for (let i = 1; i < ids.length; i++)
+                out.push({
+                "a": ids[i - 1],
+                "b": ids[i]
+            });
+        }
+        return out;
     }
 
     implicitHeight: editor.laneY(3) - editor.laneGap
@@ -503,6 +526,78 @@ Item {
             Behavior on color {
                 ColorAnimation {
                     duration: Theme.durShort
+                }
+
+            }
+
+        }
+
+    }
+
+
+    // the join buttons: + puts two neighbours on one background, - parts them
+    Repeater {
+        model: editor.dragging ? [] : editor.pairs
+
+        Item {
+            id: link
+
+            required property var modelData
+
+            readonly property var sa: editor.slots[link.modelData.a]
+            readonly property var sb: editor.slots[link.modelData.b]
+            readonly property bool joined: Prefs.barJoined(link.modelData.a, link.modelData.b)
+
+            visible: !!link.sa && !!link.sb
+            x: link.sa ? link.sa.x + link.sa.w : 0
+            y: link.sa ? link.sa.y : 0
+            width: link.sa && link.sb ? link.sb.x - link.x : 0
+            height: editor.chipHeight
+            z: 5
+
+            // the two chips joined: a bridge between them
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                x: -2
+                width: parent.width + 4
+                height: 6
+                visible: link.joined
+                color: Theme.accent
+            }
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 16
+                height: 16
+                radius: Theme.pill(height)
+                color: link.joined ? (linkArea.containsMouse ? Theme.accentHover : Theme.accent) : (linkArea.containsMouse ? Theme.bgHover : Theme.bgActive)
+                border.width: link.joined ? 0 : 1
+                border.color: Theme.outline
+
+                Text {
+                    anchors.centerIn: parent
+                    text: link.joined ? "−" : "+"
+                    color: link.joined ? Theme.fgAccent : Theme.subtext
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontLabel
+                    font.weight: Font.DemiBold
+                }
+
+                MouseArea {
+                    id: linkArea
+
+                    anchors.fill: parent
+                    anchors.margins: -3
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: Prefs.setBarJoined(link.modelData.a, link.modelData.b, !link.joined)
+                }
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: Theme.durShort
+                    }
+
                 }
 
             }
