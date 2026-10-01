@@ -31,6 +31,8 @@ Item {
     property alias overlayContent: overlayHolder.data
     property bool overlayOpen: false
     property Item overlayItem: null
+    // where the overlay holder sits in the pill, for the input region
+    readonly property real overlayY: overlayHolder.y
 
     readonly property int morphDuration: Theme.barDurEnter
     readonly property var morphEasing: Theme.easeEmphasizedDecel
