@@ -54,7 +54,7 @@ FloatingWindow {
         { "key": "notifications", "group": "System", "label": "Notifications", "title": "Notifications", "blurb": "Popups, quiet hours, sound and which applications may interrupt you", "toggle": "showNotifications" },
         { "key": "idle", "group": "System", "label": "Idle", "title": "Idle and Sleep", "blurb": "What happens when you walk away: dimming, locking, screen off and suspend", "toggle": "idleEnabled" },
         { "key": "datetime", "group": "System", "label": "Date & Time", "title": "Date and Time", "blurb": "Where you are, which zone the clock keeps and how it reads" },
-        { "key": "about", "group": "System", "label": "About", "title": "About", "blurb": "Lucid" },
+        { "key": "about", "group": "System", "label": "About", "title": "About", "blurb": "CirOShell" },
         { "key": "search", "group": "", "label": "Search", "title": "Search", "blurb": "", "hidden": true }
     ]
 
@@ -272,7 +272,7 @@ FloatingWindow {
     onClosed: win.visible = false
 
     visible: false
-    title: "Lucid Settings"
+    title: "CirOShell Settings"
     // a surface created fully opaque keeps qtwayland's opaque region for the life
     // of the process and hyprland never blurs it, so stay one step under solid
     color: Theme.alpha(Theme.bg, Math.min(Theme.bg.a, 254 / 255))
@@ -784,7 +784,7 @@ FloatingWindow {
                         spacing: -1
 
                         Text {
-                            text: "Lucid"
+                            text: "CirOShell"
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontTitleMd
