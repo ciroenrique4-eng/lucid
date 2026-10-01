@@ -1,5 +1,6 @@
 import "../luciddocks"
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import qs
 
@@ -42,6 +43,62 @@ Item {
     }
     property bool appeared: false
 
+    // shapes | glass | classic
+    readonly property string look: Prefs.desktopIconStyle
+    readonly property string kind: tile.modelData.kind
+    readonly property bool isFolder: tile.kind === "dir" || tile.kind === "home"
+    readonly property bool hasThumb: thumb.status === Image.Ready
+    // the shell's colours on the icon: never on a picture, never on an app's
+    // own icon, which is how people find it
+    readonly property bool tinted: !tile.hasThumb && tile.kind !== "app" && (Prefs.desktopIconTint === "all" || (Prefs.desktopIconTint === "folders" && tile.isFolder))
+    // each kind wears a palette role: folders the accent, apps the secondary,
+    // files and the trash the tertiary
+    readonly property color role: tile.isFolder ? Theme.cPrimary : (tile.kind === "app" ? Theme.cSecondary : Theme.cTertiary)
+    readonly property color container: tile.isFolder ? Theme.accentContainer : (tile.kind === "app" ? Theme.secondaryContainer : Theme.tertiaryContainer)
+    readonly property color onContainer: tile.isFolder ? Theme.fgAccentContainer : (tile.kind === "app" ? Theme.fgSecondaryContainer : Theme.fgTertiaryContainer)
+    // a saturated tone of the role: colourising keeps the icon's own light and
+    // shade, so a mid tone gives a dark icon its colour without going muddy
+    readonly property color tintColor: Theme.atTone(tile.role, Theme.isLight ? 45 : 72)
+    // Material's shape library, one per kind: a four-sided cookie for folders,
+    // a nine-sided one for apps, a scallop for the trash, a squircle for files.
+    // turn is how far it twists under the pointer
+    readonly property var shapeSpec: {
+        if (tile.isFolder)
+            return {
+                "form": "lobed",
+                "lobes": 4,
+                "depth": 0.16,
+                "spin": 45,
+                "turn": 45
+            };
+
+        if (tile.kind === "app")
+            return {
+                "form": "lobed",
+                "lobes": 9,
+                "depth": 0.09,
+                "spin": -90,
+                "turn": 20
+            };
+
+        if (tile.kind === "trash")
+            return {
+                "form": "lobed",
+                "lobes": 12,
+                "depth": 0.08,
+                "spin": 0,
+                "turn": 15
+            };
+
+        return {
+            "form": "squircle",
+            "lobes": 0,
+            "depth": 0,
+            "spin": 0,
+            "turn": 8
+        };
+    }
+
     function openIt() {
         if (!DesktopIcons.isSelected(tile.key))
             DesktopIcons.selectOnly(tile.key);
@@ -49,11 +106,11 @@ Item {
         DesktopIcons.openSelection();
     }
 
-    width: DesktopIcons.cellW
-    height: DesktopIcons.cellH
+    width: DesktopIcons.tileW
+    height: DesktopIcons.tileH
     visible: tile.spot !== null
-    x: tile.spot ? DesktopIcons.cellX(tile.spot.c) : 0
-    y: tile.spot ? DesktopIcons.cellY(tile.spot.r) : 0
+    x: tile.spot ? DesktopIcons.tileX(tile.spot.c) : 0
+    y: tile.spot ? DesktopIcons.tileY(tile.spot.r) : 0
     // a selected name may run past the cell, over the one below
     z: tile.selected ? 2 : (tile.hovered ? 1 : 0)
     opacity: tile.appeared ? (tile.lifted ? 0.45 : 1) : 0
@@ -94,22 +151,60 @@ Item {
 
     }
 
+    // glass: every icon on a frosted card of its own, the widgets' material;
+    // classic: a highlight that only shows under the pointer or when selected
     Rectangle {
         id: plate
+
+        readonly property bool glass: tile.look === "glass"
 
         x: 4
         y: 2
         width: parent.width - 8
-        height: Math.max(parent.height - 4, nameBox.y + nameBox.height + 4 - y)
-        radius: Theme.radiusSm
-        color: tile.dropTarget ? Theme.alpha(Theme.accent, 0.38) : (tile.selected ? Theme.alpha(Theme.accent, 0.22) : "#ffffff")
-        opacity: (tile.selected || tile.dropTarget) ? 1 : (tileArea.pressed ? 0.16 : (tile.hovered ? 0.1 : 0))
-        border.width: tile.selected || tile.dropTarget ? 1 : 0
-        border.color: Theme.alpha(Theme.accent, 0.7)
+        height: Math.max(parent.height - 4, nameBox.y + nameBox.height + 6 - y)
+        radius: plate.glass ? Theme.radiusMd : Theme.radiusSm
+        color: {
+            if (tile.dropTarget)
+                return Theme.alpha(Theme.accent, 0.38);
+
+            if (plate.glass)
+                return tile.selected ? Qt.tint(Theme.bg, Theme.alpha(Theme.accent, 0.28)) : Theme.bg;
+
+            return tile.selected ? Theme.alpha(Theme.accent, 0.22) : "#ffffff";
+        }
+        opacity: {
+            if (plate.glass || tile.selected || tile.dropTarget)
+                return 1;
+
+            // the shapes carry their own hover, so no box behind them
+            if (tile.look === "shapes")
+                return 0;
+
+            return tileArea.pressed ? 0.16 : (tile.hovered ? 0.1 : 0);
+        }
+        visible: tile.look !== "shapes" || tile.dropTarget
+        border.width: plate.glass ? (tile.selected ? 2 : 1) : ((tile.selected || tile.dropTarget) ? 1 : 0)
+        border.color: plate.glass ? (tile.selected ? Theme.accent : (tile.hovered ? Theme.alpha(Theme.accent, 0.5) : Theme.alpha(Theme.text, 0.08))) : Theme.alpha(Theme.accent, 0.7)
+        scale: plate.glass && tile.hovered && !tile.selected ? 1.03 : 1
 
         Behavior on opacity {
             NumberAnimation {
                 duration: Theme.durQuick
+            }
+
+        }
+
+        Behavior on scale {
+            NumberAnimation {
+                duration: Theme.durShort
+                easing.type: Easing.OutBack
+            }
+
+        }
+
+        Behavior on border.color {
+            ColorAnimation {
+                duration: Theme.durShort
             }
 
         }
@@ -125,21 +220,74 @@ Item {
         y: 8
         transformOrigin: Item.Bottom
 
+        // shapes: each kind sits on an expressive shape in its palette role,
+        // which breathes and turns a little under the pointer
+        IconShape {
+            id: shape
+
+            anchors.fill: parent
+            visible: tile.look === "shapes" && !tile.hasThumb
+            form: tile.shapeSpec.form
+            lobes: tile.shapeSpec.lobes
+            depth: tile.shapeSpec.depth * (tile.hovered || tile.dropTarget ? 1.8 : 1)
+            spin: tile.shapeSpec.spin + (tile.hovered || tile.dropTarget ? tile.shapeSpec.turn : 0)
+            fill: (tile.selected || tile.dropTarget) ? Theme.accent : tile.container
+            scale: tile.hovered ? 1.06 : 1
+
+            Behavior on depth {
+                NumberAnimation {
+                    duration: Theme.durMedium
+                    easing.type: Easing.OutBack
+                    easing.overshoot: 2
+                }
+
+            }
+
+            Behavior on spin {
+                NumberAnimation {
+                    duration: Theme.durMedium * 1.4
+                    easing.type: Easing.OutBack
+                }
+
+            }
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: Theme.durShort
+                    easing.type: Easing.OutBack
+                }
+
+            }
+
+            Behavior on fill {
+                ColorAnimation {
+                    duration: Theme.durShort
+                }
+
+            }
+
+        }
+
         // a theme with nothing for it still gets a shape, never a blank
         DockGlyph {
-            anchors.fill: parent
-            anchors.margins: tile.px * 0.08
-            visible: tile.themeIcon === "" && thumb.status !== Image.Ready
-            pathData: tile.modelData.kind === "dir" ? DesktopIcons.glyphs.folder : (tile.modelData.kind === "home" ? DesktopIcons.glyphs.home : (tile.modelData.kind === "trash" ? DesktopIcons.glyphs.trash : DesktopIcons.glyphs.file))
-            glyphColor: "#ffffff"
+            anchors.centerIn: parent
+            width: themed.width * 0.84
+            height: width
+            visible: tile.themeIcon === "" && !tile.hasThumb
+            pathData: tile.isFolder ? (tile.modelData.kind === "home" ? DesktopIcons.glyphs.home : DesktopIcons.glyphs.folder) : (tile.modelData.kind === "trash" ? DesktopIcons.glyphs.trash : DesktopIcons.glyphs.file)
+            glyphColor: tile.look === "shapes" ? tile.onContainer : (tile.look === "glass" ? Theme.text : "#ffffff")
             opacity: 0.9
         }
 
         Image {
             id: themed
 
-            anchors.fill: parent
-            visible: thumb.status !== Image.Ready
+            readonly property real side: tile.look === "shapes" ? Math.round(tile.px * 0.62) : tile.px
+
+            anchors.centerIn: parent
+            width: themed.side
+            height: themed.side
+            visible: !tile.hasThumb && tile.themeIcon !== ""
             source: tile.themeIcon
             sourceSize.width: tile.px * 2
             sourceSize.height: tile.px * 2
@@ -147,23 +295,73 @@ Item {
             asynchronous: true
             smooth: true
             mipmap: true
+            // the shell's colours on the icon, its light and shade kept
+            layer.enabled: tile.tinted
+            layer.effect: MultiEffect {
+                colorization: 0.9
+                colorizationColor: tile.tintColor
+                brightness: 0.35
+                contrast: 0.15
+            }
         }
 
-        // a preview keeps its own shape inside the square, with a hairline
-        // edge so a white picture still reads against a white wallpaper
+        // a picture: a print with a white border, set down slightly askew,
+        // that straightens up under the pointer (shapes); a plain preview with
+        // a hairline edge otherwise, so a white picture still reads
         Item {
+            id: photo
+
+            readonly property bool framed: tile.look === "shapes"
+            readonly property real tilt: {
+                var h = 0;
+                for (var i = 0; i < tile.key.length; i++)
+                    h = (h * 31 + tile.key.charCodeAt(i)) % 997;
+                return (h % 9) - 4;
+            }
+            readonly property real pad: photo.framed ? 3 : 0
+
             anchors.centerIn: parent
-            width: thumb.paintedWidth
-            height: thumb.paintedHeight
-            visible: thumb.status === Image.Ready
+            anchors.verticalCenterOffset: photo.framed ? -2 : 0
+            width: thumb.paintedWidth + 2 * photo.pad
+            height: thumb.paintedHeight + 2 * photo.pad + (photo.framed ? 5 : 0)
+            visible: tile.hasThumb
+            rotation: photo.framed && !tile.hovered && !tile.selected ? photo.tilt : 0
+            scale: photo.framed && tile.hovered ? 1.08 : 1
 
             Rectangle {
                 anchors.fill: parent
-                anchors.margins: -1
-                radius: 4
-                color: "transparent"
-                border.width: 1
-                border.color: Qt.rgba(0, 0, 0, 0.25)
+                anchors.topMargin: 2
+                anchors.leftMargin: 1
+                anchors.rightMargin: -1
+                anchors.bottomMargin: -2
+                radius: 2
+                color: Qt.rgba(0, 0, 0, 0.35)
+                visible: photo.framed
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: photo.framed ? 0 : -1
+                radius: photo.framed ? 2 : 4
+                color: photo.framed ? (tile.selected ? Theme.accent : "#f4f1ea") : "transparent"
+                border.width: photo.framed ? 0 : (tile.selected ? 2 : 1)
+                border.color: tile.selected ? Theme.accent : Qt.rgba(0, 0, 0, 0.25)
+            }
+
+            Behavior on rotation {
+                NumberAnimation {
+                    duration: Theme.durMedium
+                    easing.type: Easing.OutBack
+                }
+
+            }
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: Theme.durShort
+                    easing.type: Easing.OutBack
+                }
+
             }
 
         }
@@ -171,7 +369,10 @@ Item {
         Image {
             id: thumb
 
-            anchors.fill: parent
+            x: (art.width - thumb.width) / 2
+            y: (art.height - thumb.height) / 2 - (photo.framed ? 2 + 2.5 : 0)
+            width: art.width - (photo.framed ? 8 : 0)
+            height: art.height - (photo.framed ? 13 : 0)
             source: tile.preview
             sourceSize.width: tile.px * 2
             sourceSize.height: tile.px * 2
@@ -179,8 +380,9 @@ Item {
             asynchronous: true
             cache: false
             smooth: true
+            rotation: photo.rotation
+            scale: photo.scale
         }
-
         // a symbolic link wears a small arrow, the way file managers mark one
         Rectangle {
             visible: tile.modelData.link
@@ -267,14 +469,16 @@ Item {
         height: label.height
         visible: DesktopIcons.renaming !== tile.key
 
-        // selected, the name sits on the accent so it reads on any wallpaper
+        // the name's backing: the accent once selected, in every look; in
+        // shapes a quiet pill of the shell's surface the rest of the time, so
+        // it reads on any wallpaper without a shadow
         Rectangle {
             anchors.centerIn: label
-            width: Math.min(nameBox.width + 6, label.contentWidth + 10)
-            height: label.contentHeight + 2
-            radius: Math.min(6, height / 2)
-            color: Theme.accent
-            visible: tile.selected
+            width: Math.min(nameBox.width + 6, label.contentWidth + (tile.look === "shapes" ? 14 : 10))
+            height: label.contentHeight + (tile.look === "shapes" ? 4 : 2)
+            radius: tile.look === "shapes" ? Math.min(Theme.radiusSm, height / 2) : Math.min(6, height / 2)
+            color: tile.selected ? Theme.accent : Theme.bg
+            visible: tile.selected ? tile.look !== "glass" : tile.look === "shapes"
         }
 
         Text {
@@ -282,7 +486,7 @@ Item {
             y: label.y + 1
             width: label.width
             text: label.text
-            visible: !tile.selected
+            visible: tile.look === "classic" && !tile.selected
             color: Qt.rgba(0, 0, 0, 0.6)
             font: label.font
             horizontalAlignment: Text.AlignHCenter
@@ -296,7 +500,7 @@ Item {
 
             width: parent.width
             text: tile.modelData.label
-            color: tile.selected ? Theme.fgAccent : "#ffffff"
+            color: (tile.selected && tile.look !== "glass") ? Theme.fgAccent : (tile.look === "classic" ? "#ffffff" : Theme.text)
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontLabelMd
             font.weight: Font.Medium
