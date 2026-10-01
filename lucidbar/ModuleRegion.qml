@@ -51,8 +51,18 @@ Region {
         height: Math.max(0, reg.hi(reg.by + reg.bh - reg.rad) - reg.lo(reg.by + reg.rad))
     }
 
+    // by numbers, not by item: a Region on an item does not follow it when it
+    // (or what holds it) moves. an overlay item sits in the pill's overlay
+    // holder, or in a layer filling it
+    readonly property var ov: (reg.mod && reg.mod.overlayOpen && reg.mod.overlayItem) ? reg.mod.overlayItem : null
+    readonly property real ox: reg.ov ? reg.mod.x + reg.ov.x : 0
+    readonly property real oy: reg.ov ? reg.mod.y + (reg.mod.overlayY !== undefined ? reg.mod.overlayY : 0) + reg.ov.y : 0
+
     Region {
-        item: (reg.mod && reg.mod.overlayOpen) ? reg.mod.overlayItem : null
+        x: reg.ov ? reg.lo(reg.ox) : 0
+        y: reg.ov ? reg.lo(reg.oy) : 0
+        width: reg.ov ? Math.max(0, reg.hi(reg.ox + reg.ov.width) - reg.lo(reg.ox)) : 0
+        height: reg.ov ? Math.max(0, reg.hi(reg.oy + reg.ov.height) - reg.lo(reg.oy)) : 0
         radius: Theme.radiusSm
     }
 
