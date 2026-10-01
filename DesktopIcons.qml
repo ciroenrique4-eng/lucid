@@ -11,7 +11,8 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    readonly property bool live: Prefs.loaded && Prefs.desktopIcons
+    // on in Settings, and not put away from the desktop's menu
+    readonly property bool live: Prefs.loaded && Prefs.desktopIcons && Prefs.desktopIconsShown
     readonly property string script: Qt.resolvedUrl("./luciddesktop/desktop-icons.py").toString().replace("file://", "")
     readonly property string home: Quickshell.env("HOME")
 
@@ -117,15 +118,20 @@ Singleton {
     readonly property real screenW: root.screen ? root.screen.width : 1920
     readonly property real screenH: root.screen ? root.screen.height : 1080
     readonly property int iconPx: Prefs.desktopIconSize === "small" ? 32 : (Prefs.desktopIconSize === "large" ? 64 : 48)
-    readonly property real cellW: root.iconPx + 48
-    readonly property real cellH: root.iconPx + 50
+    // the icon's own footprint, and the grid pitch: whatever is left over after
+    // the last whole column (or row) is shared out, so the grid reaches both
+    // edges instead of stopping short of the right one
+    readonly property real tileW: root.iconPx + 48
+    readonly property real tileH: root.iconPx + 50
+    readonly property real cellW: (root.screenW - 2 * root.pad) / root.cols
+    readonly property real cellH: (root.screenH - root.reserveTop - root.reserveBottom - 2 * root.pad) / root.rows
     readonly property real pad: 10
     // the bar's strip and a dock that stays up are never under an icon
     readonly property real reserveTop: Prefs.barEnabled && !Prefs.barBottom ? Prefs.effectiveBarTopMargin + Prefs.barHeight : 0
     readonly property real reserveBottom: (Prefs.barEnabled && Prefs.barBottom ? Prefs.effectiveBarTopMargin + Prefs.barHeight : 0) + Widgets.spawnBottom
     readonly property real areaY: root.reserveTop + root.pad
-    readonly property int cols: Math.max(1, Math.floor((root.screenW - 2 * root.pad) / root.cellW))
-    readonly property int rows: Math.max(1, Math.floor((root.screenH - root.reserveTop - root.reserveBottom - 2 * root.pad) / root.cellH))
+    readonly property int cols: Math.max(1, Math.floor((root.screenW - 2 * root.pad) / root.tileW))
+    readonly property int rows: Math.max(1, Math.floor((root.screenH - root.reserveTop - root.reserveBottom - 2 * root.pad) / root.tileH))
     // columns count from the corner the icons start in
     readonly property bool fromRight: Prefs.desktopIconsCorner === "right"
 
@@ -135,6 +141,15 @@ Singleton {
 
     function cellY(r) {
         return root.areaY + r * root.cellH;
+    }
+
+    // where the icon itself sits inside its cell
+    function tileX(c) {
+        return root.cellX(c) + (root.cellW - root.tileW) / 2;
+    }
+
+    function tileY(r) {
+        return root.cellY(r) + (root.cellH - root.tileH) / 2;
     }
 
     function cellAt(px, py) {
@@ -191,11 +206,11 @@ Singleton {
         var b = new Array(root.cols * root.rows);
         var rects = root.widgetRects;
         for (var c = 0; c < root.cols; c++) {
-            var x0 = root.cellX(c) + 4;
-            var x1 = x0 + root.cellW - 8;
+            var x0 = root.tileX(c) + 4;
+            var x1 = x0 + root.tileW - 8;
             for (var r = 0; r < root.rows; r++) {
-                var y0 = root.cellY(r) + 4;
-                var y1 = y0 + root.cellH - 8;
+                var y0 = root.tileY(r) + 4;
+                var y1 = y0 + root.tileH - 8;
                 var hit = false;
                 for (var i = 0; i < rects.length && !hit; i++) {
                     var q = rects[i];
@@ -216,9 +231,9 @@ Singleton {
         var keys = Object.keys(root.placed);
         for (var i = 0; i < keys.length; i++) {
             var p = root.placed[keys[i]];
-            var cx = root.cellX(p.c);
-            var cy = root.cellY(p.r);
-            if (x < cx + root.cellW && x + w > cx && y < cy + root.cellH && y + h > cy)
+            var cx = root.tileX(p.c);
+            var cy = root.tileY(p.r);
+            if (x < cx + root.tileW && x + w > cx && y < cy + root.tileH && y + h > cy)
                 return true;
 
         }
@@ -519,9 +534,9 @@ Singleton {
         var keys = Object.keys(root.placed);
         for (var i = 0; i < keys.length; i++) {
             var p = root.placed[keys[i]];
-            var cx = root.cellX(p.c) + 8;
-            var cy = root.cellY(p.r) + 4;
-            if (x < cx + root.cellW - 16 && x + w > cx && y < cy + root.cellH - 8 && y + h > cy)
+            var cx = root.tileX(p.c) + 8;
+            var cy = root.tileY(p.r) + 4;
+            if (x < cx + root.tileW - 16 && x + w > cx && y < cy + root.tileH - 8 && y + h > cy)
                 s[keys[i]] = true;
 
         }
@@ -646,7 +661,7 @@ Singleton {
 
         if (it.kind === "app" && !it.exec) {
             // an untrusted launcher asks first
-            root.openMenu([key], root.cellX(root.placed[key].c) + root.cellW / 2, root.cellY(root.placed[key].r) + root.cellH / 2);
+            root.openMenu([key], root.tileX(root.placed[key].c) + root.tileW / 2, root.tileY(root.placed[key].r) + root.tileH / 2);
             return ;
         }
         root.launched = key;
