@@ -144,12 +144,14 @@ Singleton {
     }
 
     // where the icon itself sits inside its cell
+    // whole pixels: the shared-out pitch is fractional, and an icon or a name
+    // half a pixel off is drawn soft
     function tileX(c) {
-        return root.cellX(c) + (root.cellW - root.tileW) / 2;
+        return Math.round(root.cellX(c) + (root.cellW - root.tileW) / 2);
     }
 
     function tileY(r) {
-        return root.cellY(r) + (root.cellH - root.tileH) / 2;
+        return Math.round(root.cellY(r) + (root.cellH - root.tileH) / 2);
     }
 
     function cellAt(px, py) {
