@@ -69,6 +69,7 @@ Settings still follows upstream's releases, and this branch follows them too.
 |  | Module backgrounds on the full bar, and groups of modules you join in the arrangement | this fork only |
 |  | Start and Show desktop buttons, drag to reorder the apps, notification counts on their icons | this fork only |
 |  | Control centre looks: stacked, wide (figures, tiles and two tall sliders side by side), compact and minimal | this fork only |
+|  | Bar presets: Lucid, centred and classic taskbars, top bar and dock, minimal - one tap, with undo | this fork only |
 | **Launcher** | One ranking for windows, apps, commands and the web; power buttons of your choice | [#17](https://github.com/Sn3akyy1/lucid/pull/17) |
 |  | Favourite and hidden applications, and a page of its own in Settings | [#32](https://github.com/Sn3akyy1/lucid/pull/32) |
 |  | A preview pane for the clipboard, entry kinds, clearing from the keyboard | [#10](https://github.com/Sn3akyy1/lucid/pull/10) |
