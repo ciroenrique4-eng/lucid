@@ -220,6 +220,16 @@ Singleton {
             "key": "icons",
             "name": "Icons",
             "blurb": "Only the icons, narrower"
+        }],
+        "panelStyle": "systemPanelStyle",
+        "panelStyles": [{
+            "key": "stacked",
+            "name": "Stacked",
+            "blurb": "One column: tiles, sliders, then the system figures"
+        }, {
+            "key": "wide",
+            "name": "Wide",
+            "blurb": "Three side by side, the sliders standing up (on screens 900 px or wider)"
         }]
     }, {
         "id": "privacy",
@@ -467,6 +477,7 @@ Singleton {
     property alias notificationsHideEmpty: s.notificationsHideEmpty
     property alias showSystem: s.showSystem
     property alias systemStyle: s.systemStyle
+    property alias systemPanelStyle: s.systemPanelStyle
     property alias systemIndicators: s.systemIndicators
     property alias showPrivacy: s.showPrivacy
     property alias privacyWatch: s.privacyWatch
@@ -788,6 +799,7 @@ Singleton {
         "notificationsHideEmpty": false,
         "showSystem": true,
         "systemStyle": "values",
+        "systemPanelStyle": "stacked",
         "systemIndicators": "wifi,bluetooth,volume,mic,battery",
         "showPrivacy": false,
         "privacyWatch": "mic,camera,screen",
@@ -1376,6 +1388,7 @@ Singleton {
             property bool notificationsHideEmpty: false
             property bool showSystem: true
             property string systemStyle: "values"
+            property string systemPanelStyle: "stacked"
             property string systemIndicators: "wifi,bluetooth,volume,mic,battery"
             property bool showPrivacy: false
             property string privacyWatch: "mic,camera,screen"
