@@ -167,6 +167,76 @@ Column {
     }
 
     SettingCard {
+        title: "PINNED WINDOWS"
+        subtitle: "A pinned window floats over the rest and follows you to every workspace. These make it easy to tell which one it is."
+
+        SettingRow {
+            title: "Border"
+            description: Prefs.pinBorder === "off" ? "A pinned window wears the same border as any other." : "A border of its own, from your palette, so it reads as pinned even when you are in another window."
+            resetKey: "pinBorder"
+            stacked: true
+
+            M3Segmented {
+                width: Math.min(parent.width, 420)
+                current: Prefs.pinBorder
+                options: HyprConfig.pinModes
+                onChosen: (key) => {
+                    Prefs.pinBorder = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Pin badge"
+            description: Prefs.pinBadge === "off" ? "No badge." : "A small tab with a pin, tucked into that corner of the window in the border's colour. Click it to unpin. It steps away while the window moves and comes back once it stops."
+            resetKey: "pinBadge"
+            stacked: true
+
+            M3Segmented {
+                width: Math.min(parent.width, 520)
+                current: Prefs.pinBadge
+                options: [{
+                    "key": "off",
+                    "label": "Off"
+                }, {
+                    "key": "top-left",
+                    "label": "Top left"
+                }, {
+                    "key": "top-right",
+                    "label": "Top right"
+                }, {
+                    "key": "bottom-left",
+                    "label": "Bottom left"
+                }, {
+                    "key": "bottom-right",
+                    "label": "Bottom right"
+                }]
+                onChosen: (key) => {
+                    Prefs.pinBadge = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Ripple when pinned"
+            description: "A ring spreads out from the window the moment you pin it."
+            resetKey: "pinPulse"
+            showDivider: false
+
+            M3Switch {
+                checked: Prefs.pinPulse
+                onToggled: (v) => {
+                    Prefs.pinPulse = v;
+                }
+            }
+
+        }
+
+    }
+
+    SettingCard {
         title: "CORNERS"
 
         HyprRow {
