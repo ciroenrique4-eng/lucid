@@ -430,7 +430,8 @@ BarPill {
             id: stackSheet
 
             // parked directly under whichever surface the pill is wearing
-            readonly property real liveY: root.popupItem ? root.popupItem.y + root.popupItem.height + 8 : 0
+            // (over it, newest nearest the bar, on a bottom bar)
+            readonly property real liveY: root.popupItem ? root.overlayEdgeY(root.surfaceReach + 8, stackSheet.height) : 0
             property real heldY: 0
 
             onLiveYChanged: {
@@ -453,19 +454,25 @@ BarPill {
                 onHoveredChanged: Notifs.popupsPaused = hovered
             }
 
-            Column {
+            // the list, then the overflow chip, going away from the bar
+            Item {
                 id: stackColumn
 
+                readonly property bool up: root.atBottom
+                readonly property real overflowSpace: overflowItem.visible ? overflowItem.height + 8 : 0
+
                 width: parent.width
-                spacing: 8
+                implicitHeight: stackList.height + stackColumn.overflowSpace
 
                 ListView {
                     id: stackList
 
+                    y: stackColumn.up ? stackColumn.overflowSpace : 0
                     width: parent.width
                     height: contentHeight
                     interactive: false
                     spacing: 8
+                    verticalLayoutDirection: stackColumn.up ? ListView.BottomToTop : ListView.TopToBottom
                     model: stackModel
 
                     Behavior on height {
@@ -533,6 +540,9 @@ BarPill {
 
                 // whatever the stack could not hold is still in the shade
                 Item {
+                    id: overflowItem
+
+                    y: stackColumn.up ? 0 : stackList.height + 8
                     width: parent.width
                     height: root.popupOverflow > 0 ? 26 : 0
                     opacity: root.popupOverflow > 0 ? 1 : 0
@@ -564,6 +574,8 @@ BarPill {
                                 anchors.verticalCenter: parent.verticalCenter
                                 size: 13
                                 path: Notifs.icons.expand_more
+                                // towards the shade, which opens off the bar
+                                rotation: root.atBottom ? 180 : 0
                                 color: Theme.subtext
                             }
 

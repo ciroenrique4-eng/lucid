@@ -11,6 +11,7 @@
     "barNotchFlare": 14,
     "barPopupGap": 10,
     "barPopupMode": false,
+    "barPosition": "top",
     "barSideMargin": 17,
     "barSpacing": 8,
     "barStyle": "island",
