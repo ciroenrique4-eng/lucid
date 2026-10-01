@@ -83,7 +83,7 @@ Column {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Lucid"
+                        text: "CirOShell"
                         color: Theme.text
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fs(30)
@@ -138,7 +138,7 @@ Column {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "The brightest thing in your setup."
+                        text: "Built on Lucid by Sn3akyy1."
                         color: Theme.subtext
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBody
@@ -156,7 +156,7 @@ Column {
         title: "UPDATES"
 
         SettingRow {
-            title: Updates.available ? "Lucid v" + Updates.latest + " is out" : "Version " + Updates.currentLabel
+            title: Updates.available ? "CirOShell v" + Updates.latest + " is out" : "Version " + Updates.currentLabel
             description: Updates.status
 
             Row {
@@ -180,9 +180,21 @@ Column {
         }
 
         SettingRow {
+            title: Updates.upstreamAhead ? "Lucid v" + Updates.upstreamLatest + " is out upstream" : "Based on Lucid v" + Updates.base
+            description: (Updates.upstreamAhead ? "Upstream moved ahead of what this is built on. It gets pulled into CirOShell, nothing to do here. " : "") + "CirOShell is a fork of Lucid by Sn3akyy1, released under the MIT licence."
+
+            M3Button {
+                text: "Lucid releases"
+                variant: "outlined"
+                onClicked: Updates.openUpstream()
+            }
+
+        }
+
+        SettingRow {
             title: "Check for updates"
             resetKey: "updateCheck"
-            description: "Once a day Lucid asks GitHub for the newest release, and tells you once when there is one. The request carries nothing about you or this machine."
+            description: "Once a day CirOShell asks GitHub for the newest release, and tells you once when there is one. The request carries nothing about you or this machine."
             showDivider: false
 
             M3Switch {
