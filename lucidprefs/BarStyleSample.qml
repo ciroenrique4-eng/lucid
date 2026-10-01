@@ -42,7 +42,11 @@ Item {
         "window/plain": windowPlain,
         "window/chip": windowChip,
         "apps/icons": appsIcons,
-        "apps/names": appsNames
+        "apps/names": appsNames,
+        "start/logo": startLogo,
+        "start/grid": startGrid,
+        "desktop/sliver": desktopSliver,
+        "desktop/icon": desktopIcon
     })
     readonly property string powerPath: "M11 3h2v10h-2V3Zm6.36 2.64 1.42-1.42A9.96 9.96 0 0 1 22 12c0 5.52-4.48 10-10 10S2 17.52 2 12c0-2.76 1.12-5.26 2.93-7.07l1.42 1.42A7.96 7.96 0 0 0 4 12c0 4.42 3.58 8 8 8s8-3.58 8-8c0-2.21-.9-4.21-2.64-5.36Z"
     readonly property string micPath: "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
@@ -933,6 +937,113 @@ Item {
                     color: miniApp.focused ? Theme.accent : Theme.subtext
                 }
 
+            }
+
+        }
+
+    }
+
+    Component {
+        id: startLogo
+
+        Item {
+            implicitWidth: 26
+            implicitHeight: 26
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 18
+                height: 18
+                radius: width / 2
+                color: "transparent"
+                border.width: 3
+                border.color: Theme.accent
+            }
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 6
+                height: 6
+                radius: 3
+                color: Theme.text
+            }
+
+        }
+
+    }
+
+    Component {
+        id: startGrid
+
+        Grid {
+            columns: 3
+            spacing: 3
+
+            Repeater {
+                model: 9
+
+                Rectangle {
+                    width: 4
+                    height: 4
+                    radius: 2
+                    color: index === 4 ? Theme.accent : Theme.text
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: desktopSliver
+
+        Row {
+            spacing: 10
+
+            BarText {
+                text: "100%"
+                font.pixelSize: Theme.fontLabelLg
+            }
+
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 1
+                height: 14
+                color: Theme.alpha(Theme.text, 0.3)
+            }
+
+            Item {
+                width: 4
+                height: 1
+            }
+
+        }
+
+    }
+
+    Component {
+        id: desktopIcon
+
+        Item {
+            implicitWidth: 20
+            implicitHeight: 16
+
+            Rectangle {
+                width: 18
+                height: 11
+                radius: 2
+                color: "transparent"
+                border.width: 1.6
+                border.color: Theme.text
+            }
+
+            Rectangle {
+                x: 5
+                y: 12
+                width: 8
+                height: 1.6
+                color: Theme.text
             }
 
         }
