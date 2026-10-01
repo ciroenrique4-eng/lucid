@@ -90,6 +90,7 @@ Settings still follows upstream's releases, and this branch follows them too.
 |  | Phone widget: browse its files, plugin-aware buttons and a second phone | [#15](https://github.com/Sn3akyy1/lucid/pull/15) |
 |  | Receive files over Bluetooth, with Accept and Decline in a notification | this fork only |
 |  | Pinned windows wear a border of their own, a pin tab in the corner that unpins them, and a ripple when pinned | this fork only |
+|  | Desktop icons: the Desktop folder on the wallpaper, sharing it with the widgets (an icon steps aside for one, even mid-drag); drag files in, out, into folders and onto the trash, rename in place | this fork only |
 | **Fixes** | Screenshots and recordings from the display you are on | [#8](https://github.com/Sn3akyy1/lucid/pull/8) |
 |  | Bluetooth pairing keeps its key (pairable held on while pairing) | [#9](https://github.com/Sn3akyy1/lucid/pull/9) |
 |  | The charger and low-battery toasts fire, and Preview runs | [#25](https://github.com/Sn3akyy1/lucid/pull/25) |

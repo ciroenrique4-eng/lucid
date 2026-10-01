@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs
 
@@ -12,9 +13,13 @@ Variants {
         id: unit
 
         required property var modelData
+        // the icons live on the main screen only
+        readonly property bool icons: DesktopIcons.live && unit.modelData === DesktopIcons.screen
 
         function run(id) {
-            if (id === "addWidget")
+            if (id.indexOf("icon:") === 0 || id === "newFolder" || id === "paste" || id === "arrange" || id === "openDesktop")
+                DesktopIcons.runAction(id);
+            else if (id === "addWidget")
                 Prefs.settingsRequested("widgets");
             else if (id === "settings")
                 Prefs.settingsRequested("");
@@ -26,11 +31,38 @@ Variants {
                 Prefs.desktopActionRequested(id);
         }
 
+        // surfaces on one layer stack in the order they were made, so a wallpaper
+        // daemon that starts (or restarts) after the shell would cover the
+        // icons. Its surface showing up remaps this one, back on top
+        property bool lifting: false
+
+        Connections {
+            function onRawEvent(event) {
+                if (event.name === "openlayer" && /awww|swww|paper|swaybg|wallpaper/i.test(event.data))
+                    liftTimer.restart();
+
+            }
+
+            target: Hyprland
+        }
+
+        Timer {
+            id: liftTimer
+
+            interval: 400
+            onTriggered: {
+                unit.lifting = true;
+                Qt.callLater(() => {
+                    unit.lifting = false;
+                });
+            }
+        }
+
         PanelWindow {
             id: layer
 
             screen: unit.modelData
-            visible: Prefs.loaded && (Prefs.desktopSelection || Prefs.desktopMenu)
+            visible: Prefs.loaded && (Prefs.desktopSelection || Prefs.desktopMenu || unit.icons) && !unit.lifting
             color: "transparent"
             // reserves nothing and refuses to be shrunk into the bar and dock's
             // strips, so the box can be dragged edge to edge
@@ -38,7 +70,9 @@ Variants {
             // the bottom-most layer, so a press only reaches here when nothing —
             // no window, no widget, no panel — is sitting over that pixel
             WlrLayershell.layer: WlrLayer.Background
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+            // a click on an icon takes the keyboard (Enter, Delete, F2...) and a
+            // click on a window gives it straight back
+            WlrLayershell.keyboardFocus: unit.icons ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
             anchors {
                 top: true
@@ -61,15 +95,33 @@ Variants {
                 // a plain click should not flash a box, so wait for real travel
                 readonly property int threshold: 4
 
+                // with icons, the box selects them, and the icons' board draws it
+                // over them; without, this one is the decoration it always was
+                property bool additive: false
+
                 function begin() {
                     field.dragging = true;
+                    if (unit.icons) {
+                        DesktopIcons.beginBand(field.additive);
+                        field.track();
+                        return ;
+                    }
                     fade.stop();
                     box.opacity = 1;
                 }
 
+                function track() {
+                    if (unit.icons && field.dragging)
+                        DesktopIcons.updateBand(Math.min(field.ax, field.bx), Math.min(field.ay, field.by), Math.abs(field.bx - field.ax), Math.abs(field.by - field.ay));
+
+                }
+
                 function finish() {
-                    if (field.dragging)
+                    if (field.dragging && !unit.icons)
                         fade.restart();
+
+                    if (unit.icons)
+                        DesktopIcons.endBand();
 
                     field.dragging = false;
                     field.armed = false;
@@ -80,11 +132,26 @@ Variants {
                 onPressed: (m) => {
                     if (m.button === Qt.RightButton) {
                         field.armed = false;
-                        if (Prefs.desktopMenu)
+                        if (unit.icons) {
+                            DesktopIcons.clearSelection();
+                            DesktopIcons.menuX = m.x;
+                            DesktopIcons.menuY = m.y;
+                            DesktopIcons.probePaste();
+                        }
+                        if (Prefs.desktopMenu) {
+                            menu.custom = null;
                             menu.openAt(m.x, m.y);
-
+                        }
                         return ;
                     }
+                    field.additive = (m.modifiers & (Qt.ControlModifier | Qt.ShiftModifier)) !== 0;
+                    if (unit.icons) {
+                        iconBoard.forceActiveFocus();
+                        if (!field.additive)
+                            DesktopIcons.clearSelection();
+
+                    }
+
                     field.armed = Prefs.desktopSelection;
                     field.ax = m.x;
                     field.ay = m.y;
@@ -102,6 +169,8 @@ Variants {
                     field.by = Math.max(0, Math.min(field.height, m.y));
                     if (!field.dragging && (Math.abs(field.bx - field.ax) > field.threshold || Math.abs(field.by - field.ay) > field.threshold))
                         field.begin();
+                    else
+                        field.track();
 
                 }
                 onReleased: field.finish()
@@ -138,6 +207,44 @@ Variants {
 
             }
 
+            IconBoard {
+                id: iconBoard
+
+                anchors.fill: parent
+                visible: unit.icons
+                enabled: unit.icons
+            }
+
+            // files dragged over the desktop: from a file manager, a
+            // browser, the screenshot card, or our own icons being moved
+            DropArea {
+                anchors.fill: parent
+                enabled: unit.icons
+                onEntered: (d) => {
+                    d.accept(d.proposedAction);
+                }
+                onPositionChanged: (d) => {
+                    DesktopIcons.hover(d.x, d.y);
+                }
+                onExited: DesktopIcons.leaveDrag()
+                onDropped: (d) => {
+                    DesktopIcons.dropped(d);
+                }
+            }
+
+        }
+
+        // the icons ask for their menu through here, so there is one menu
+        Connections {
+            function onMenuRequested(x, y, actions) {
+                if (!unit.icons)
+                    return ;
+
+                menu.custom = actions;
+                menu.openAt(x, y);
+            }
+
+            target: DesktopIcons
         }
 
         // the menu cannot live on the background layer or windows would cover it,
