@@ -10,6 +10,7 @@ lucidmoji/state.json
 lucidkeys/state.json
 lucidprefs/prefs.json
 lucidwidgets/widgets.json
+luciddesktop/icons.json
 
 # editor / tooling
 .claude/
