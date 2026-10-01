@@ -77,11 +77,25 @@ BarPill {
     // playing) in the middle, brightness and volume as two tall sliders on the
     // right. only where the screen has the room, and only for the main view:
     // the sub-views (Wi-Fi, Bluetooth...) keep the usual width
-    readonly property bool wideFits: root.screenW - 34 >= 900
-    readonly property bool wideMain: Prefs.systemPanelStyle === "wide" && root.wideFits && !root.inSubView
-    readonly property int sysColWidth: root.wideMain ? 330 : root.contentWidth
+    // the look picked on its card (systemPanelStyle): stacked, wide, compact
+    // (square icon tiles, the figures as chips) or minimal (tiles and sliders)
+    readonly property bool wideFits: root.screenW - 34 >= 820
+    readonly property string look: {
+        const s = Prefs.systemPanelStyle;
+        if (s === "wide" && !root.wideFits)
+            return "stacked";
+
+        return ["stacked", "wide", "compact", "minimal"].indexOf(s) >= 0 ? s : "stacked";
+    }
+    readonly property bool wideMain: root.look === "wide" && !root.inSubView
+    readonly property bool iconTiles: root.look === "compact" || root.look === "minimal"
+    readonly property bool showFigures: root.look !== "minimal"
+    readonly property bool chipFigures: root.look === "compact"
+    // wide: three columns of fixed widths, the tiles two of about 150 px
+    readonly property int sysColWidth: root.wideMain ? 296 : root.contentWidth
     readonly property int sliderColWidth: root.wideMain ? 48 * 2 + root.sp2 : 0
-    readonly property int tilesColWidth: root.wideMain ? root.contentWidth - root.sysColWidth - root.sliderColWidth - root.sp5 * 2 : root.contentWidth
+    readonly property int tilesColWidth: root.wideMain ? 150 * 2 + root.sp2 : root.contentWidth
+    readonly property int wideWidth: 296 + 150 * 2 + root.sp2 + 48 * 2 + root.sp2 + root.sp5 * 2 + root.panelPad * 2
     readonly property int headerHeight: 44
     readonly property int subHeaderHeight: 44
     // header top margin + header + gap + body + bottom padding
@@ -162,6 +176,10 @@ BarPill {
     readonly property string micIconPath: "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
     readonly property string btIconPath: "M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"
     readonly property string chevronPath: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+    readonly property string lockPath: "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"
+    readonly property string cameraPath: "M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zM9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"
+    readonly property string clipboardPath: "M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z"
+    readonly property string powerOffPath: "M11 3h2v10h-2V3Zm6.36 2.64 1.42-1.42A9.96 9.96 0 0 1 22 12c0 5.52-4.48 10-10 10S2 17.52 2 12c0-2.76 1.12-5.26 2.93-7.07l1.42 1.42A7.96 7.96 0 0 0 4 12c0 4.42 3.58 8 8 8s8-3.58 8-8c0-2.21-.9-4.21-2.64-5.36Z"
     // weather-night, material design icons
     readonly property string moonPath: "M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95Z"
     readonly property string chevronLeftPath: "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
@@ -557,7 +575,7 @@ BarPill {
     shown: Prefs.showSystem
 
     compactWidth: content.implicitWidth + root.horizontalPadding * 2
-    panelWidth: root.wideMain ? Math.min(980, root.screenW - 34) : Math.min(400, root.screenW - 34)
+    panelWidth: Math.min(root.wideMain ? root.wideWidth : (root.iconTiles ? 360 : 400), root.screenW - 34)
     panelHeight: Math.min(root.maxPanelHeight, root.viewContentHeight)
     expandedRadius: Theme.shapeXl
     compactCollapseScale: 0.94
@@ -1344,19 +1362,23 @@ BarPill {
                     Item {
                         id: mainColumn
 
-                        readonly property real middleHeight: tilesGrid.height + (mediaSection.visible ? root.sp5 + mediaSection.height : 0)
+                        // wide: the figures, then what is playing or the quick actions,
+                        // on the left; the tiles in the middle
+                        readonly property real leftHeight: systemSection.height + root.sp5 + (mediaSection.visible ? mediaSection.height : quickActions.height)
+                        // the last section down, for the one-column looks
+                        readonly property Item lastDown: systemSection.visible ? systemSection : (mediaSection.visible ? mediaSection : soundSection)
 
                         width: scrollArea.width
-                        implicitHeight: root.wideMain ? Math.max(systemSection.height, mainColumn.middleHeight, 300) : systemSection.y + systemSection.height
+                        implicitHeight: root.wideMain ? Math.max(mainColumn.leftHeight, tilesGrid.height) : mainColumn.lastDown.y + mainColumn.lastDown.height
 
                         Grid {
                             id: tilesGrid
 
                             x: root.wideMain ? root.sysColWidth + root.sp5 : 0
                             width: root.tilesColWidth
-                            columns: 2
+                            columns: root.iconTiles ? 4 : 2
                             columnSpacing: root.sp2
-                            rowSpacing: root.sp2
+                            rowSpacing: root.iconTiles ? root.sp3 : root.sp2
 
                             ToggleTile {
                                 iconGlyph: "󰤯"
@@ -1514,9 +1536,9 @@ BarPill {
                         Column {
                             id: mediaSection
 
-                            x: tilesGrid.x
-                            y: root.wideMain ? tilesGrid.height + root.sp5 : soundSection.y + soundSection.height + root.sp5
-                            width: root.tilesColWidth
+                            x: 0
+                            y: root.wideMain ? systemSection.height + root.sp5 : soundSection.y + soundSection.height + root.sp5
+                            width: root.wideMain ? root.sysColWidth : root.contentWidth
                             spacing: root.sp2
                             visible: !!(root.mprisMod && root.mprisMod.player)
 
@@ -1530,7 +1552,7 @@ BarPill {
                                 readonly property var mprisPlayer: root.mprisMod ? root.mprisMod.player : null
                                 readonly property real progress: (root.mprisMod && root.mprisMod.lenSec > 0) ? Math.max(0, Math.min(1, root.mprisMod.posSec / root.mprisMod.lenSec)) : 0
 
-                                width: root.tilesColWidth
+                                width: mediaSection.width
                                 height: 72
                                 radius: Theme.shapeLg
                                 color: Theme.withBlur(Theme.bgTile)
@@ -1705,6 +1727,7 @@ BarPill {
                         Column {
                             id: systemSection
 
+                            visible: root.showFigures
                             y: root.wideMain ? 0 : (mediaSection.visible ? mediaSection.y + mediaSection.height : soundSection.y + soundSection.height) + root.sp5
                             width: root.sysColWidth
                             spacing: root.sp2
@@ -1713,7 +1736,32 @@ BarPill {
                                 text: "SYSTEM"
                             }
 
+                            // compact: the three figures as one row of chips
                             Row {
+                                visible: root.chipFigures
+                                width: parent.width
+                                spacing: root.sp2
+
+                                FigureChip {
+                                    label: "CPU"
+                                    value: root.cpuHistory.length > 0 ? Math.round(root.cpuPercent) + "%" : "—"
+                                }
+
+                                FigureChip {
+                                    label: "RAM"
+                                    value: root.ramHistory.length > 0 ? Math.round(root.ramPercent) + "%" : "—"
+                                }
+
+                                FigureChip {
+                                    label: root.batteryCharging ? "CHARGING" : "BATTERY"
+                                    value: root.batteryPresent ? root.batteryPercent + "%" : "N/A"
+                                    warn: root.batteryPresent && !root.batteryCharging && root.batteryPercent <= 20
+                                }
+
+                            }
+
+                            Row {
+                                visible: !root.chipFigures
                                 width: parent.width
                                 spacing: root.sp2
 
@@ -1749,6 +1797,8 @@ BarPill {
 
                             Rectangle {
                                 id: diskCard
+
+                                visible: !root.chipFigures
 
                                 readonly property var selectedDiskInfo: {
                                     for (const d of root.diskList) {
@@ -1898,6 +1948,54 @@ BarPill {
 
                                 }
 
+                            }
+
+                        }
+
+                        // wide, with nothing playing: the things reached for most, under
+                        // the figures, so the column is not left half empty
+                        Row {
+                            id: quickActions
+
+                            visible: root.wideMain && !mediaSection.visible
+                            y: systemSection.height + root.sp5
+                            width: root.sysColWidth
+                            spacing: root.sp2
+
+                            QuickAction {
+                                label: "Lock"
+                                path: root.lockPath
+                                onActivated: {
+                                    root.expanded = false;
+                                    Quickshell.execDetached(["qs", "ipc", "call", "lock", "lock"]);
+                                }
+                            }
+
+                            QuickAction {
+                                label: "Screenshot"
+                                path: root.cameraPath
+                                onActivated: {
+                                    root.expanded = false;
+                                    Prefs.desktopActionRequested("screenshot");
+                                }
+                            }
+
+                            QuickAction {
+                                label: "Clipboard"
+                                path: root.clipboardPath
+                                onActivated: {
+                                    root.expanded = false;
+                                    Quickshell.execDetached(["qs", "ipc", "call", "launcher", "clipboard"]);
+                                }
+                            }
+
+                            QuickAction {
+                                label: "Power"
+                                path: root.powerOffPath
+                                onActivated: {
+                                    root.expanded = false;
+                                    Quickshell.execDetached(["qs", "ipc", "call", "launcher", "power"]);
+                                }
                             }
 
                         }
@@ -3309,7 +3407,10 @@ BarPill {
 
     // flat tile; "on" is carried by the icon tint and a growing accent underline
     // checked tiles fill with the accent, the way they did before
-    component ToggleTile: Rectangle {
+    // a quick-settings tile: wide with its name and state beside the icon, or,
+    // in the icon looks, a square with the name under it, where the arrow to
+    // its own view is a small one in the corner (or a right click)
+    component ToggleTile: Item {
         id: tile
 
         property string iconPath: ""
@@ -3318,100 +3419,252 @@ BarPill {
         property string sub: ""
         property bool checked: false
         property bool showArrow: false
+        readonly property bool square: root.iconTiles
 
         signal toggled()
         signal expandRequested()
 
-        width: (root.tilesColWidth - root.sp2) / 2
-        height: 56
-        radius: Theme.shapeLg
-        color: tile.checked ? Theme.accent : Theme.withBlur(Theme.bgTile)
+        width: tile.square ? (root.tilesColWidth - root.sp2 * 3) / 4 : (root.tilesColWidth - root.sp2) / 2
+        height: tile.square ? 52 + 20 : 56
 
-        StateLayer {
-            hovered: tileArea.containsMouse
-            pressed: tileArea.pressed
-            tint: tile.checked ? Theme.fgAccent : Theme.text
-        }
+        Rectangle {
+            id: tileFace
 
-        MouseArea {
-            id: tileArea
+            width: parent.width
+            height: tile.square ? 52 : parent.height
+            radius: Theme.shapeLg
+            color: tile.checked ? Theme.accent : Theme.withBlur(Theme.bgTile)
 
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: tile.toggled()
-        }
+            StateLayer {
+                hovered: tileArea.containsMouse
+                pressed: tileArea.pressed
+                tint: tile.checked ? Theme.fgAccent : Theme.text
+            }
 
-        Row {
-            anchors.left: parent.left
-            anchors.leftMargin: root.sp3
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: root.sp2
-            width: parent.width - root.sp3 - (tile.showArrow ? 38 : root.sp3)
+            MouseArea {
+                id: tileArea
 
-            SvgIcon {
-                visible: tile.iconGlyph === ""
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onClicked: (mouse) => {
+                    if (mouse.button === Qt.RightButton) {
+                        if (tile.showArrow)
+                            tile.expandRequested();
+
+                        return ;
+                    }
+                    tile.toggled();
+                }
+            }
+
+            Row {
+                visible: !tile.square
+                anchors.left: parent.left
+                anchors.leftMargin: root.sp3
                 anchors.verticalCenter: parent.verticalCenter
+                spacing: root.sp2
+                width: parent.width - root.sp3 - (tile.showArrow ? 38 : root.sp3)
+
+                SvgIcon {
+                    visible: tile.iconGlyph === ""
+                    anchors.verticalCenter: parent.verticalCenter
+                    path: tile.iconPath
+                    tint: tile.checked ? Theme.fgAccent : Theme.subtext
+                    iconSize: 18
+                }
+
+                Text {
+                    visible: tile.iconGlyph !== ""
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: tile.iconGlyph
+                    color: tile.checked ? Theme.fgAccent : Theme.subtext
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fs(17)
+                }
+
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 1
+                    width: parent.width - 18 - root.sp2
+
+                    Text {
+                        width: parent.width
+                        text: tile.name
+                        color: tile.checked ? Theme.fgAccent : Theme.text
+                        font.family: Theme.fontFamily
+                        font.bold: true
+                        font.pixelSize: Theme.fontLabelLg
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        width: parent.width
+                        visible: tile.sub !== ""
+                        text: tile.sub
+                        color: tile.checked ? Theme.alpha(Theme.fgAccent, 0.75) : Theme.subtext
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontLabelSm
+                        elide: Text.ElideRight
+                    }
+
+                }
+
+            }
+
+            // the square: the icon alone
+            SvgIcon {
+                visible: tile.square && tile.iconGlyph === ""
+                anchors.centerIn: parent
                 path: tile.iconPath
                 tint: tile.checked ? Theme.fgAccent : Theme.subtext
+                iconSize: 20
+            }
+
+            Text {
+                visible: tile.square && tile.iconGlyph !== ""
+                anchors.centerIn: parent
+                text: tile.iconGlyph
+                color: tile.checked ? Theme.fgAccent : Theme.subtext
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fs(19)
+            }
+
+            IconButton {
+                visible: tile.showArrow && !tile.square
+                anchors.right: parent.right
+                anchors.rightMargin: root.sp1
+                anchors.verticalCenter: parent.verticalCenter
+                path: root.chevronPath
+                tint: tile.checked ? Theme.fgAccent : Theme.subtext
+                diameter: 30
+                iconSize: 14
+                onTapped: tile.expandRequested()
+            }
+
+            IconButton {
+                visible: tile.showArrow && tile.square
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 1
+                path: root.chevronPath
+                tint: tile.checked ? Theme.fgAccent : Theme.subtext
+                diameter: 20
+                iconSize: 11
+                onTapped: tile.expandRequested()
+            }
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: Theme.barMs(180)
+                }
+
+            }
+
+        }
+
+        Text {
+            visible: tile.square
+            y: 52 + 4
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            text: tile.name
+            color: Theme.text
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.fontLabelSm
+            elide: Text.ElideRight
+        }
+
+    }
+
+    // compact look: one figure on a chip
+    component FigureChip: Rectangle {
+        id: chip
+
+        property string label: ""
+        property string value: ""
+        property bool warn: false
+
+        width: (root.contentWidth - root.sp2 * 2) / 3
+        height: 38
+        radius: Theme.shapeMd
+        color: Theme.withBlur(Theme.bgTile)
+
+        Row {
+            anchors.centerIn: parent
+            spacing: root.sp2
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: chip.label
+                color: Theme.subtext
+                font.family: Theme.fontFamily
+                font.bold: true
+                font.pixelSize: Theme.fontLabelSm
+                font.letterSpacing: 0.6
+            }
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: chip.value
+                color: chip.warn ? Theme.error : Theme.text
+                font.family: Theme.fontFamily
+                font.bold: true
+                font.pixelSize: Theme.fontLabelLg
+            }
+
+        }
+
+    }
+
+    // wide look: one of the actions under the figures
+    component QuickAction: Rectangle {
+        id: action
+
+        property string label: ""
+        property string path: ""
+
+        signal activated()
+
+        width: (root.sysColWidth - root.sp2 * 3) / 4
+        height: 58
+        radius: Theme.shapeMd
+        color: Theme.withBlur(Theme.bgTile)
+
+        StateLayer {
+            hovered: actionArea.containsMouse
+            pressed: actionArea.pressed
+        }
+
+        Column {
+            anchors.centerIn: parent
+            spacing: 4
+
+            SvgIcon {
+                anchors.horizontalCenter: parent.horizontalCenter
+                path: action.path
+                tint: Theme.text
                 iconSize: 18
             }
 
             Text {
-                visible: tile.iconGlyph !== ""
-                anchors.verticalCenter: parent.verticalCenter
-                text: tile.iconGlyph
-                color: tile.checked ? Theme.fgAccent : Theme.subtext
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: action.label
+                color: Theme.subtext
                 font.family: Theme.fontFamily
-                font.pixelSize: Theme.fs(17)
-            }
-
-            Column {
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 1
-                width: parent.width - 18 - root.sp2
-
-                Text {
-                    width: parent.width
-                    text: tile.name
-                    color: tile.checked ? Theme.fgAccent : Theme.text
-                    font.family: Theme.fontFamily
-                    font.bold: true
-                    font.pixelSize: Theme.fontLabelLg
-                    elide: Text.ElideRight
-                }
-
-                Text {
-                    width: parent.width
-                    visible: tile.sub !== ""
-                    text: tile.sub
-                    color: tile.checked ? Theme.alpha(Theme.fgAccent, 0.75) : Theme.subtext
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontLabelSm
-                    elide: Text.ElideRight
-                }
-
+                font.pixelSize: Theme.fontLabelSm
             }
 
         }
 
-        IconButton {
-            visible: tile.showArrow
-            anchors.right: parent.right
-            anchors.rightMargin: root.sp1
-            anchors.verticalCenter: parent.verticalCenter
-            path: root.chevronPath
-            tint: tile.checked ? Theme.fgAccent : Theme.subtext
-            diameter: 30
-            iconSize: 14
-            onTapped: tile.expandRequested()
-        }
+        MouseArea {
+            id: actionArea
 
-        Behavior on color {
-            ColorAnimation {
-                duration: Theme.barMs(180)
-            }
-
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: action.activated()
         }
 
     }
