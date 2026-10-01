@@ -3,17 +3,26 @@ import Quickshell
 import Quickshell.Io
 pragma Singleton
 
-// asks github once a day whether a newer release is out, and says so once per
-// version. off switch: Prefs.updateCheck
+// asks github once a day whether a newer CirOShell release is out, and says so
+// once per version. a release is tagged v<lucid version>-ciro.<revision>, e.g.
+// v1.10.5-ciro.1. it also looks at upstream Lucid, only to say when it moved.
+// off switch: Prefs.updateCheck
 Singleton {
     id: root
 
-    readonly property string repo: "Sn3akyy1/lucid"
+    readonly property string repo: "ciroenrique4-eng/lucid"
+    readonly property string upstreamRepo: "Sn3akyy1/lucid"
     readonly property string releasesUrl: "https://github.com/" + root.repo + "/releases"
+    readonly property string upstreamUrl: "https://github.com/" + root.upstreamRepo + "/releases"
     readonly property int everyMs: 86400000 // test-marker
 
     // the installer copies a VERSION file in beside shell.qml
-    property string current: ""
+    // VERSION is the Lucid release this is built on, FORK the CirOShell revision on top of it
+    property string base: ""
+    property string rev: ""
+    readonly property string current: root.base === "" ? "" : root.base + (root.rev !== "" && root.rev !== "0" ? "-ciro." + root.rev : "")
+    property string upstreamLatest: ""
+    property string upstreamUrlLatest: root.upstreamUrl
     property string latest: ""
     property string latestName: ""
     property string latestUrl: root.releasesUrl
@@ -27,7 +36,14 @@ Singleton {
 
     readonly property string currentLabel: root.current === "" ? "unknown" : "v" + root.current
     readonly property bool available: root.current !== "" && root.latest !== "" && root.isNewer(root.latest, root.current)
+    // upstream Lucid is ahead of the version this is built on
+    readonly property bool upstreamAhead: root.base !== "" && root.upstreamLatest !== "" && root.isNewer(root.upstreamLatest, root.base)
     readonly property bool wanted: Prefs.loaded && Prefs.updateCheck && root.current !== ""
+
+    function revision(v) {
+        var m = /-ciro\.(\d+)/i.exec(String(v));
+        return m ? parseInt(m[1], 10) : 0;
+    }
 
     function numbers(v) {
         return String(v).trim().replace(/^v/i, "").split("-")[0].split(".").map((n) => {
@@ -44,7 +60,7 @@ Singleton {
                 return d > 0;
 
         }
-        return false;
+        return root.revision(a) > root.revision(b);
     }
 
     function ago(ts) {
@@ -65,25 +81,25 @@ Singleton {
 
     readonly property string status: {
         if (root.current === "")
-            return "Lucid cannot tell which version it is — there is no VERSION file beside shell.qml.";
+            return "CirOShell cannot tell which version it is — there is no VERSION file beside shell.qml.";
 
         if (root.busy)
             return "Asking GitHub…";
 
         if (root.problem === "offline")
-            return "Could not reach GitHub. Lucid tries again later.";
+            return "Could not reach GitHub. CirOShell tries again later.";
 
         if (root.problem === "ratelimited")
-            return "GitHub is rate-limiting this address. Lucid tries again later.";
+            return "GitHub is rate-limiting this address. CirOShell tries again later.";
 
         if (root.problem === "norelease")
             return "No release has been published yet.";
 
         if (root.problem === "unreadable")
-            return "GitHub answered with something Lucid could not read.";
+            return "GitHub answered with something CirOShell could not read.";
 
         if (root.available)
-            return (root.latestName !== "" ? root.latestName + ". " : "") + "Pull the repo and run ./install.sh to update.";
+            return (root.latestName !== "" ? root.latestName + ". " : "") + "Pull the integrated branch and run ./install.sh to update.";
 
         // a saved timestamp outlives the reason for it, so an empty latest after
         // a real check means nothing is published rather than up to date
@@ -103,12 +119,17 @@ Singleton {
         root.busy = true;
         root.gotResponse = false;
         fetcher.running = true;
+        upstream.running = true;
     }
 
     function maybeCheck() {
         if (root.wanted && Date.now() - root.checkedAt >= root.everyMs)
             root.check();
 
+    }
+
+    function openUpstream() {
+        Quickshell.execDetached(["xdg-open", root.upstreamUrlLatest]);
     }
 
     function openLatest() {
@@ -126,7 +147,7 @@ Singleton {
         if (root.latestName !== "" && root.latestName.trim().replace(/^v/i, "") !== root.latest)
             body = root.latestName + "\n" + body;
 
-        Quickshell.execDetached(["sh", "-c", "A=$(notify-send -a Lucid -i \"$1\" \"$2\" \"$3\" -A \"open=What's new\" --wait) && [ \"$A\" = open ] && xdg-open \"$4\"; true", "sh", root.iconPath, "Lucid v" + root.latest + " is out", body, root.latestUrl]);
+        Quickshell.execDetached(["sh", "-c", "A=$(notify-send -a CirOShell -i \"$1\" \"$2\" \"$3\" -A \"open=What's new\" --wait) && [ \"$A\" = open ] && xdg-open \"$4\"; true", "sh", root.iconPath, "CirOShell v" + root.latest + " is out", body, root.latestUrl]);
     }
 
     readonly property string iconPath: Qt.resolvedUrl("assets/logo-mark.svg").toString().replace("file://", "")
@@ -139,7 +160,7 @@ Singleton {
             return ;
         }
         root.latest = tag;
-        root.latestName = String(d.name || "").trim().replace(/^lucid\s+/i, "");
+        root.latestName = String(d.name || "").trim().replace(/^(ciroshell|lucid)\s+/i, "");
         root.latestUrl = String(d.html_url || root.releasesUrl);
         root.checkedAt = Date.now();
         root.problem = "";
@@ -153,7 +174,10 @@ Singleton {
             "latest": root.latest,
             "name": root.latestName,
             "url": root.latestUrl,
-            "notified": root.notified
+            "notified": root.notified,
+            "repo": root.repo,
+            "upstream": root.upstreamLatest,
+            "upstreamUrl": root.upstreamUrlLatest
         }));
     }
 
@@ -175,7 +199,7 @@ Singleton {
         }
 
         function probe(): string {
-            return root.repo + " | latest=" + root.latest + " | url=" + root.latestUrl;
+            return root.repo + " | latest=" + root.latest + " | url=" + root.latestUrl + " | upstream=" + root.upstreamLatest;
         }
 
     }
@@ -222,6 +246,30 @@ Singleton {
 
     }
 
+    // upstream Lucid, for the "based on" line only; failing quietly is fine
+    Process {
+        id: upstream
+
+        command: ["curl", "-s", "--max-time", "15", "-H", "Accept: application/vnd.github+json", "https://api.github.com/repos/" + root.upstreamRepo + "/releases/latest"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    var d = JSON.parse(this.text);
+                    var tag = String(d.tag_name || "").trim().replace(/^v/i, "");
+                    if (tag === "")
+                        return ;
+
+                    root.upstreamLatest = tag;
+                    root.upstreamUrlLatest = String(d.html_url || root.upstreamUrl);
+                    root.save();
+                } catch (e) {
+                }
+            }
+        }
+
+    }
+
     Timer {
         interval: 3600000
         repeat: true
@@ -243,7 +291,14 @@ Singleton {
         path: Qt.resolvedUrl("VERSION").toString().replace("file://", "")
         blockLoading: true
         printErrors: false
-        onLoaded: root.current = text().trim().replace(/^v/i, "")
+        onLoaded: root.base = text().trim().replace(/^v/i, "")
+    }
+
+    FileView {
+        path: Qt.resolvedUrl("FORK").toString().replace("file://", "")
+        blockLoading: true
+        printErrors: false
+        onLoaded: root.rev = text().trim()
     }
 
     FileView {
@@ -255,6 +310,12 @@ Singleton {
         onLoaded: {
             try {
                 var p = JSON.parse(text());
+                root.upstreamLatest = p.upstream || "";
+                root.upstreamUrlLatest = p.upstreamUrl || root.upstreamUrl;
+                // a cache from before the fork had its own releases points at Lucid
+                if (p.repo !== root.repo)
+                    return ;
+
                 root.checkedAt = p.checkedAt || 0;
                 root.latest = p.latest || "";
                 root.latestName = p.name || "";
