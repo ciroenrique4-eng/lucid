@@ -47,6 +47,28 @@ Item {
     Keys.onPressed: (e) => {
         var ctrl = (e.modifiers & Qt.ControlModifier) !== 0;
         var keys = DesktopIcons.selectedKeys;
+        // the quick look has the keys while it is open
+        if (DesktopIcons.lookKey !== "") {
+            if (e.key === Qt.Key_Space || e.key === Qt.Key_Escape) {
+                DesktopIcons.closeLook();
+            } else if (e.key === Qt.Key_Left || e.key === Qt.Key_Up) {
+                DesktopIcons.lookStep(-1);
+            } else if (e.key === Qt.Key_Right || e.key === Qt.Key_Down) {
+                DesktopIcons.lookStep(1);
+            } else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
+                DesktopIcons.openSelection();
+                DesktopIcons.closeLook();
+            }
+            e.accepted = true;
+            return ;
+        }
+        if (e.key === Qt.Key_Space) {
+            if (keys.length > 0)
+                DesktopIcons.quickLook(DesktopIcons.isSelected(DesktopIcons.anchorKey) ? DesktopIcons.anchorKey : keys[0]);
+
+            e.accepted = true;
+            return ;
+        }
         if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
             DesktopIcons.openSelection();
         } else if (e.key === Qt.Key_Delete) {
@@ -80,8 +102,9 @@ Item {
         e.accepted = true;
     }
 
+    // by count: the icons stay put while the folder changes under them
     Repeater {
-        model: DesktopIcons.items
+        model: DesktopIcons.items.length
 
         DesktopIcon {
         }
@@ -129,6 +152,10 @@ Item {
         border.width: 1
         border.color: Theme.alpha(Theme.accent, 0.8)
         antialiasing: true
+    }
+
+    QuickLook {
+        z: 20
     }
 
 }
