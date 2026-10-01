@@ -599,7 +599,9 @@ Every palette has a light mode too — **Light or dark** on the Theme page.
 Matugen and Pywal re-extract the wallpaper in the mode you pick, Your colour is
 built again from its colour; the fixed
 palettes get a light version built from their own colours, so Nord lands on its
-own Snow Storm and Gruvbox on its own cream. Light surfaces carry a trace of the
+own Snow Storm and Gruvbox on its own cream. An imported light scheme goes the
+other way: light mode keeps it exactly as its author made it, and its dark mode
+is built from its own colours. Light surfaces carry a trace of the
 accent, and *Accent tint* on the General page sets how much. The mode is
 remembered beside the theme, and GTK and Qt applications follow it, switching to
 the light or dark counterpart of their theme where one is installed.
@@ -693,10 +695,20 @@ is copied to `config.toml.lucid-backup` before each change.
 
 ### Adding your own theme
 
-**Settings → Theme** takes the URL of any colour-scheme repo, clones it, reads
-it, and builds a full Material 3 palette out of what it finds. Scheme repos
-agree on no common format, so detection is tiered: base16 and base24 YAML and
-name-keyed JSON (Catppuccin and friends) are read exactly, and anything else
+**Settings → Palettes** (`qs ipc call settings palettes`) has a **gallery** of
+the few hundred base16 and base24 schemes that
+[tinted-theming](https://github.com/tinted-theming/schemes) collects, each drawn
+in its own colours, searchable, and split into dark and light. *Download* fetches
+the whole collection once (about half a megabyte, kept in
+`~/.cache/lucid/schemes`); after that, hovering a scheme offers *Add*, which
+makes it one of your themes, and *Use*, which also switches to it.
+
+The same page takes the URL of any colour-scheme repo, or a scheme file you
+already have, clones or reads it, and builds a full Material 3 palette out of
+what it finds. Scheme repos
+agree on no common format, so detection is tiered: base16 and base24 YAML,
+name-keyed JSON (Catppuccin and friends) and palettes Lucid exported are read
+exactly, and anything else
 falls back to harvesting hex codes and sorting them by tone and chroma. A repo
 carrying several variants lists them so you can pick one, and wallpapers in the
 repo come along with it.
@@ -707,10 +719,26 @@ are copied.
 It writes `~/.config/lucid/themes/<id>/{quickshell.json,meta.json}` and
 `~/Pictures/wallpapers/<id>/`, which you can also do by hand: a
 `quickshell.json` with the same keys as the bundled palettes is all a theme is.
-The importer runs from a terminal too:
+The importer runs from a terminal too, on a repo URL or a local file or folder:
 
 ```sh
-python3 ~/.config/lucid/add-theme.py <repo-url> [--list] [--variant <name>] [--name <label>]
+python3 ~/.config/lucid/add-theme.py <repo-url|file|folder> [--list] [--variant <name>] [--name <label>]
+python3 ~/.config/lucid/scheme-gallery.py update    # the gallery, downloaded and indexed
+```
+
+Further down the page, the **editor** works on the palette on screen. Six key
+colours (background, text, primary, secondary, tertiary, error) each rebuild
+the whole palette the way an imported scheme is built, and every other role can
+be set by itself; the shell wears the draft while you work, and *Save as theme*
+keeps it (*Discard*, or closing Settings, puts the palette back). **Export**
+writes the palette on screen to a file: a *Lucid palette*, which keeps every
+role and imports back exactly, or *base16 YAML* for tinted-theming's tools and
+anything else that reads base16.
+
+The exporter runs from a terminal too:
+
+```sh
+python3 ~/.config/lucid/palette-edit.py export ~/.cache/quickshell/matugen.json <lucid|base16> <file> [<name>]
 ```
 
 ## Requirements
