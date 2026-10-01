@@ -371,7 +371,7 @@ Column {
             description: "Recolour the icon theme's folders, or its file icons too, in the palette, keeping their light and shade. Apps keep their own colours, and pictures are never touched."
 
             M3Segmented {
-                width: 300
+                width: 420
                 current: Prefs.desktopIconTint
                 options: [{
                     "key": "off",
