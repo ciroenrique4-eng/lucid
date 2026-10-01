@@ -450,13 +450,24 @@ BarPill {
                         opacity: tile.count > 0 || tile.hovered ? 1 : 0.72
                     }
 
+                    // measured apart: an eliding Text's implicitWidth follows its own
+                    // width, which loops when the width is taken from it
+                    TextMetrics {
+                        id: nameMetrics
+
+                        text: tile.app.name
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontLabelLg
+                        font.weight: Font.DemiBold
+                    }
+
                     Text {
                         id: nameText
 
                         visible: root.namesFace
                         x: tileIcon.x + tileIcon.width + 8
                         anchors.verticalCenter: parent.verticalCenter
-                        width: root.namesFace ? Math.min(implicitWidth, Prefs.appsModuleNameWidth) : 0
+                        width: root.namesFace ? Math.min(Math.ceil(nameMetrics.advanceWidth) + 1, Prefs.appsModuleNameWidth) : 0
                         text: tile.app.name
                         color: tile.count > 0 ? Theme.text : Theme.subtext
                         font.family: Theme.fontFamily
