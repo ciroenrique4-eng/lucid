@@ -1310,6 +1310,15 @@ PanelWindow {
         dockWindow.publishPinned();
     }
 
+    // the bar's apps module reorders the pins through this
+    function movePinned(from, to) {
+        if (from < 0 || from >= appListModel.count || to < 0 || to >= appListModel.count || from === to)
+            return;
+
+        appListModel.move(from, to, 1);
+        dockWindow.persistOrder();
+    }
+
     function removePinnedAt(index) {
         if (index < 0 || index >= appListModel.count)
             return;
