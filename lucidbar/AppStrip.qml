@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import Quickshell.Widgets
 import qs
 import "../luciddocks"
@@ -79,11 +80,62 @@ BarPill {
         return out;
     }
 
+    readonly property var noApp: ({
+        "key": "",
+        "appId": "",
+        "name": "",
+        "icon": "",
+        "command": "",
+        "pinned": false,
+        "windows": []
+    })
+
     // the app the panel is about, looked up again as windows come and go
     property string panelKey: ""
     readonly property var panelApp: root.apps.find((a) => {
         return a.key === root.panelKey;
     }) || null
+
+    // the app the pointer rests on: its windows, live, over the bar
+    property string previewKey: ""
+    // the middle of its icon, in the overlay's coordinates
+    property real previewX: 0
+    readonly property var previewApp: root.previewKey === "" ? null : (root.apps.find((a) => {
+        return a.key === root.previewKey;
+    }) || null)
+    readonly property bool previewShown: root.previewApp !== null && root.shown && !root.anyOpen
+
+    function tileFor(index) {
+        for (const c of appRow.children) {
+            if (c.index === index)
+                return c;
+
+        }
+        return null;
+    }
+
+    function showPreview(index) {
+        const app = index >= 0 && index < root.apps.length ? root.apps[index] : null;
+        const tileItem = root.tileFor(index);
+        if (!app || !tileItem)
+            return ;
+
+        root.previewX = tileItem.mapToItem(previewLayer, tileItem.width / 2, 0).x;
+        root.previewKey = app.key;
+    }
+
+    function hidePreview() {
+        previewOpen.stop();
+        previewClose.stop();
+        root.previewKey = "";
+    }
+
+    // the toplevel behind one of an app's windows, for its live picture
+    function toplevelAt(address) {
+        return Hyprland.toplevels.values.find((t) => {
+            return t && t.lastIpcObject && t.lastIpcObject.address === address;
+        }) || null;
+    }
 
     function hasFocus(app) {
         return app.windows.some((w) => {
@@ -102,10 +154,14 @@ BarPill {
         return best;
     }
 
+    // the pointer stays where it is: it was on the bar, and Hyprland would
+    // otherwise warp it to the window's middle. no_warps goes on for this one
+    // focus and back to what it was, in the same call, so nothing else sees it
     function focusNow(address) {
-        if (address)
-            Hyprland.dispatch("hl.dsp.focus({ window = \"address:" + address + "\" })");
+        if (!/^0x[0-9a-fA-F]+$/.test(address || ""))
+            return ;
 
+        Quickshell.execDetached(["hyprctl", "eval", "local nw = hl.get_config('cursor.no_warps') " + "hl.config({ cursor = { no_warps = true } }) " + "pcall(function() hl.dispatch(hl.dsp.focus({ window = 'address:" + address + "' })) end) " + "hl.config({ cursor = { no_warps = nw } })"]);
     }
 
     // from inside the panel: its focus grab hands the focus back as it lets go,
@@ -186,10 +242,44 @@ BarPill {
             root.expanded = false;
 
     }
+    overlayOpen: root.previewShown
+    overlayItem: previewCard
+    onAnyOpenChanged: {
+        if (root.anyOpen)
+            root.hidePreview();
+
+    }
+    onPreviewAppChanged: {
+        if (!root.previewApp)
+            root.previewKey = "";
+
+    }
     onPanelAppChanged: {
         if (root.expanded && !root.panelApp)
             root.expanded = false;
 
+    }
+
+    // resting on an icon opens it; once one is up, moving along switches at once
+    Timer {
+        id: previewOpen
+
+        property int index: -1
+
+        interval: 500
+        onTriggered: root.showPreview(previewOpen.index)
+    }
+
+    // long enough to cross the gap between the bar and the preview
+    Timer {
+        id: previewClose
+
+        interval: 280
+        onTriggered: {
+            if (faceArea.hoverIndex < 0 && !previewHover.hovered)
+                root.previewKey = "";
+
+        }
     }
 
     Timer {
@@ -313,16 +403,17 @@ BarPill {
             anchors.centerIn: parent
             spacing: 2
 
+            // by count, not by the list: the list is rebuilt whenever a window
+            // changes title, and a list model would rebuild every icon with it
             Repeater {
-                model: root.apps
+                model: root.apps.length
 
                 Item {
                     id: tile
 
-                    required property var modelData
                     required property int index
 
-                    readonly property var app: tile.modelData
+                    readonly property var app: root.apps[tile.index] || root.noApp
                     readonly property int count: tile.app.windows.length
                     readonly property bool focused: root.hasFocus(tile.app)
                     readonly property bool hovered: faceArea.hoverIndex === tile.index
@@ -432,11 +523,37 @@ BarPill {
             hoverEnabled: true
             acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
             cursorShape: Qt.PointingHandCursor
-            onPositionChanged: (mouse) => {
-                return faceArea.hoverIndex = faceArea.indexAt(mouse.x, mouse.y);
+            // on entering too: a pointer that lands on an icon in one jump sends
+            // no move until it moves again
+            function hoverAt(mx, my) {
+                const i = faceArea.indexAt(mx, my);
+                if (i === faceArea.hoverIndex)
+                    return ;
+
+                faceArea.hoverIndex = i;
+                if (i < 0) {
+                    previewOpen.stop();
+                    previewClose.restart();
+                } else if (root.previewShown) {
+                    previewClose.stop();
+                    root.showPreview(i);
+                } else {
+                    previewOpen.index = i;
+                    previewOpen.restart();
+                }
             }
-            onExited: faceArea.hoverIndex = -1
+
+            onEntered: faceArea.hoverAt(faceArea.mouseX, faceArea.mouseY)
+            onPositionChanged: (mouse) => {
+                return faceArea.hoverAt(mouse.x, mouse.y);
+            }
+            onExited: {
+                faceArea.hoverIndex = -1;
+                previewOpen.stop();
+                previewClose.restart();
+            }
             onPressed: (mouse) => {
+                root.hidePreview();
                 return faceArea.pressedIndex = faceArea.indexAt(mouse.x, mouse.y);
             }
             onReleased: faceArea.pressedIndex = -1
@@ -466,6 +583,265 @@ BarPill {
                 }
                 root.cycle(root.apps[i], wheel.angleDelta.y < 0 ? 1 : -1);
             }
+        }
+    ]
+
+    overlayContent: [
+        Item {
+            id: previewLayer
+
+            anchors.fill: parent
+
+            Rectangle {
+                id: previewCard
+
+                readonly property var app: root.previewApp
+                readonly property var windows: previewCard.app ? previewCard.app.windows.slice(0, 5) : []
+                readonly property int thumbHeight: 112
+
+                // the width a window's picture gets, from its own shape
+                function thumbWidth(w) {
+                    const size = w && w.size ? w.size : [16, 9];
+                    const ratio = size[1] > 0 ? size[0] / size[1] : 16 / 9;
+                    return Math.round(Math.max(96, Math.min(220, previewCard.thumbHeight * ratio)));
+                }
+
+                width: Math.max(previewHeader.implicitWidth, thumbRow.visible ? thumbRow.implicitWidth : 0, previewHint.visible ? previewHint.implicitWidth : 0) + 24
+                height: previewColumn.implicitHeight + 24
+                // over its icon, kept on screen
+                x: Math.round(Math.max(10 - root.x, Math.min(root.previewX - width / 2, previewLayer.width - width - 10)))
+                y: Math.round(root.overlayEdgeY(root.compactHeight + 8, height))
+                radius: Theme.shapeLg
+                color: Theme.bg
+                opacity: root.previewShown ? 1 : 0
+                visible: opacity > 0.01
+
+                HoverHandler {
+                    id: previewHover
+
+                    onHoveredChanged: {
+                        if (previewHover.hovered)
+                            previewClose.stop();
+                        else
+                            previewClose.restart();
+                    }
+                }
+
+                Column {
+                    id: previewColumn
+
+                    x: 12
+                    y: 12
+                    spacing: 10
+
+                    Row {
+                        id: previewHeader
+
+                        spacing: 8
+
+                        AppIcon {
+                            app: previewCard.app
+                            size: 18
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: previewCard.app ? previewCard.app.name : ""
+                            color: Theme.text
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontLabelLg
+                            font.weight: Font.DemiBold
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            readonly property int extra: previewCard.app ? previewCard.app.windows.length - previewCard.windows.length : 0
+                            visible: extra > 0
+                            text: "+" + extra + " more"
+                            color: Theme.subtext
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontLabel
+                        }
+
+                    }
+
+                    Text {
+                        id: previewHint
+
+                        visible: previewCard.windows.length === 0
+                        text: previewCard.app && previewCard.app.command !== "" ? "Not open · click to open it" : "Not open"
+                        color: Theme.subtext
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontLabel
+                    }
+
+                    Row {
+                        id: thumbRow
+
+                        visible: previewCard.windows.length > 0
+                        spacing: 10
+
+                        Repeater {
+                            model: previewCard.windows.length
+
+                            Item {
+                                id: thumb
+
+                                required property int index
+                                readonly property var modelData: previewCard.windows[thumb.index] || ({})
+
+                                readonly property var toplevel: root.toplevelAt(thumb.modelData.address)
+                                readonly property bool hovered: thumbHover.hovered
+                                readonly property bool isFocused: thumb.modelData.address === root.focusedAddress
+
+                                width: previewCard.thumbWidth(thumb.modelData)
+                                height: previewCard.thumbHeight + 26
+
+                                HoverHandler {
+                                    id: thumbHover
+                                }
+
+                                ClippingRectangle {
+                                    id: frame
+
+                                    width: parent.width
+                                    height: previewCard.thumbHeight
+                                    radius: Theme.shapeMd
+                                    color: Theme.bgTile
+                                    border.width: thumb.isFocused ? 2 : 0
+                                    border.color: Theme.accent
+
+                                    ScreencopyView {
+                                        id: picture
+
+                                        anchors.centerIn: parent
+                                        constraintSize.width: frame.width
+                                        constraintSize.height: frame.height
+                                        captureSource: thumb.toplevel ? thumb.toplevel.wayland : null
+                                        live: root.previewShown
+                                        visible: picture.hasContent
+                                    }
+
+                                    AppIcon {
+                                        anchors.centerIn: parent
+                                        app: previewCard.app
+                                        size: 36
+                                        visible: !picture.hasContent
+                                    }
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        color: Theme.text
+                                        opacity: thumb.hovered ? Theme.stateHover : 0
+
+                                        Behavior on opacity {
+                                            NumberAnimation {
+                                                duration: Theme.durQuick
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
+                                Text {
+                                    y: previewCard.thumbHeight + 6
+                                    width: parent.width
+                                    text: thumb.modelData.title || thumb.modelData.class
+                                    color: thumb.hovered || thumb.isFocused ? Theme.text : Theme.subtext
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: Theme.fontLabel
+                                    font.weight: thumb.isFocused ? Font.DemiBold : Font.Normal
+                                    elide: Text.ElideRight
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+                                    onClicked: (mouse) => {
+                                        // read before the preview goes, which takes this thumb with it
+                                        const address = thumb.modelData.address;
+                                        if (mouse.button === Qt.MiddleButton) {
+                                            if (!closeGuard.running)
+                                                root.closeWindow(address);
+
+                                            return ;
+                                        }
+                                        // the preview goes first: as it does, the pointer is
+                                        // over whatever window is under it, and Hyprland hands
+                                        // that one the focus, so the switch comes a beat later
+                                        // (and last: it takes this thumb, handler and all)
+                                        focusLater.address = address;
+                                        focusLater.restart();
+                                        root.hidePreview();
+                                    }
+                                }
+
+                                Rectangle {
+                                    anchors.right: frame.right
+                                    anchors.top: frame.top
+                                    anchors.margins: 6
+                                    width: 24
+                                    height: 24
+                                    radius: Theme.pill(height)
+                                    visible: thumb.hovered
+                                    color: thumbClose.containsMouse ? Theme.error : Theme.alpha(Theme.bg, 0.85)
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "✕"
+                                        color: thumbClose.containsMouse ? Theme.fgError : Theme.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: Theme.fontLabel
+                                    }
+
+                                    MouseArea {
+                                        id: thumbClose
+
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            if (!closeGuard.running)
+                                                root.closeWindow(thumb.modelData.address);
+
+                                        }
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Theme.barMs(160)
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+                Behavior on x {
+                    enabled: previewCard.visible
+
+                    NumberAnimation {
+                        duration: Theme.barMs(180)
+                        easing.type: Easing.OutCubic
+                    }
+
+                }
+
+            }
+
         }
     ]
 
@@ -530,12 +906,13 @@ BarPill {
                 visible: !!panelColumn.app && panelColumn.app.windows.length > 0
 
                 Repeater {
-                    model: panelColumn.app ? panelColumn.app.windows : []
+                    model: panelColumn.app ? panelColumn.app.windows.length : 0
 
                     Rectangle {
                         id: winRow
 
-                        required property var modelData
+                        required property int index
+                        readonly property var modelData: panelColumn.app && panelColumn.app.windows[winRow.index] || ({})
 
                         readonly property bool isFocused: winRow.modelData.address === root.focusedAddress
 
