@@ -355,6 +355,42 @@ Column {
 
         }
 
+        SettingRow {
+            title: "Module backgrounds"
+            resetKey: "barModuleBackgrounds"
+            description: "A soft background behind each module, so they stand out on the strip. In the arrangement above, the + between two neighbours puts them on one background; the - parts them again."
+            enabled: Prefs.barEnabled && Prefs.barFull
+            disabledReason: "Only on the full bar: islands and notches already give every module a shape of its own."
+            showDivider: false
+
+            M3Switch {
+                enabled: Prefs.barEnabled && Prefs.barFull
+                checked: Prefs.barModuleBackgrounds
+                onToggled: (v) => {
+                    return Prefs.barModuleBackgrounds = v;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Lines between joined modules"
+            resetKey: "barGroupDividers"
+            description: "A thin line between modules that share a background."
+            enabled: Prefs.barEnabled && Prefs.barGrouping
+            disabledReason: "Turn on module backgrounds, on the full bar, first."
+            showDivider: false
+
+            M3Switch {
+                enabled: Prefs.barEnabled && Prefs.barGrouping
+                checked: Prefs.barGroupDividers
+                onToggled: (v) => {
+                    return Prefs.barGroupDividers = v;
+                }
+            }
+
+        }
+
     }
 
     BarModuleCard {
