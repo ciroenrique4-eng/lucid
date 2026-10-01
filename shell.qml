@@ -27,6 +27,7 @@ ShellRoot {
     // which own lucid-settings.lua and follow the palette in border colours,
     // the bluetooth file receiver, which has to be listening before anyone
     // sends something,
+    // the desktop shown before a restart, whose windows go back home,
     // the update check, which runs whether or not the settings app is
     // ever opened, the clipboard, which owns the wl-paste watchers and so
     // has to be up long before the launcher is first opened, and night
@@ -48,6 +49,7 @@ ShellRoot {
         void Users.probed;
         void Polkit.registered;
         void NightLight.active;
+        void ShowDesktop.active;
     }
 
     // one bar, or one on every display when Settings > Displays asks for it
@@ -95,7 +97,9 @@ ShellRoot {
                 "privacy": privacyMod,
                 "power": powerMod,
                 "window": windowMod,
-                "apps": appsMod
+                "apps": appsMod,
+                "start": startMod,
+                "desktop": desktopMod
             })
             readonly property var modules: Prefs.barModules.map((m) => {
                 return bar.moduleById[m.id];
@@ -560,6 +564,29 @@ ShellRoot {
 
             }
 
+            StartButton {
+                id: startMod
+
+                popupAlign: bar.alignOf("start")
+
+                hostWindow: bar
+                dockMod: dock
+                x: bar.xOf("start")
+                y: bar.edgeY(startMod.height)
+
+            }
+
+            DesktopButton {
+                id: desktopMod
+
+                popupAlign: bar.alignOf("desktop")
+
+                hostWindow: bar
+                x: bar.xOf("desktop")
+                y: bar.edgeY(desktopMod.height)
+
+            }
+
             ActiveWindow {
                 id: windowMod
 
@@ -702,6 +729,14 @@ ShellRoot {
                     mod: appsMod
                 }
 
+                ModuleRegion {
+                    mod: startMod
+                }
+
+                ModuleRegion {
+                    mod: desktopMod
+                }
+
                 Region {
                     item: Prefs.barAutoHide ? revealArea : null
                 }
@@ -782,6 +817,16 @@ ShellRoot {
                 ModuleRegion {
                     blur: true
                     mod: appsMod
+                }
+
+                ModuleRegion {
+                    blur: true
+                    mod: startMod
+                }
+
+                ModuleRegion {
+                    blur: true
+                    mod: desktopMod
                 }
 
             }
