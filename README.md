@@ -68,6 +68,7 @@ Settings still follows upstream's releases, and this branch follows them too.
 |  | New modules — privacy, power, active window — and looks and options for every module | [#50](https://github.com/Sn3akyy1/lucid/pull/50) |
 |  | A full-width style, opening on hover, and auto-hide | [#16](https://github.com/Sn3akyy1/lucid/pull/16) |
 |  | A bar on every display | [#14](https://github.com/Sn3akyy1/lucid/pull/14) |
+|  | The bar on the bottom edge: every panel, pop-up, menu and notification opens upwards | this fork only |
 | **Launcher** | One ranking for windows, apps, commands and the web; power buttons of your choice | [#17](https://github.com/Sn3akyy1/lucid/pull/17) |
 |  | Favourite and hidden applications, and a page of its own in Settings | [#32](https://github.com/Sn3akyy1/lucid/pull/32) |
 |  | A preview pane for the clipboard, entry kinds, clearing from the keyboard | [#10](https://github.com/Sn3akyy1/lucid/pull/10) |
