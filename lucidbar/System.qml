@@ -9,6 +9,7 @@ import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Widgets
 import qs
+import "../lucidprefs"
 
 BarPill {
     id: root
@@ -573,6 +574,12 @@ BarPill {
     }
 
     shown: Prefs.showSystem
+    // open on its main view, its sliders stand in for the OSD
+    readonly property bool levelsShown: root.expanded && !root.inSubView
+    readonly property string screenKey: root.hostWindow && root.hostWindow.screen ? root.hostWindow.screen.name : ""
+
+    onLevelsShownChanged: Prefs.noteControlCentre(root.screenKey, root.levelsShown)
+    Component.onDestruction: Prefs.noteControlCentre(root.screenKey, false)
 
     compactWidth: content.implicitWidth + root.horizontalPadding * 2
     panelWidth: Math.min(root.wideMain ? root.wideWidth : (root.iconTiles ? 360 : 400), root.screenW - 34)
@@ -1303,6 +1310,7 @@ BarPill {
                     height: root.headerHeight
 
                     Text {
+                        visible: !meChip.visible
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         text: "Control Centre"
@@ -1310,6 +1318,70 @@ BarPill {
                         font.family: Theme.fontFamily
                         font.bold: true
                         font.pixelSize: Theme.fontTitleSm
+                    }
+
+                    // you: your picture and name, a click away from your account
+                    Rectangle {
+                        id: meChip
+
+                        visible: Prefs.systemPanelAvatar && Users.me !== null
+                        anchors.left: parent.left
+                        anchors.leftMargin: -6
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: meRow.implicitWidth + 16
+                        height: 40
+                        radius: Theme.pill(height)
+                        color: Theme.alpha(Theme.text, meArea.containsMouse ? 0.08 : 0)
+
+                        Row {
+                            id: meRow
+
+                            anchors.left: parent.left
+                            anchors.leftMargin: 6
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: root.sp2
+
+                            UserAvatar {
+                                anchors.verticalCenter: parent.verticalCenter
+                                user: Users.me
+                                size: 30
+                            }
+
+                            Column {
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 0
+
+                                Text {
+                                    text: Users.displayName(Users.me)
+                                    color: Theme.text
+                                    font.family: Theme.fontFamily
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontLabelLg
+                                }
+
+                                Text {
+                                    text: "Control Centre"
+                                    color: Theme.subtextDim
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: Theme.fontLabelSm
+                                }
+
+                            }
+
+                        }
+
+                        MouseArea {
+                            id: meArea
+
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.expanded = false;
+                                Prefs.settingsRequested("users");
+                            }
+                        }
+
                     }
 
                     Row {
