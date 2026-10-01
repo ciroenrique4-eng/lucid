@@ -285,6 +285,22 @@ def rename(path, new):
     print(new)
 
 
+def peek(path, n=3):
+    # what a folder holds, for the fan its icon opens on hover: the first few
+    # (folders first, by name) and how many there are
+    items = []
+    try:
+        en = Gio.File.new_for_path(path).enumerate_children(ATTRS, Gio.FileQueryInfoFlags.NONE, None)
+        for info in en:
+            if info.get_is_hidden() or info.get_is_backup():
+                continue
+            items.append(entry(path, info))
+    except GLib.Error:
+        pass
+    items.sort(key=lambda e: (e["kind"] != "dir", e["label"].lower()))
+    print(json.dumps({"count": len(items), "items": items[:n]}))
+
+
 def main():
     a = sys.argv[1:]
     cmd = a[0] if a else "watch"
@@ -299,6 +315,8 @@ def main():
         add_app(a[1])
     elif cmd == "rename":
         rename(a[1], a[2])
+    elif cmd == "peek":
+        peek(a[1])
     elif cmd == "trust":
         trust(a[1])
     else:
