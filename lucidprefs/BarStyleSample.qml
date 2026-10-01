@@ -45,6 +45,8 @@ Item {
         "apps/names": appsNames,
         "system/panel/stacked": systemPanelStacked,
         "system/panel/wide": systemPanelWide,
+        "system/panel/compact": systemPanelCompact,
+        "system/panel/minimal": systemPanelMinimal,
         "start/logo": startLogo,
         "start/grid": startGrid,
         "desktop/sliver": desktopSliver,
@@ -1005,6 +1007,98 @@ Item {
             }
 
             MiniFigures {
+            }
+
+        }
+
+    }
+
+    component MiniSquares: Grid {
+        columns: 4
+        spacing: 3
+
+        Repeater {
+            model: 8
+
+            Rectangle {
+                width: 10
+                height: 10
+                radius: 3
+                color: index === 0 || index === 4 ? Theme.accent : Theme.bgActive
+            }
+
+        }
+
+    }
+
+    component MiniSliders: Column {
+        spacing: 3
+
+        Repeater {
+            model: 2
+
+            Rectangle {
+                width: 49
+                height: 4
+                radius: 2
+                color: Theme.bgActive
+
+                Rectangle {
+                    width: parent.width * (index === 0 ? 0.6 : 0.85)
+                    height: parent.height
+                    radius: 2
+                    color: Theme.accent
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: systemPanelCompact
+
+        Column {
+            spacing: 4
+
+            MiniSquares {
+            }
+
+            MiniSliders {
+            }
+
+            Row {
+                spacing: 3
+
+                Repeater {
+                    model: 3
+
+                    Rectangle {
+                        width: 14
+                        height: 6
+                        radius: 3
+                        color: Theme.bgActive
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: systemPanelMinimal
+
+        Column {
+            spacing: 5
+
+            MiniSquares {
+            }
+
+            MiniSliders {
             }
 
         }
