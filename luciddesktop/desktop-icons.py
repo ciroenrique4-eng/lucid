@@ -30,6 +30,15 @@ gi.require_version("Gio", "2.0")
 gi.require_version("GLib", "2.0")
 from gi.repository import Gio, GLib  # noqa: E402
 
+# newer glib moved the desktop entry reader to GioUnix and left a deprecated
+# alias behind; take whichever this system has
+try:
+    gi.require_version("GioUnix", "2.0")
+    from gi.repository import GioUnix  # noqa: E402
+    DesktopAppInfo = GioUnix.DesktopAppInfo
+except (ValueError, ImportError):
+    DesktopAppInfo = Gio.DesktopAppInfo
+
 ATTRS = ",".join([
     "standard::name", "standard::display-name", "standard::type", "standard::icon",
     "standard::content-type", "standard::size", "standard::is-hidden", "standard::is-backup",
@@ -83,7 +92,7 @@ def entry(folder, info):
     }
     if not is_dir and name.endswith(".desktop"):
         try:
-            app = Gio.DesktopAppInfo.new_from_filename(path)
+            app = DesktopAppInfo.new_from_filename(path)
         except TypeError:
             app = None
         if app is not None:
@@ -216,18 +225,35 @@ def put(mode, dest, uris):
             print("error\t%s\t%s" % (uri, e), file=sys.stderr, flush=True)
 
 
+def app_file(desktop_id):
+    # the shell knows apps by id with or without ".desktop"; the constructor
+    # raises rather than answering None when there is no such entry
+    for cand in (desktop_id, desktop_id + ".desktop"):
+        try:
+            app = DesktopAppInfo.new(cand)
+        except TypeError:
+            app = None
+        if app is not None and app.get_filename():
+            return app.get_filename()
+    # a hidden or odd entry the lookup skips: find the file itself
+    name = desktop_id if desktop_id.endswith(".desktop") else desktop_id + ".desktop"
+    for d in [GLib.get_user_data_dir()] + list(GLib.get_system_data_dirs()):
+        p = os.path.join(d, "applications", name)
+        if os.path.isfile(p):
+            return p
+    return None
+
+
 def add_app(desktop_id):
-    app = Gio.DesktopAppInfo.new(desktop_id)
-    if app is None and not desktop_id.endswith(".desktop"):
-        app = Gio.DesktopAppInfo.new(desktop_id + ".desktop")
-    if app is None or not app.get_filename():
+    src = app_file(desktop_id)
+    if src is None:
         sys.exit("no such application: " + desktop_id)
     folder = desktop_dir()
     os.makedirs(folder, exist_ok=True)
-    name = free_name(folder, os.path.basename(app.get_filename()))
+    name = free_name(folder, os.path.basename(src))
     path = os.path.join(folder, name)
-    with open(app.get_filename(), "rb") as src, open(path, "wb") as out:
-        out.write(src.read())
+    with open(src, "rb") as f, open(path, "wb") as out:
+        out.write(f.read())
     trust(path)
     print(name)
 
