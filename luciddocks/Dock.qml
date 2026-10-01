@@ -589,6 +589,25 @@ PanelWindow {
         return IconTheme.resolve(entry && entry.iconName !== "" ? entry.iconName : cls);
     }
 
+    // the pinned apps as plain data, for the bar's apps module: a ListModel's
+    // rows changing is invisible to bindings, so this is set wherever they change
+    property var pinnedList: []
+
+    function publishPinned() {
+        var arr = [];
+        for (var i = 0; i < appListModel.count; i++) {
+            var item = appListModel.get(i);
+            arr.push({
+                "appKey": item.appKey,
+                "iconName": item.iconName,
+                "command": item.command,
+                "appId": item.appId,
+                "name": item.displayName
+            });
+        }
+        dockWindow.pinnedList = arr;
+    }
+
     readonly property var pinnedAppIds: {
         var ids = {};
         for (var i = 0; i < appListModel.count; i++) {
@@ -1272,6 +1291,7 @@ PanelWindow {
                 "justAdded": false
             });
         }
+        dockWindow.publishPinned();
     }
 
     function persistOrder() {
@@ -1287,6 +1307,7 @@ PanelWindow {
             });
         }
         pinnedAdapter.pinnedApps = arr;
+        dockWindow.publishPinned();
     }
 
     function removePinnedAt(index) {
