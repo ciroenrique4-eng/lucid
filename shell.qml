@@ -1,3 +1,4 @@
+//@ pragma AppId lucid
 import "./lucidbar"
 import "./luciddesktop"
 import "./luciddocks"
