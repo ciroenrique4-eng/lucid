@@ -25,6 +25,10 @@ Singleton {
     // uid of the card currently held by the pointer, and of the one showing its menu
     property string dragUid: ""
     property string menuUid: ""
+    // the card under a drag or a resize and where it is this moment, before the
+    // store hears of it: the desktop icons step out of its way as it goes
+    property string liveUid: ""
+    property rect liveRect: Qt.rect(0, 0, 0, 0)
     // the preset on the desktop right now, "" once the arrangement is your own
     property string presetId: ""
     // presets saved from your own desktop, in the same shape as the built-in ones
@@ -1072,21 +1076,25 @@ Singleton {
         var top = root.spawnTop + pad;
         var maxX = Math.max(pad, root.canvasW - w - pad);
         var maxY = Math.max(top, root.canvasH - root.spawnBottom - h - pad);
-        for (var y = top; y <= maxY; y += step) {
-            for (var x = pad; x <= maxX; x += step) {
-                var clear = true;
-                for (var i = 0; i < instances.count && clear; i++) {
-                    var e = instances.get(i);
-                    if (x < e.wx + e.bw * e.zoom + 18 && x + w + 18 > e.wx && y < e.wy + e.bh * e.zoom + 18 && y + h + 18 > e.wy)
-                        clear = false;
+        // twice: clear of the desktop icons too if it can be, and of the other
+        // widgets either way (icons step aside for a widget, never the reverse)
+        for (var pass = 0; pass < 2; pass++) {
+            for (var y = top; y <= maxY; y += step) {
+                for (var x = pad; x <= maxX; x += step) {
+                    var clear = pass === 1 || !DesktopIcons.overlapsIcons(x, y, w, h);
+                    for (var i = 0; i < instances.count && clear; i++) {
+                        var e = instances.get(i);
+                        if (x < e.wx + e.bw * e.zoom + 18 && x + w + 18 > e.wx && y < e.wy + e.bh * e.zoom + 18 && y + h + 18 > e.wy)
+                            clear = false;
+
+                    }
+                    if (clear)
+                        return ({
+                            "x": x,
+                            "y": y
+                        });
 
                 }
-                if (clear)
-                    return ({
-                        "x": x,
-                        "y": y
-                    });
-
             }
         }
         var n = instances.count;
@@ -1094,6 +1102,11 @@ Singleton {
             "x": Math.min(maxX, pad + (n % 8) * 34),
             "y": Math.min(maxY, top + (n % 8) * 34)
         });
+    }
+
+    function setLive(uid, x, y, w, h) {
+        root.liveRect = Qt.rect(x, y, w, h);
+        root.liveUid = uid;
     }
 
     function spawn(typeId, variantId) {
