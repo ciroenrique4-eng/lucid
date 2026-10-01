@@ -6,6 +6,8 @@ Item {
     id: flare
 
     property bool mirrored: false
+    // upside down, for a bar on the bottom edge
+    property bool flipped: false
     property int size: 14
     property color fillColor: Theme.bg
     property bool hovered: false
@@ -31,7 +33,9 @@ Item {
 
         transform: Scale {
             xScale: flare.mirrored ? -1 : 1
+            yScale: flare.flipped ? -1 : 1
             origin.x: flare.width / 2
+            origin.y: flare.height / 2
         }
 
         ShapePath {
