@@ -6,8 +6,7 @@ import qs
 // breathe and turn: a circle with soft lobes (the cookies), a polygon with
 // rounded corners (the pentagon the calendar marks today with), or a squircle.
 // All of them follow the shell's roundness dial: squared off, the lobes flatten
-// and the corners sharpen; rounder, they soften. A sheen - a light the tilt
-// moves across it - can be laid over the fill
+// and the corners sharpen; rounder, they soften.
 Shape {
     id: sh
 
@@ -22,10 +21,6 @@ Shape {
     // degrees
     property real spin: 0
     property color fill: "white"
-    // where the light sits, 0..1 across the shape; strength 0 hides it
-    property real sheenX: 0.3
-    property real sheenY: 0.2
-    property real sheen: 0
 
     // the shell's corner scale: 1 as shipped, 0 square, up to 2 rounder
     readonly property real k: Math.max(0, Theme.radiusScale)
@@ -104,39 +99,6 @@ Shape {
         fillColor: sh.fill
         strokeWidth: 0
         strokeColor: "transparent"
-
-        PathPolyline {
-            path: sh.points
-        }
-
-    }
-
-    ShapePath {
-        strokeWidth: 0
-        strokeColor: "transparent"
-        fillGradient: RadialGradient {
-            centerX: sh.width * sh.sheenX
-            centerY: sh.height * sh.sheenY
-            centerRadius: Math.max(sh.width, sh.height) * 0.6
-            focalX: centerX
-            focalY: centerY
-
-            GradientStop {
-                position: 0
-                color: Qt.rgba(1, 1, 1, 0.42 * sh.sheen)
-            }
-
-            GradientStop {
-                position: 0.55
-                color: Qt.rgba(1, 1, 1, 0.08 * sh.sheen)
-            }
-
-            GradientStop {
-                position: 1
-                color: Qt.rgba(1, 1, 1, 0)
-            }
-
-        }
 
         PathPolyline {
             path: sh.points
