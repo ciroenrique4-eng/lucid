@@ -275,6 +275,9 @@ Scope {
             if (!root.hasBattery || s === root.chargerState)
                 return ;
 
+            if (root.armed && root.chargerState !== -1)
+                Sounds.play(s === 1 ? "plugIn" : "plugOut");
+
             root.chargerState = s;
             // plugged in with nothing left to charge: say so, and let that stand
             // in for the "Fully charged" toast that would follow a moment later
@@ -350,6 +353,16 @@ Scope {
             const now = root.liveBtConnected;
             const before = root.btLast;
             root.btLast = now;
+            if (root.armed) {
+                if (now.some((a) => {
+                    return before.indexOf(a) < 0;
+                }))
+                    Sounds.play("plugIn");
+                else if (Bt.on && before.some((a) => {
+                    return now.indexOf(a) < 0;
+                }))
+                    Sounds.play("plugOut");
+            }
             if (!Prefs.toastOnBluetooth)
                 return ;
 
@@ -366,6 +379,40 @@ Scope {
                     root.announceBt(address, false);
 
             }
+        }
+    }
+
+    // usb: a device plugged in or pulled out, for its sound only. A hub brings
+    // its devices along in one burst, so the burst is one event
+    // whether anything in the burst arrived; a burst of removals only is a pull
+    property bool usbArrived: false
+
+    Process {
+        running: Prefs.soundPlug
+        command: ["udevadm", "monitor", "--udev", "--subsystem-match=usb/usb_device"]
+
+        stdout: SplitParser {
+            onRead: (line) => {
+                const m = /^UDEV\s+\[[^\]]*\]\s+(add|remove)\s/.exec(line);
+                if (!m || !root.armed)
+                    return ;
+
+                if (m[1] === "add")
+                    root.usbArrived = true;
+
+                usbSettle.restart();
+            }
+        }
+
+    }
+
+    Timer {
+        id: usbSettle
+
+        interval: 350
+        onTriggered: {
+            Sounds.play(root.usbArrived ? "plugIn" : "plugOut");
+            root.usbArrived = false;
         }
     }
 

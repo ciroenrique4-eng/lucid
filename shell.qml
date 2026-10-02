@@ -32,7 +32,8 @@ ShellRoot {
     // the update check, which runs whether or not the settings app is
     // ever opened, the clipboard, which owns the wl-paste watchers and so
     // has to be up long before the launcher is first opened, and night
-    // light, whose schedule runs whether or not the System pill is shown
+    // light, whose schedule runs whether or not the System pill is shown, and
+    // the feedback sounds, whose ipc has to answer before anything has played
     Component.onCompleted: {
         void KdeConnect.installed;
         void Bt.present;
@@ -50,6 +51,7 @@ ShellRoot {
         void Users.probed;
         void Polkit.registered;
         void NightLight.active;
+        void Sounds.choosing;
         void ShowDesktop.active;
     }
 
