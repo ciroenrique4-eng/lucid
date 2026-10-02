@@ -701,6 +701,10 @@ Singleton {
     property real dragX: 0
     property real dragY: 0
     property string dropInto: ""
+    // an application dragged out of the launcher or the bar's Apps: it lands
+    // as a launcher on the desktop, never into a folder, the trash or an app
+    readonly property string appMime: "application/x-lucid-desktop-app"
+    property bool appDrag: false
     // the key just opened, for a little bounce
     property string launched: ""
     property int launchTick: 0
@@ -810,6 +814,7 @@ Singleton {
     function leaveDrag() {
         root.dragOver = false;
         root.dropInto = "";
+        root.appDrag = false;
     }
 
     // which icon a drop at this point would go into: a folder, the trash, or a
@@ -839,7 +844,7 @@ Singleton {
         root.dragOver = true;
         root.dragX = px;
         root.dragY = py;
-        root.dropInto = root.targetAt(px, py);
+        root.dropInto = root.appDrag ? "" : root.targetAt(px, py);
     }
 
     // a drop on either desktop layer. Wayland reports the drop at the middle of
@@ -847,6 +852,12 @@ Singleton {
     function dropped(drop) {
         var px = root.dragX;
         var py = root.dragY;
+        if (drop.formats.indexOf(root.appMime) >= 0) {
+            root.addAppAt(drop.getDataAsString(root.appMime), px, py);
+            root.leaveDrag();
+            drop.accept(Qt.CopyAction);
+            return ;
+        }
         var into = root.targetAt(px, py);
         var ours = root.dragKey !== "";
         var uris = drop.hasUrls ? drop.urls.map((u) => String(u)) : [];
@@ -960,10 +971,14 @@ Singleton {
         var into = intoKey ? root.byKey[intoKey] : null;
         var dest = into && (into.kind === "dir" || into.kind === "home") ? into.path : "";
         if (!dest) {
+            // a name the desktop already has keeps its icon where it is; the
+            // copy's new name ("photo (2).png") gets the cell once it is known
             var names = [];
             for (var i = 0; i < uris.length; i++) {
-                var u = String(uris[i]);
-                names.push(root.baseOf(u));
+                var n = root.baseOf(String(uris[i]));
+                if (!root.byKey[n])
+                    names.push(n);
+
             }
             root.expect(names, px, py);
         }
@@ -1026,6 +1041,23 @@ Singleton {
 
     function addApp(desktopId) {
         root.run(["python3", root.script, "add-app", desktopId]);
+    }
+
+    // an application dropped on the desktop: its launcher, at the drop point
+    function addAppAt(desktopId, px, py) {
+        if (!desktopId)
+            return ;
+
+        var asked = /\.desktop$/.test(desktopId) ? desktopId : desktopId + ".desktop";
+        if (!root.byKey[asked])
+            root.expect([asked], px, py);
+
+        var p = putProc.createObject(root, {
+            "placeAt": Qt.point(px, py),
+            "intoDesktop": true
+        });
+        p.command = ["python3", root.script, "add-app", desktopId];
+        p.running = true;
     }
 
     // every app with a desktop entry, for the picker in Settings
@@ -1361,7 +1393,10 @@ Singleton {
                     var uri = line.substring(0, tab);
                     var name = line.substring(tab + 1);
                     var asked = root.baseOf(uri);
-                    if (name !== asked && root.homes[asked] && !root.homes[name]) {
+                    if (name === asked || root.homes[name])
+                        return ;
+
+                    if (root.homes[asked] && !root.byKey[asked]) {
                         var nh = Object.assign({}, root.homes);
                         nh[name] = nh[asked];
                         delete nh[asked];
@@ -1369,6 +1404,10 @@ Singleton {
                         var ex = Object.assign({}, root.expected);
                         ex[name] = true;
                         root.expected = ex;
+                    } else if (root.byKey[asked]) {
+                        // the asked name was an icon already there, which
+                        // keeps its cell: the copy takes the drop point
+                        root.expect([name], proc.placeAt.x, proc.placeAt.y);
                     }
                 }
             }
