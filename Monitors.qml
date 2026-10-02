@@ -12,6 +12,29 @@ Singleton {
     readonly property string dataPath: Quickshell.env("HOME") + "/.config/hypr/lucid-monitors.lua"
     readonly property string modulePath: Quickshell.env("HOME") + "/.config/hypr/modules/monitors.lua"
 
+    // a fullscreen window covers a bar on the bottom edge, but the bar still
+    // holds its strip, so a surface anchored to the bottom (the launcher, the
+    // OSD) would float that high over the window. Maximized leaves the bar
+    // showing, and the workspace's hasFullscreen says yes to both, so the
+    // window's own fullscreen state decides
+    function barCoveredOn(screen) {
+        if (!Prefs.barBottom)
+            return false;
+
+        var mon = Hyprland.monitorFor(screen);
+        var ws = mon ? mon.activeWorkspace : null;
+        if (!ws || !ws.hasFullscreen)
+            return false;
+
+        var ts = ws.toplevels.values;
+        for (var i = 0; i < ts.length; i++) {
+            if (ts[i].wayland && ts[i].wayland.fullscreen)
+                return true;
+
+        }
+        return false;
+    }
+
     // ---- live outputs -----------------------------------------------------
     property bool probed: false
     property var outputs: []
