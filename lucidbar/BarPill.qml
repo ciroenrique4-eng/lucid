@@ -35,6 +35,17 @@ Item {
     readonly property int morphDuration: Theme.barDurEnter
     readonly property var morphEasing: Theme.easeEmphasizedDecel
 
+    // the id the bar knows this pill by
+    function moduleId() {
+        const map = pill.hostWindow && pill.hostWindow.moduleById ? pill.hostWindow.moduleById : {};
+        for (const id in map) {
+            if (map[id] === pill)
+                return id;
+
+        }
+        return "";
+    }
+
     function beginTransition() {
         panelTransitionTimer.restart();
     }
@@ -430,10 +441,19 @@ Item {
                 anchors.fill: parent
                 enabled: pill.compactInteractive
                 hoverEnabled: pill.compactInteractive
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
                 cursorShape: Qt.PointingHandCursor
                 onEntered: pill.compactHovered = true
                 onExited: pill.compactHovered = false
-                onClicked: {
+                onClicked: (mouse) => {
+                    // a right click opens this module's card in Settings
+                    if (mouse.button === Qt.RightButton) {
+                        const id = pill.moduleId();
+                        if (id !== "")
+                            Prefs.openBarModule(id);
+
+                        return ;
+                    }
                     pill.hoverOpen = false;
                     pill.compactClicked();
                     pill.expanded = true;
