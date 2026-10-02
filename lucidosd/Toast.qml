@@ -3,6 +3,7 @@ import QtQuick.Shapes
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import Quickshell.Widgets
 import qs
 
 PanelWindow {
@@ -18,6 +19,9 @@ PanelWindow {
     property bool warn: false
     property color swatch: "transparent"
     property bool hasSwatch: false
+    // a picture in place of the icon: a copied image shows as itself
+    property string image: ""
+    readonly property int imageSize: 32
 
     // m3 snackbar metrics: 48dp container, 16dp leading pad, 12dp icon gap
     readonly property int pillHeight: 48
@@ -45,8 +49,9 @@ PanelWindow {
         "camera": "M9,2L7.17,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6A2,2 0 0,0 20,4H16.83L15,2H9M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"
     })
 
-    // entry: { icon, label, detail, warn, swatch, key, ms }. icon is a name from
-    // the list above, raw svg path data, or a single glyph
+    // entry: { icon, label, detail, warn, swatch, image, key, ms }. icon is a
+    // name from the list above, raw svg path data, or a single glyph; image, a
+    // url, stands in for it
     function present(entry) {
         const icon = entry.icon || "";
         const named = toastWindow.icons[icon];
@@ -54,6 +59,7 @@ PanelWindow {
         const isGlyph = !isPath && icon.length > 0 && icon.length <= 2;
         toastWindow.currentKey = entry.key || "";
         toastWindow.hasSwatch = entry.swatch !== undefined;
+        toastWindow.image = entry.image || "";
         if (entry.swatch !== undefined)
             toastWindow.swatch = entry.swatch;
 
@@ -262,8 +268,26 @@ PanelWindow {
             anchors.left: parent.left
             anchors.leftMargin: toastWindow.pillPad
             anchors.verticalCenter: parent.verticalCenter
-            width: toastWindow.glyphSize
-            height: toastWindow.glyphSize
+            width: toastWindow.image !== "" ? toastWindow.imageSize : toastWindow.glyphSize
+            height: toastWindow.image !== "" ? toastWindow.imageSize : toastWindow.glyphSize
+
+            ClippingRectangle {
+                visible: toastWindow.image !== ""
+                anchors.fill: parent
+                radius: Theme.rad(8)
+                color: Theme.bgActive
+
+                Image {
+                    anchors.fill: parent
+                    source: toastWindow.image
+                    fillMode: Image.PreserveAspectCrop
+                    asynchronous: true
+                    cache: false
+                    sourceSize.width: toastWindow.imageSize * 2
+                    sourceSize.height: toastWindow.imageSize * 2
+                }
+
+            }
 
             Rectangle {
                 visible: toastWindow.hasSwatch
@@ -278,7 +302,7 @@ PanelWindow {
             }
 
             Text {
-                visible: !toastWindow.hasSwatch && toastWindow.iconGlyph !== ""
+                visible: toastWindow.image === "" && !toastWindow.hasSwatch && toastWindow.iconGlyph !== ""
                 anchors.centerIn: parent
                 text: toastWindow.iconGlyph
                 color: toastWindow.warn ? Theme.error : Theme.accent
@@ -287,7 +311,7 @@ PanelWindow {
             }
 
             Shape {
-                visible: !toastWindow.hasSwatch && toastWindow.iconGlyph === ""
+                visible: toastWindow.image === "" && !toastWindow.hasSwatch && toastWindow.iconGlyph === ""
                 width: 24
                 height: 24
                 scale: toastWindow.glyphSize / 24
