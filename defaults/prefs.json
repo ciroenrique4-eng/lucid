@@ -6,6 +6,7 @@
     "barHeight": 35,
     "barHoverGrow": 3,
     "barHoverOpen": false,
+    "barLayout": "{\"left\":[\"workspaces\",\"media\",\"tray\"],\"center\":[\"clock\"],\"right\":[\"notifications\",\"system\"]}",
     "barMotionScale": 1.35,
     "barNotchFlare": 14,
     "barPopupGap": 10,
