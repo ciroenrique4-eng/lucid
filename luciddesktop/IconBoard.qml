@@ -44,6 +44,7 @@ Item {
 
     anchors.fill: parent
     focus: true
+    Component.onCompleted: board.syncTiles()
     Keys.onPressed: (e) => {
         var ctrl = (e.modifiers & Qt.ControlModifier) !== 0;
         var keys = DesktopIcons.selectedKeys;
@@ -102,9 +103,45 @@ Item {
         e.accepted = true;
     }
 
-    // by count: the icons stay put while the folder changes under them
+    // one row per name, kept in step with the folder by adding and removing
+    // only what came and went: the other icons are never rebuilt, so they
+    // neither fade in again nor slide over to a neighbour's place
+    function syncTiles() {
+        var want = {};
+        DesktopIcons.items.forEach((it) => {
+            want[it.key] = true;
+        });
+        var have = {};
+        for (var i = tiles.count - 1; i >= 0; i--) {
+            var k = tiles.get(i).key;
+            if (want[k])
+                have[k] = true;
+            else
+                tiles.remove(i);
+        }
+        DesktopIcons.items.forEach((it) => {
+            if (!have[it.key])
+                tiles.append({
+                "key": it.key
+            });
+
+        });
+    }
+
+    ListModel {
+        id: tiles
+    }
+
+    Connections {
+        function onItemsChanged() {
+            board.syncTiles();
+        }
+
+        target: DesktopIcons
+    }
+
     Repeater {
-        model: DesktopIcons.items.length
+        model: tiles
 
         DesktopIcon {
         }
