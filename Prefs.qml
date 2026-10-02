@@ -869,6 +869,8 @@ Singleton {
     property alias pinBorder: s.pinBorder
     property alias pinBadge: s.pinBadge
     property alias pinPulse: s.pinPulse
+    property alias urgentBadge: s.urgentBadge
+    property alias urgentPulse: s.urgentPulse
 
     property alias glassApps: s.glassApps
     property alias glassValues: s.glassValues
@@ -1270,6 +1272,8 @@ Singleton {
         "pinBorder": "tertiary",
         "pinBadge": "top-right",
         "pinPulse": true,
+        "urgentBadge": "top-left",
+        "urgentPulse": true,
         "glassApps": "vscodium",
         "glassValues": "vscodium=0.9",
         "monitorSetups": "{}",
@@ -1897,6 +1901,8 @@ Singleton {
             property string pinBorder: "tertiary"
             property string pinBadge: "top-right"
             property bool pinPulse: true
+            property string urgentBadge: "top-left"
+            property bool urgentPulse: true
             // the apps on the Glass page, and the ones given their own value
             property string glassApps: "vscodium"
             property string glassValues: "vscodium=0.9"
