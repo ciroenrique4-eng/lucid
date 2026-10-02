@@ -36,6 +36,38 @@ Singleton {
     readonly property int listLimit: 300
     readonly property string thumbDir: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/lucid-clip"
     readonly property bool watching: root.available && Prefs.clipboardEnabled
+    // something new on the clipboard: the entry it became, and whether a
+    // password manager marked it secret. Not for a copy the shell already
+    // announced in its own way (hushCopy), nor for what was there when the
+    // watchers started
+    signal copied(var entry, bool secret)
+    property double watchSince: 0
+    property double hushUntil: 0
+    property bool copyPending: false
+    // when the copy was noticed, and when the list being read was asked for:
+    // a list asked for before the copy does not have it yet
+    property double copyAt: 0
+    property double listAskedAt: 0
+    property bool copySecret: false
+    // each watcher stores, then says whether that copy came marked secret
+    readonly property string storeAndTell: "cliphist store; if wl-paste --list-types 2>/dev/null | grep -qx 'x-kde-passwordManagerHint'; then echo secret; else echo copied; fi"
+
+    function hushCopy() {
+        root.hushUntil = Date.now() + 2500;
+    }
+
+    function noteCopy(line) {
+        // the watchers run once at start for what is already there; not news
+        if (Date.now() - root.watchSince < 1200)
+            return;
+
+        if (line === "secret")
+            root.copySecret = true;
+
+        copySettle.restart();
+    }
+
+    onWatchingChanged: root.watchSince = Date.now()
 
     function refresh() {
         if (!root.available)
@@ -45,6 +77,7 @@ Singleton {
             root.refreshQueued = true;
             return;
         }
+        root.listAskedAt = Date.now();
         listProc.running = true;
     }
 
@@ -142,6 +175,14 @@ Singleton {
 
         root.topId = top;
         root.entries = rows;
+        if (root.copyPending && root.listAskedAt >= root.copyAt) {
+            root.copyPending = false;
+            const secret = root.copySecret;
+            root.copySecret = false;
+            if (rows.length > 0 && Date.now() >= root.hushUntil)
+                root.copied(rows[0], secret);
+
+        }
     }
 
     function copy(id) {
@@ -355,14 +396,34 @@ Singleton {
         id: textWatch
 
         running: root.watching
-        command: ["wl-paste", "--type", "text", "--watch", "cliphist", "store"]
+        command: ["wl-paste", "--type", "text", "--watch", "sh", "-c", root.storeAndTell]
+
+        stdout: SplitParser {
+            onRead: (line) => root.noteCopy(line)
+        }
     }
 
     Process {
         id: imageWatch
 
         running: root.watching
-        command: ["wl-paste", "--type", "image", "--watch", "cliphist", "store"]
+        command: ["wl-paste", "--type", "image", "--watch", "sh", "-c", root.storeAndTell]
+
+        stdout: SplitParser {
+            onRead: (line) => root.noteCopy(line)
+        }
+    }
+
+    // a copy offering text and an image wakes both watchers: one read
+    Timer {
+        id: copySettle
+
+        interval: 150
+        onTriggered: {
+            root.copyPending = true;
+            root.copyAt = Date.now();
+            root.refresh();
+        }
     }
 
     Process {
@@ -370,9 +431,14 @@ Singleton {
 
         command: ["cliphist", "list"]
         onExited: {
+            // after the reading just finished is adopted, so it is judged by
+            // when it was asked for, not by when the next one is
             if (root.refreshQueued) {
                 root.refreshQueued = false;
-                listProc.running = true;
+                Qt.callLater(() => {
+                    root.listAskedAt = Date.now();
+                    listProc.running = true;
+                });
             }
         }
 
