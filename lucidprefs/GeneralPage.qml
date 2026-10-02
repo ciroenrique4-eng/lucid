@@ -341,12 +341,15 @@ Column {
             resetKey: "desktopIconStyle"
             enabled: Prefs.desktopIcons
             disabledReason: "Turn on Show icons first."
-            description: Prefs.desktopIconStyle === "shapes" ? "Each icon sits on a shape in a colour of the palette \u2014 folders, apps and files apart at a glance \u2014 and tips toward the pointer. Pictures are prints on paper in the wallpaper's hue, set down slightly askew." : (Prefs.desktopIconStyle === "glass" ? "Every icon on a frosted card of its own, the material the widgets are made of." : "The icons straight on the wallpaper, their names in white.")
+            description: Prefs.desktopIconStyle === "objects" ? "Folders, pages and the bin drawn as things on a desk, in the wallpaper's colours: a folder's flap opens under the pointer, a page wears its type on a tab, the bin's lid lifts for a drop. Pictures are prints, apps keep their own icons, and a card of the widgets' material comes up under the pointer." : (Prefs.desktopIconStyle === "shapes" ? "Each icon sits on a shape in a colour of the palette \u2014 folders, apps and files apart at a glance \u2014 and tips toward the pointer. Pictures are prints on paper in the wallpaper's hue, set down slightly askew." : (Prefs.desktopIconStyle === "glass" ? "Every icon on a frosted card of its own, the material the widgets are made of." : "The icons straight on the wallpaper, their names in white."))
 
             M3Segmented {
-                width: 260
+                width: 340
                 current: Prefs.desktopIconStyle
                 options: [{
+                    "key": "objects",
+                    "label": "Objects"
+                }, {
                     "key": "shapes",
                     "label": "Shapes"
                 }, {
@@ -390,8 +393,8 @@ Column {
         SettingRow {
             title: "Shell colours"
             resetKey: "desktopIconTint"
-            enabled: Prefs.desktopIcons
-            disabledReason: "Turn on Show icons first."
+            enabled: Prefs.desktopIcons && Prefs.desktopIconStyle !== "objects"
+            disabledReason: Prefs.desktopIcons ? "The Objects look draws folders and files in the palette already." : "Turn on Show icons first."
             description: "Recolour the icon theme's folders, or its file icons too, in the palette, keeping their light and shade. Apps keep their own colours, and pictures are never touched."
 
             M3Segmented {
@@ -409,6 +412,30 @@ Column {
                 }]
                 onChosen: (key) => {
                     return Prefs.desktopIconTint = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Names"
+            resetKey: "desktopIconNames"
+            enabled: Prefs.desktopIcons
+            disabledReason: "Turn on Show icons first."
+            description: Prefs.desktopIconNames === "hover" ? "Only the pictures until the pointer comes among them; then the names come out in a wave from the one under it. Selected icons keep theirs." : "Every name under its icon, on one line; the whole name shows under the pointer. Over a light sky the names turn dark."
+
+            M3Segmented {
+                width: 240
+                current: Prefs.desktopIconNames
+                options: [{
+                    "key": "always",
+                    "label": "Always"
+                }, {
+                    "key": "hover",
+                    "label": "On hover"
+                }]
+                onChosen: (key) => {
+                    return Prefs.desktopIconNames = key;
                 }
             }
 
