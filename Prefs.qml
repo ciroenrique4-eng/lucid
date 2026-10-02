@@ -96,6 +96,14 @@ Singleton {
             "key": "numbers",
             "name": "Numbers",
             "blurb": "Each one's number, the empty ones quieter"
+        }, {
+            "key": "bars",
+            "name": "Bars",
+            "blurb": "A bar for each, as tall as its windows"
+        }, {
+            "key": "track",
+            "name": "Track",
+            "blurb": "One segmented track, the accent sliding on it"
         }]
     }, {
         "id": "media",

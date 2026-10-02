@@ -139,7 +139,8 @@ Item {
     }
     readonly property bool sunk: root.shownSpecialSlot >= 0 && !root.rowHovered
     readonly property int horizontalPadding: 10
-    readonly property int dotGap: 6
+    // the track's segments sit almost touching, a seam apart
+    readonly property int dotGap: root.trackStyle && !root.spread ? 2 : 6
     readonly property int specialGap: 6
     readonly property int dotSize: 10
     readonly property int activeDotWidth: 24
@@ -147,6 +148,19 @@ Item {
     readonly property int hoverActiveDotWidth: 38
     readonly property int sunkDotSize: 6
     readonly property int sunkActiveWidth: 14
+    // bars: as wide as a dot (the lit one wider), as tall as the windows in it
+    readonly property int barWidth: 6
+    readonly property int barActiveWidth: 12
+    readonly property int barStep: 4
+    readonly property int barTallest: 20
+    readonly property int sunkBarWidth: 4
+    readonly property int sunkBarActiveWidth: 8
+    // track: equal segments, the accent pill a thumb a little taller than it
+    readonly property int trackWidth: 16
+    readonly property int trackHeight: 6
+    readonly property int trackThumb: 4
+    readonly property int sunkTrackWidth: 10
+    readonly property int sunkTrackHeight: 4
     readonly property int stashIcon: 16
     readonly property int stashMax: 3
     readonly property int stashFan: 20
@@ -155,6 +169,12 @@ Item {
     readonly property bool rowHovered: rowHover.hovered && !root.expanded
     // numbered keeps the numbers the hover shows, in slots a size down
     readonly property bool numbered: Prefs.workspacesStyle === "numbers"
+    readonly property bool barsStyle: Prefs.workspacesStyle === "bars"
+    readonly property bool trackStyle: Prefs.workspacesStyle === "track"
+    property real barsStand: root.barsStyle && !root.spread ? 1 : 0
+    // the line sits as low as the tallest bar reaches, half that while sunk
+    property real barsLine: root.sunk ? root.barTallest / 2 : root.barTallest
+    property real thumbLift: root.trackStyle && !root.spread ? (root.sunk ? root.trackThumb / 2 : root.trackThumb) : 0
     readonly property bool spread: root.rowHovered || root.numbered
     readonly property int spreadSize: root.rowHovered ? root.hoverDotSize : 20
     readonly property int spreadActiveWidth: root.rowHovered ? root.hoverActiveDotWidth : 30
@@ -369,8 +389,17 @@ Item {
         if (root.spread)
             return root.litSlot === index ? root.spreadActiveWidth : root.spreadSize;
 
+        if (root.trackStyle)
+            return root.sunk ? root.sunkTrackWidth : root.trackWidth;
+
         const ws = root.wsAt(index);
         const wide = index === root.activeSlot || (ws && (ws.active || ws.urgent));
+        if (root.barsStyle) {
+            if (root.sunk)
+                return wide ? root.sunkBarActiveWidth : root.sunkBarWidth;
+
+            return wide ? root.barActiveWidth : root.barWidth;
+        }
         if (root.sunk)
             return wide ? root.sunkActiveWidth : root.sunkDotSize;
 
@@ -384,7 +413,27 @@ Item {
         if (root.spread)
             return root.spreadSize;
 
+        if (root.trackStyle)
+            return root.sunk ? root.sunkTrackHeight : root.trackHeight;
+
+        if (root.barsStyle) {
+            // an empty one is a dot, then a step up per window
+            const ws = root.wsAt(index);
+            const n = ws ? ws.toplevels.values.length : 0;
+            const h = Math.min(root.barTallest, root.barWidth + n * root.barStep);
+            return root.sunk ? Math.max(root.sunkBarWidth, Math.round(h / 2)) : h;
+        }
         return root.sunk ? root.sunkDotSize : root.dotSize;
+    }
+
+    // bars stand on one line, the rest are centred; barsStand glides between
+    // the two, so the hover's numbers come up from the line without a jump
+    function slotY(index, h) {
+        const centred = (dotsRow.height - h) / 2;
+        if (index >= root.slotCount)
+            return centred;
+
+        return centred + root.barsStand * (root.barsLine - h) / 2;
     }
 
     function chipOpen(index) {
@@ -912,6 +961,30 @@ Item {
         }
     }
 
+    Behavior on thumbLift {
+        NumberAnimation {
+            duration: Theme.barMs(300)
+            easing.type: Easing.OutCubic
+        }
+
+    }
+
+    Behavior on barsLine {
+        NumberAnimation {
+            duration: Theme.barMs(300)
+            easing.type: Easing.OutCubic
+        }
+
+    }
+
+    Behavior on barsStand {
+        NumberAnimation {
+            duration: Theme.barMs(300)
+            easing.type: Easing.OutCubic
+        }
+
+    }
+
     Behavior on dotsWidthAnim {
         NumberAnimation {
             duration: Theme.barMs(300)
@@ -1084,7 +1157,7 @@ Item {
 
                         activePill.x = t.x + activePill.offX;
                         activePill.width = t.width + activePill.offW;
-                        activePill.height = t.height + activePill.offH;
+                        activePill.height = t.height + activePill.offH + root.thumbLift;
                     }
 
                     function retarget() {
@@ -1110,8 +1183,11 @@ Item {
                     }
 
                     visible: root.litIndexValid
+                    // a thumb on the track; anywhere else it sits under the slots' numbers
+                    z: root.trackStyle && !root.spread && root.litSlot < root.slotCount ? 1 : 0
                     x: 0
-                    y: (parent.height - height) / 2
+                    // on the bars' line it stands with them, otherwise it is centred on its slot
+                    y: activePill.target ? activePill.target.y + (activePill.target.height - height) * (1 + root.barsStand) / 2 : (parent.height - height) / 2
                     width: 0
                     height: 0
                     radius: Theme.pill(Math.min(width, height))
@@ -1119,6 +1195,14 @@ Item {
                     onOffXChanged: activePill.place()
                     onOffWChanged: activePill.place()
                     onOffHChanged: activePill.place()
+
+                    Connections {
+                        function onThumbLiftChanged() {
+                            activePill.place();
+                        }
+
+                        target: root
+                    }
 
                     Connections {
                         function onXChanged() {
@@ -1194,13 +1278,20 @@ Item {
                         // workspaces can exist while empty, so count windows rather than trusting wsObj
                         readonly property bool isOccupied: dot.wsObj ? dot.wsObj.toplevels.values.length > 0 : false
                         readonly property bool isLit: root.spread && root.pillCovers(dot.x, dot.width)
+                        // the track is round at its two ends only, its seams nearly square
+                        readonly property int seam: root.trackStyle && !root.spread ? Math.min(Theme.rad(1), dot.radius) : dot.radius
 
                         x: root.slotX(dot.index)
-                        y: (parent.height - height) / 2
+                        y: root.slotY(dot.index, height)
                         width: root.slotWidth(dot.index)
                         height: root.slotHeight(dot.index)
                         radius: Theme.pill(Math.min(width, height))
-                        color: dot.isUrgent ? Theme.error : (root.spread || dot.index === root.activeSlot ? "transparent" : Theme.withBlur(dot.isOccupied ? Theme.cSecondary : Theme._darken(Theme.subtext, 0.45)))
+                        topLeftRadius: dot.index > 0 ? dot.seam : dot.radius
+                        bottomLeftRadius: dot.index > 0 ? dot.seam : dot.radius
+                        topRightRadius: dot.index < root.slotCount - 1 ? dot.seam : dot.radius
+                        bottomRightRadius: dot.index < root.slotCount - 1 ? dot.seam : dot.radius
+                        // the track stays whole under its thumb, so a switch leaves no hole behind it
+                        color: dot.isUrgent ? Theme.error : (root.spread || (dot.index === root.activeSlot && !root.trackStyle) ? "transparent" : Theme.withBlur(dot.isOccupied ? Theme.cSecondary : Theme._darken(Theme.subtext, 0.45)))
 
                         Text {
                             anchors.centerIn: parent

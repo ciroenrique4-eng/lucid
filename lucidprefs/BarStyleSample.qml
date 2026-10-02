@@ -26,6 +26,8 @@ Item {
         "media/panel/cover": mediaPanelCover,
         "workspaces/dots": workspacesDots,
         "workspaces/numbers": workspacesNumbers,
+        "workspaces/bars": workspacesBars,
+        "workspaces/track": workspacesTrack,
         "notifications/badge": notificationsBadge,
         "notifications/dot": notificationsDot,
         "notifications/chip": notificationsChip,
@@ -411,6 +413,96 @@ Item {
 
                 }
 
+            }
+
+        }
+
+    }
+
+    Component {
+        id: workspacesBars
+
+        Item {
+            id: barsSample
+
+            readonly property var windows: [1, 3, 0, 2, 0, 0]
+
+            implicitWidth: barsRow.width
+            implicitHeight: 20
+
+            Row {
+                id: barsRow
+
+                anchors.bottom: parent.bottom
+                spacing: 6
+
+                Repeater {
+                    model: Math.min(Prefs.workspacesShown, 6)
+
+                    Rectangle {
+                        required property int index
+                        readonly property int n: barsSample.windows[index]
+
+                        width: index === 0 ? 12 : 6
+                        height: Math.min(20, 6 + n * 4)
+                        radius: Theme.pill(Math.min(width, height))
+                        color: index === 0 ? Theme.accent : Theme.withBlur(n > 0 ? Theme.cSecondary : Theme._darken(Theme.subtext, 0.45))
+                        anchors.bottom: parent.bottom
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: workspacesTrack
+
+        Item {
+            id: trackSample
+
+            readonly property int count: Math.min(Prefs.workspacesShown, 6)
+
+            implicitWidth: trackRow.width
+            implicitHeight: 10
+
+            Row {
+                id: trackRow
+
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 2
+
+                Repeater {
+                    model: trackSample.count
+
+                    Rectangle {
+                        required property int index
+                        readonly property int seam: Math.min(Theme.rad(1), radius)
+
+                        width: 16
+                        height: 6
+                        radius: Theme.pill(height)
+                        topLeftRadius: index > 0 ? seam : radius
+                        bottomLeftRadius: index > 0 ? seam : radius
+                        topRightRadius: index < trackSample.count - 1 ? seam : radius
+                        bottomRightRadius: index < trackSample.count - 1 ? seam : radius
+                        color: Theme.withBlur(index === 2 ? Theme.cSecondary : Theme._darken(Theme.subtext, 0.45))
+                    }
+
+                }
+
+            }
+
+            Rectangle {
+                x: 18
+                anchors.verticalCenter: parent.verticalCenter
+                width: 16
+                height: 10
+                radius: Theme.pill(width < height ? width : height)
+                color: Theme.accent
             }
 
         }
