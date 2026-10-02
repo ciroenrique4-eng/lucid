@@ -18,6 +18,8 @@
 #       marks a launcher as allowed to run
 #   desktop-icons.py luma <image> <screen width> <screen height>
 #       how light a wallpaper is across the screen, as a grid of L* values
+#   desktop-icons.py open-trash
+#       opens the trash in the file manager
 import ctypes
 import json
 import os
@@ -303,6 +305,28 @@ def peek(path, n=3):
     print(json.dumps({"count": len(items), "items": items[:n]}))
 
 
+def open_trash():
+    # gio open trash:/// skips a file manager that only takes local paths
+    # (HyprFM's Exec is %F) for any app that takes URLs at all, which can be
+    # kitty's "open URL" prompt. An app that claims trash: itself, or a file
+    # manager that takes URLs, gets trash:///; any other gets the folder on
+    # disk, which a file manager that knows the trash shows as the trash
+    app = Gio.AppInfo.get_default_for_uri_scheme("trash")
+    if app:
+        app.launch_uris(["trash:///"], None)
+        return
+    app = Gio.AppInfo.get_default_for_type("inode/directory", False)
+    if app and app.supports_uris():
+        app.launch_uris(["trash:///"], None)
+        return
+    path = trash_dir()
+    os.makedirs(path, exist_ok=True)
+    if app:
+        app.launch([Gio.File.new_for_path(path)], None)
+    else:
+        subprocess.Popen(["xdg-open", path], start_new_session=True)
+
+
 def luma(path, sw, sh, cols=96, rows=54):
     # how light the wallpaper is across the screen, so names can read on it:
     # the picture cropped to cover the screen, the way the wallpaper daemon
@@ -369,6 +393,8 @@ def main():
         trust(a[1])
     elif cmd == "luma":
         luma(a[1], float(a[2]), float(a[3]))
+    elif cmd == "open-trash":
+        open_trash()
     else:
         sys.exit("unknown command " + cmd)
 
