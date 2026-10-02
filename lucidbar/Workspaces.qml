@@ -1114,7 +1114,7 @@ Item {
                     y: (parent.height - height) / 2
                     width: 0
                     height: 0
-                    radius: Theme.radiusPill
+                    radius: Theme.pill(Math.min(width, height))
                     color: activePill.litWs && activePill.litWs.urgent ? Theme.error : Theme.accent
                     onOffXChanged: activePill.place()
                     onOffWChanged: activePill.place()
@@ -1199,7 +1199,7 @@ Item {
                         y: (parent.height - height) / 2
                         width: root.slotWidth(dot.index)
                         height: root.slotHeight(dot.index)
-                        radius: Theme.radiusPill
+                        radius: Theme.pill(Math.min(width, height))
                         color: dot.isUrgent ? Theme.error : (root.spread || dot.index === root.activeSlot ? "transparent" : Theme.withBlur(dot.isOccupied ? Theme.cSecondary : Theme._darken(Theme.subtext, 0.45)))
 
                         Text {
