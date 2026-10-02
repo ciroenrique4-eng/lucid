@@ -11,7 +11,8 @@
 #       one "<uri>\t<new name>" line per item. auto moves within a filesystem
 #       and copies across, the way a file manager's drag does
 #   desktop-icons.py add-app <desktop-id>
-#       drops an application's launcher on the desktop, ready to launch
+#       drops an application's launcher on the desktop, ready to launch, and
+#       prints "<launcher file>\t<new name>" the way put does
 #   desktop-icons.py rename <path> <new name>
 #       renames a file; a launcher keeps its file name and gets a new Name=
 #   desktop-icons.py trust <path>
@@ -259,7 +260,7 @@ def add_app(desktop_id):
     with open(src, "rb") as f, open(path, "wb") as out:
         out.write(f.read())
     trust(path)
-    print(name)
+    print(os.path.basename(src) + "\t" + name)
 
 
 def trust(path):

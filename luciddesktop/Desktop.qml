@@ -223,7 +223,8 @@ Variants {
                 anchors.fill: parent
                 enabled: unit.icons
                 onEntered: (d) => {
-                    d.accept(d.proposedAction);
+                    DesktopIcons.appDrag = d.formats.indexOf(DesktopIcons.appMime) >= 0;
+                    d.accept(DesktopIcons.appDrag ? Qt.CopyAction : d.proposedAction);
                 }
                 onPositionChanged: (d) => {
                     DesktopIcons.hover(d.x, d.y);
