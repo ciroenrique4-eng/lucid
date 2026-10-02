@@ -67,6 +67,7 @@ Settings still follows upstream's releases, and this branch follows them too.
 |  | The bar on the bottom edge: every panel, pop-up, menu and notification opens upwards | this fork only |
 |  | An Apps module: the dock's pinned apps and every open one, an icon each, with live previews, to switch, open and close from the bar | this fork only |
 |  | Module backgrounds on the full bar, and groups of modules you join in the arrangement | this fork only |
+|  | Shared notches: modules joined in the arrangement hang from one notch, so notches come in different widths | this fork only |
 |  | Start and Show desktop buttons, drag to reorder the apps, notification counts on their icons | this fork only |
 |  | Control centre looks: stacked, wide (figures, tiles and two tall sliders side by side), compact and minimal | this fork only |
 |  | Bar presets: Lucid, centred and classic taskbars, top bar and dock, minimal - one tap, with undo | this fork only |
