@@ -391,7 +391,7 @@ PanelWindow {
             anchors.verticalCenter: parent.verticalCenter
             width: osdWindow.badgeSize
             height: osdWindow.badgeSize
-            radius: Theme.shapeFull
+            radius: Theme.pill(width)
             color: osdWindow.badgeActive ? Theme.accent : Theme.withBlur(Theme.bgHigh)
 
             MorphIcon {
@@ -830,7 +830,7 @@ PanelWindow {
             visible: activeTrack.width > 2
             width: Math.max(0, lt.handleX - lt.notch)
             height: lt.trackH
-            radius: lt.trackH / 2
+            radius: Theme.pill(lt.trackH)
             topRightRadius: 2
             bottomRightRadius: 2
             color: lt.liveColor
@@ -851,7 +851,7 @@ PanelWindow {
             anchors.verticalCenter: parent.verticalCenter
             width: Math.max(0, lt.width - inactiveTrack.x)
             height: lt.trackH
-            radius: lt.trackH / 2
+            radius: Theme.pill(lt.trackH)
             topLeftRadius: 2
             bottomLeftRadius: 2
             color: Theme.withBlur(Theme.bgHigh)
