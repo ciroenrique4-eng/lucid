@@ -40,8 +40,11 @@ Singleton {
     // show* pref that switches it on, the group it starts in, how Settings
     // names it, the prefs its card on the Bar page sets (options), and where
     // any settings it has elsewhere live (more, page), and, for one that leaves
-    // the bar while it has nothing to show, when it is there (when). a new module is an entry
-    // here, a pill in shell.qml and its rows in BarModuleCard
+    // the bar while it has nothing to show, when it is there (when). A module
+    // with looks to pick names the pref that holds its bar face (style) and its
+    // panel (panelStyle), and the choices, each {key, name, blurb} (styles,
+    // panelStyles); BarStyleSample draws a sample of each. a new module is an
+    // entry here, a pill in shell.qml and its rows in BarModuleCard
     readonly property var barModules: [{
         "id": "workspaces",
         "key": "showWorkspaces",
@@ -49,36 +52,125 @@ Singleton {
         "name": "Workspaces",
         "desc": "Workspace pills and the expanded overview",
         "more": "Special workspaces, which it shows as well, have a page of their own.",
-        "page": "workspaces"
+        "page": "workspaces",
+        "options": ["workspacesShown", "workspacesWheel"],
+        "style": "workspacesStyle",
+        "styles": [{
+            "key": "dots",
+            "name": "Dots",
+            "blurb": "A dot for each, the numbers on hover"
+        }, {
+            "key": "numbers",
+            "name": "Numbers",
+            "blurb": "Each one's number, the empty ones quieter"
+        }]
     }, {
         "id": "media",
         "key": "showMedia",
         "home": "left",
         "name": "Media",
-        "desc": "Now-playing pill and player controls"
+        "desc": "Now-playing pill and player controls",
+        "when": "while something plays",
+        "options": ["mediaHideIdle", "mediaArtist", "mediaTitleWidth", "mediaPlayButton", "mediaWheelVolume"],
+        "style": "mediaStyle",
+        "styles": [{
+            "key": "playing",
+            "name": "Playing",
+            "blurb": "Bars that move with the music, then the track"
+        }, {
+            "key": "cover",
+            "name": "Cover",
+            "blurb": "The album's cover, then the track"
+        }, {
+            "key": "compact",
+            "name": "Compact",
+            "blurb": "Only the bars and the play button"
+        }],
+        "panelStyle": "mediaPanelStyle",
+        "panelStyles": [{
+            "key": "side",
+            "name": "Side by side",
+            "blurb": "The cover beside the track"
+        }, {
+            "key": "cover",
+            "name": "Large cover",
+            "blurb": "The cover across the panel, the track under it"
+        }]
     }, {
         "id": "tray",
         "key": "showTray",
         "home": "left",
         "name": "Tray",
         "desc": "Status icons from running applications",
-        "when": "while an app has an icon in the tray"
+        "when": "while an app has an icon in the tray",
+        "options": ["trayHidden", "trayIconColor"],
+        "style": "trayStyle",
+        "styles": [{
+            "key": "collapsed",
+            "name": "Collapsed",
+            "blurb": "One icon and how many are running"
+        }, {
+            "key": "icons",
+            "name": "Icons",
+            "blurb": "Each app's icon in the bar"
+        }]
     }, {
         "id": "clock",
         "key": "showClock",
         "home": "center",
         "name": "Clock",
         "desc": "Time, date and the calendar panel",
-        "more": "The time format and the time zone are on the Date & Time page.",
-        "page": "datetime"
+        "more": "The time format, whether the date shows and the time zone are on the Date & Time page.",
+        "page": "datetime",
+        "options": ["clockSeconds", "clockBlink", "clockDateFormat", "clockWeather"],
+        "style": "clockStyle",
+        "styles": [{
+            "key": "inline",
+            "name": "One line",
+            "blurb": "The time, then the date"
+        }, {
+            "key": "stacked",
+            "name": "Two lines",
+            "blurb": "The date small under the time"
+        }, {
+            "key": "accent",
+            "name": "Accent",
+            "blurb": "The time on a chip in the accent colour"
+        }],
+        "panelStyle": "clockPanelStyle",
+        "panelStyles": [{
+            "key": "full",
+            "name": "Full",
+            "blurb": "The time, the weather, what is next and the calendar"
+        }, {
+            "key": "calendar",
+            "name": "Calendar",
+            "blurb": "Only the calendar, in a narrow panel"
+        }]
     }, {
         "id": "notifications",
         "key": "showNotifications",
         "home": "right",
         "name": "Notifications",
         "desc": "Toasts and the notification list",
+        "when": "while a notification is waiting",
         "more": "Do not disturb is just below; popups, sounds and quiet hours are on the Notifications page.",
-        "page": "notifications"
+        "page": "notifications",
+        "options": ["notificationsHideEmpty"],
+        "style": "notificationsStyle",
+        "styles": [{
+            "key": "badge",
+            "name": "Count",
+            "blurb": "The bell and how many are waiting"
+        }, {
+            "key": "dot",
+            "name": "Dot",
+            "blurb": "The bell with a dot while any are waiting"
+        }, {
+            "key": "chip",
+            "name": "Accent",
+            "blurb": "Bell and count on the accent while any wait"
+        }]
     }, {
         "id": "system",
         "key": "showSystem",
@@ -86,7 +178,81 @@ Singleton {
         "name": "System",
         "desc": "Battery, volume, brightness and quick settings",
         "more": "Its tiles and the keyboard layout sign are in System module, further down this page.",
-        "page": ""
+        "page": "",
+        "options": ["systemIndicators"],
+        "style": "systemStyle",
+        "styles": [{
+            "key": "values",
+            "name": "Icons and values",
+            "blurb": "The volume, microphone and battery read out"
+        }, {
+            "key": "icons",
+            "name": "Icons",
+            "blurb": "Only the icons, narrower"
+        }]
+    }, {
+        "id": "privacy",
+        "key": "showPrivacy",
+        "home": "right",
+        "name": "Privacy",
+        "desc": "Shows up only while an app uses the microphone, the camera or the screen, and says which",
+        "when": "while an app uses the microphone, the camera or the screen",
+        "options": ["privacyWatch", "privacyToast", "privacyAlwaysShown"],
+        "style": "privacyStyle",
+        "styles": [{
+            "key": "marks",
+            "name": "Marks",
+            "blurb": "A tinted mark for each thing in use"
+        }, {
+            "key": "dot",
+            "name": "Dot",
+            "blurb": "One small dot, red while the screen is shared"
+        }]
+    }, {
+        "id": "power",
+        "key": "showPower",
+        "home": "right",
+        "name": "Power",
+        "desc": "Lock, suspend, log out, restart or shut down, the ones you pick in the order you pick",
+        "options": ["powerModuleActions", "powerModuleConfirm", "powerModuleUptime"],
+        "style": "powerModuleStyle",
+        "styles": [{
+            "key": "icon",
+            "name": "Icon",
+            "blurb": "The power symbol"
+        }, {
+            "key": "accent",
+            "name": "Accent",
+            "blurb": "The symbol on a circle in the accent"
+        }],
+        "panelStyle": "powerModulePanelStyle",
+        "panelStyles": [{
+            "key": "list",
+            "name": "List",
+            "blurb": "One action to a row"
+        }, {
+            "key": "grid",
+            "name": "Grid",
+            "blurb": "Three to a row, the name under each"
+        }]
+    }, {
+        "id": "window",
+        "key": "showWindow",
+        "home": "left",
+        "name": "Active window",
+        "desc": "The focused window's icon and title; open it to float, pin, fullscreen, move or close it, or switch to another window on the workspace",
+        "when": "while a window on this workspace has the focus",
+        "options": ["windowModuleText", "windowModuleWidth", "windowModuleScroll", "windowModuleMiddleClose"],
+        "style": "windowModuleStyle",
+        "styles": [{
+            "key": "plain",
+            "name": "Plain",
+            "blurb": "The icon and the text on the bar"
+        }, {
+            "key": "chip",
+            "name": "Chip",
+            "blurb": "The same on a chip tinted with the accent"
+        }]
     }]
     readonly property bool anyBarModuleEnabled: root.barModules.some((m) => {
         return root[m.key] === true;
@@ -181,8 +347,21 @@ Singleton {
     property alias barHoverGrow: s.barHoverGrow
     property alias barLayout: s.barLayout
     property alias showWorkspaces: s.showWorkspaces
+    property alias workspacesStyle: s.workspacesStyle
+    property alias workspacesShown: s.workspacesShown
+    property alias workspacesWheel: s.workspacesWheel
     property alias showMedia: s.showMedia
+    property alias mediaStyle: s.mediaStyle
+    property alias mediaPanelStyle: s.mediaPanelStyle
+    property alias mediaHideIdle: s.mediaHideIdle
+    property alias mediaArtist: s.mediaArtist
+    property alias mediaTitleWidth: s.mediaTitleWidth
+    property alias mediaPlayButton: s.mediaPlayButton
+    property alias mediaWheelVolume: s.mediaWheelVolume
     property alias showTray: s.showTray
+    property alias trayStyle: s.trayStyle
+    property alias trayHidden: s.trayHidden
+    property alias trayIconColor: s.trayIconColor
     property alias showKbLayout: s.showKbLayout
     property alias gameModeOnCmd: s.gameModeOnCmd
     property alias gameModeOffCmd: s.gameModeOffCmd
@@ -194,9 +373,36 @@ Singleton {
     }
     property alias showClock: s.showClock
     property alias showNotifications: s.showNotifications
+    property alias notificationsStyle: s.notificationsStyle
+    property alias notificationsHideEmpty: s.notificationsHideEmpty
     property alias showSystem: s.showSystem
+    property alias systemStyle: s.systemStyle
+    property alias systemIndicators: s.systemIndicators
+    property alias showPrivacy: s.showPrivacy
+    property alias privacyWatch: s.privacyWatch
+    property alias privacyToast: s.privacyToast
+    property alias privacyAlwaysShown: s.privacyAlwaysShown
+    property alias privacyStyle: s.privacyStyle
+    property alias showPower: s.showPower
+    property alias powerModuleActions: s.powerModuleActions
+    property alias powerModuleConfirm: s.powerModuleConfirm
+    property alias powerModuleUptime: s.powerModuleUptime
+    property alias powerModuleStyle: s.powerModuleStyle
+    property alias powerModulePanelStyle: s.powerModulePanelStyle
+    property alias showWindow: s.showWindow
+    property alias windowModuleText: s.windowModuleText
+    property alias windowModuleWidth: s.windowModuleWidth
+    property alias windowModuleScroll: s.windowModuleScroll
+    property alias windowModuleMiddleClose: s.windowModuleMiddleClose
+    property alias windowModuleStyle: s.windowModuleStyle
     property alias clock24h: s.clock24h
     property alias clockShowDate: s.clockShowDate
+    property alias clockStyle: s.clockStyle
+    property alias clockPanelStyle: s.clockPanelStyle
+    property alias clockSeconds: s.clockSeconds
+    property alias clockBlink: s.clockBlink
+    property alias clockDateFormat: s.clockDateFormat
+    property alias clockWeather: s.clockWeather
     property alias gpsEnabled: s.gpsEnabled
     property alias locationName: s.locationName
     property alias locationLabel: s.locationLabel
@@ -432,17 +638,57 @@ Singleton {
         "barHoverGrow": 3,
         "barLayout": "{\"left\":[\"workspaces\",\"media\",\"tray\"],\"center\":[\"clock\"],\"right\":[\"notifications\",\"system\"]}",
         "showWorkspaces": true,
+        "workspacesStyle": "dots",
+        "workspacesShown": 6,
+        "workspacesWheel": true,
         "showMedia": true,
+        "mediaStyle": "playing",
+        "mediaPanelStyle": "side",
+        "mediaHideIdle": false,
+        "mediaArtist": true,
+        "mediaTitleWidth": 160,
+        "mediaPlayButton": true,
+        "mediaWheelVolume": true,
         "showTray": true,
+        "trayStyle": "collapsed",
+        "trayHidden": "",
+        "trayIconColor": "original",
         "showKbLayout": true,
         "gameModeOnCmd": "",
         "gameModeOffCmd": "",
         "gameModeStatusCmd": "",
         "showClock": true,
         "showNotifications": true,
+        "notificationsStyle": "badge",
+        "notificationsHideEmpty": false,
         "showSystem": true,
+        "systemStyle": "values",
+        "systemIndicators": "wifi,bluetooth,volume,mic,battery",
+        "showPrivacy": false,
+        "privacyWatch": "mic,camera,screen",
+        "privacyToast": true,
+        "privacyAlwaysShown": false,
+        "privacyStyle": "marks",
+        "showPower": false,
+        "powerModuleActions": "lock,suspend,hibernate,logout,reboot,shutdown",
+        "powerModuleConfirm": true,
+        "powerModuleUptime": true,
+        "powerModuleStyle": "icon",
+        "powerModulePanelStyle": "list",
+        "showWindow": false,
+        "windowModuleText": "title",
+        "windowModuleWidth": 260,
+        "windowModuleScroll": true,
+        "windowModuleMiddleClose": false,
+        "windowModuleStyle": "plain",
         "clock24h": false,
         "clockShowDate": true,
+        "clockStyle": "inline",
+        "clockPanelStyle": "full",
+        "clockSeconds": false,
+        "clockBlink": true,
+        "clockDateFormat": "short",
+        "clockWeather": false,
         "gpsEnabled": false,
         "locationName": "",
         "locationLabel": "",
@@ -941,17 +1187,57 @@ Singleton {
             property int barHoverGrow: 3
             property string barLayout: "{\"left\":[\"workspaces\",\"media\",\"tray\"],\"center\":[\"clock\"],\"right\":[\"notifications\",\"system\"]}"
             property bool showWorkspaces: true
+            property string workspacesStyle: "dots"
+            property int workspacesShown: 6
+            property bool workspacesWheel: true
             property bool showMedia: true
+            property string mediaStyle: "playing"
+            property string mediaPanelStyle: "side"
+            property bool mediaHideIdle: false
+            property bool mediaArtist: true
+            property int mediaTitleWidth: 160
+            property bool mediaPlayButton: true
+            property bool mediaWheelVolume: true
             property bool showTray: true
+            property string trayStyle: "collapsed"
+            property string trayHidden: ""
+            property string trayIconColor: "original"
             property bool showKbLayout: true
             property string gameModeOnCmd: ""
             property string gameModeOffCmd: ""
             property string gameModeStatusCmd: ""
             property bool showClock: true
             property bool showNotifications: true
+            property string notificationsStyle: "badge"
+            property bool notificationsHideEmpty: false
             property bool showSystem: true
+            property string systemStyle: "values"
+            property string systemIndicators: "wifi,bluetooth,volume,mic,battery"
+            property bool showPrivacy: false
+            property string privacyWatch: "mic,camera,screen"
+            property bool privacyToast: true
+            property bool privacyAlwaysShown: false
+            property string privacyStyle: "marks"
+            property bool showPower: false
+            property string powerModuleActions: "lock,suspend,hibernate,logout,reboot,shutdown"
+            property bool powerModuleConfirm: true
+            property bool powerModuleUptime: true
+            property string powerModuleStyle: "icon"
+            property string powerModulePanelStyle: "list"
+            property bool showWindow: false
+            property string windowModuleText: "title"
+            property int windowModuleWidth: 260
+            property bool windowModuleScroll: true
+            property bool windowModuleMiddleClose: false
+            property string windowModuleStyle: "plain"
             property bool clock24h: false
             property bool clockShowDate: true
+            property string clockStyle: "inline"
+            property string clockPanelStyle: "full"
+            property bool clockSeconds: false
+            property bool clockBlink: true
+            property string clockDateFormat: "short"
+            property bool clockWeather: false
             property bool gpsEnabled: false
             property string locationName: ""
             property string locationLabel: ""
