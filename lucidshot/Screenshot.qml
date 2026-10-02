@@ -142,6 +142,8 @@ PanelWindow {
         var maxY = Math.round(h) - 1;
         var r = Math.round(radius);
         windowProcess.targetFile = file;
+        // a capture announces itself; the copy that comes with it is no news
+        Clip.hushCopy();
         windowProcess.command = ["sh", "-c",
             "mkdir -p '" + flashWindow.saveDir + "' && " +
             "command -v magick >/dev/null 2>&1 && IM=magick || IM=convert; " +
@@ -301,6 +303,7 @@ PanelWindow {
                 }
                 // something was picked, so always copy and say so, even if the
                 // swatch colour could not be worked out from the string
+                Clip.hushCopy();
                 Quickshell.execDetached(["wl-copy", "--", out]);
                 flashWindow.colorResult(out, flashWindow.swatchFor(out, colorProcess.format), "ok");
             }
@@ -313,6 +316,8 @@ PanelWindow {
         stdout: StdioCollector {
             onStreamFinished: {
                 var lines = text.trim().split("\n");
+                // "Text copied" says it; the copy itself is no news
+                Clip.hushCopy();
                 flashWindow.textResult(lines[lines.length - 1]);
             }
         }
@@ -331,6 +336,7 @@ PanelWindow {
                 flashAnim.restart();
             Sounds.play("capture");
             flashWindow.captured();
+            Clip.hushCopy();
             Quickshell.execDetached(["sh", "-c", "wl-copy < \"$1\"", "sh", grimProcess.targetFile]);
             flashWindow.announce(grimProcess.targetFile, "image");
         }
