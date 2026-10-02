@@ -16,6 +16,8 @@
 #       renames a file; a launcher keeps its file name and gets a new Name=
 #   desktop-icons.py trust <path>
 #       marks a launcher as allowed to run
+#   desktop-icons.py luma <image> <screen width> <screen height>
+#       how light a wallpaper is across the screen, as a grid of L* values
 import ctypes
 import json
 import os
@@ -301,6 +303,52 @@ def peek(path, n=3):
     print(json.dumps({"count": len(items), "items": items[:n]}))
 
 
+def luma(path, sw, sh, cols=96, rows=54):
+    # how light the wallpaper is across the screen, so names can read on it:
+    # the picture cropped to cover the screen, the way the wallpaper daemon
+    # fills it, as a grid of lightness from 0 to 100
+    gi.require_version("GdkPixbuf", "2.0")
+    from gi.repository import GdkPixbuf
+    try:
+        info = GdkPixbuf.Pixbuf.get_file_info(path)
+        if not info or not info[0]:
+            raise GLib.Error("unknown")
+        iw, ih = info[1], info[2]
+        k = max(cols / iw, rows / ih) * 2
+        pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, max(cols, round(iw * k)), max(rows, round(ih * k)), True)
+    except GLib.Error:
+        print(json.dumps({"cols": 0, "rows": 0, "l": []}))
+        return
+    w, h = pb.get_width(), pb.get_height()
+    # the slice of the picture the screen shows
+    scale = max(sw / w, sh / h)
+    vw, vh = sw / scale, sh / scale
+    ox, oy = (w - vw) / 2, (h - vh) / 2
+    px = pb.get_pixels()
+    stride, n = pb.get_rowstride(), pb.get_n_channels()
+
+    def lin(v):
+        v /= 255
+        return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+
+    out = []
+    for r in range(rows):
+        for c in range(cols):
+            # a few samples per cell, averaged
+            acc = 0
+            for sy in (0.25, 0.75):
+                for sx in (0.25, 0.75):
+                    x = min(w - 1, int(ox + (c + sx) * vw / cols))
+                    y = min(h - 1, int(oy + (r + sy) * vh / rows))
+                    i = y * stride + x * n
+                    acc += 0.2126 * lin(px[i]) + 0.7152 * lin(px[i + 1]) + 0.0722 * lin(px[i + 2])
+            y_ = acc / 4
+            # perceived lightness, L*
+            lstar = y_ * 903.3 if y_ <= 0.008856 else 116 * y_ ** (1 / 3) - 16
+            out.append(round(lstar))
+    print(json.dumps({"cols": cols, "rows": rows, "l": out}))
+
+
 def main():
     a = sys.argv[1:]
     cmd = a[0] if a else "watch"
@@ -319,6 +367,8 @@ def main():
         peek(a[1])
     elif cmd == "trust":
         trust(a[1])
+    elif cmd == "luma":
+        luma(a[1], float(a[2]), float(a[3]))
     else:
         sys.exit("unknown command " + cmd)
 
