@@ -18,6 +18,8 @@ Item {
     signal deleteRequested(int index)
     // right-click on an app row
     signal favToggleRequested(int index)
+    signal appDragStarted()
+    signal appDragEnded()
 
     // typing rewrites the whole list at once. Per-row transitions on that many
     // inserts, moves and removals, cut short every keystroke, tangle: rows fly in
@@ -480,6 +482,7 @@ Item {
             required property bool nested
             // an app starred as a favourite
             required property bool starred
+            required property string desktopId
             readonly property bool isAction: rowItem.kind === "action"
             readonly property string hint: rowItem.selected && rowItem.trailing === "" ? list.hintFor(rowItem.kind) : ""
 
@@ -747,6 +750,44 @@ Item {
                 acceptedButtons: Qt.RightButton
                 enabled: rowItem.kind === "app"
                 onTapped: list.favToggleRequested(rowItem.index)
+            }
+
+            // an app dragged out of the list lands on the desktop as a launcher
+            DragHandler {
+                id: appDrag
+
+                enabled: rowItem.kind === "app" && rowItem.desktopId !== ""
+                target: null
+                dragThreshold: 12
+                grabPermissions: PointerHandler.CanTakeOverFromAnything
+                onActiveChanged: {
+                    if (!appDrag.active || appProxy.Drag.active)
+                        return ;
+
+                    var data = {};
+                    data[DesktopIcons.appMime] = rowItem.desktopId;
+                    appProxy.Drag.mimeData = data;
+                    appProxy.Drag.imageSource = rowItem.iconName === "" ? "" : (IconTheme.pathFor(rowItem.iconName) !== "" ? IconTheme.pathFor(rowItem.iconName) : Quickshell.iconPath(rowItem.iconName, true));
+                    list.appDragStarted();
+                    appProxy.Drag.active = true;
+                }
+            }
+
+            Item {
+                id: appProxy
+
+                width: 48
+                height: 48
+                Drag.dragType: Drag.Automatic
+                Drag.supportedActions: Qt.CopyAction
+                Drag.proposedAction: Qt.CopyAction
+                Drag.imageSourceSize: Qt.size(48, 48)
+                Drag.hotSpot.x: 24
+                Drag.hotSpot.y: 24
+                Drag.onDragFinished: (action) => {
+                    appProxy.Drag.active = false;
+                    list.appDragEnded();
+                }
             }
 
         }
