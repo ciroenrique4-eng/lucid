@@ -237,6 +237,59 @@ Column {
     }
 
     SettingCard {
+        title: "WINDOWS ASKING FOR ATTENTION"
+        subtitle: "A window that wants you (a message come in, a download done, a terminal's bell) lights its workspace up in the bar. These mark the window itself once you are there."
+
+        SettingRow {
+            title: "Attention tab"
+            description: Prefs.urgentBadge === "off" ? "No tab." : "A tab with a bell in that corner of the window, in the colour the bar gives it. Click it to go to the window; it goes away once you do."
+            resetKey: "urgentBadge"
+            stacked: true
+
+            M3Segmented {
+                width: Math.min(parent.width, 520)
+                current: Prefs.urgentBadge
+                options: [{
+                    "key": "off",
+                    "label": "Off"
+                }, {
+                    "key": "top-left",
+                    "label": "Top left"
+                }, {
+                    "key": "top-right",
+                    "label": "Top right"
+                }, {
+                    "key": "bottom-left",
+                    "label": "Bottom left"
+                }, {
+                    "key": "bottom-right",
+                    "label": "Bottom right"
+                }]
+                onChosen: (key) => {
+                    Prefs.urgentBadge = key;
+                }
+            }
+
+        }
+
+        SettingRow {
+            title: "Ripple when it asks"
+            description: "Rings spread out from the window the first time you see it asking."
+            resetKey: "urgentPulse"
+            showDivider: false
+
+            M3Switch {
+                checked: Prefs.urgentPulse
+                onToggled: (v) => {
+                    Prefs.urgentPulse = v;
+                }
+            }
+
+        }
+
+    }
+
+    SettingCard {
         title: "CORNERS"
 
         HyprRow {
