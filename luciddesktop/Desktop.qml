@@ -245,14 +245,30 @@ Variants {
 
         }
 
-        readonly property bool glass: unit.icons && Prefs.desktopIconStyle === "glass" && Theme.blurAmount > 0
+        readonly property bool glass: unit.icons && (Prefs.desktopIconStyle === "glass" || Prefs.desktopIconStyle === "objects") && Theme.blurAmount > 0
 
         Variants {
             id: glassCards
 
-            model: unit.glass ? DesktopIcons.items.map((i) => {
-                return i.key;
-            }) : []
+            // every card in the glass look; in the object look only the ones
+            // showing, under the pointer, selected or taking a drop
+            model: {
+                if (!unit.glass)
+                    return [];
+
+                if (Prefs.desktopIconStyle === "glass")
+                    return DesktopIcons.items.map((i) => {
+                    return i.key;
+                });
+
+                var keys = DesktopIcons.selectedKeys.slice();
+                [DesktopIcons.hoverKey, DesktopIcons.dropInto].forEach((k) => {
+                    if (k !== "" && keys.indexOf(k) < 0)
+                        keys.push(k);
+
+                });
+                return keys;
+            }
 
             // the card's own rectangle, a hair inside it so the frosting's hard
             // edge never shows past the card's rounded one
@@ -264,8 +280,8 @@ Variants {
                 x: spot ? DesktopIcons.tileX(spot.c) + 5 : 0
                 y: spot ? DesktopIcons.tileY(spot.r) + 3 : 0
                 width: spot ? DesktopIcons.tileW - 10 : 0
-                height: spot ? DesktopIcons.tileH - 6 : 0
-                radius: Math.max(0, Theme.radiusMd - 1)
+                height: spot ? (DesktopIcons.cardH[modelData] || DesktopIcons.tileH - 4) - 2 : 0
+                radius: Math.max(0, (Prefs.desktopIconStyle === "objects" ? Theme.radiusLg : Theme.radiusMd) - 1)
             }
 
         }

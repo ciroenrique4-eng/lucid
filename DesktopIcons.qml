@@ -163,6 +163,148 @@ Singleton {
         };
     }
 
+    // ---- names on the wallpaper --------------------------------------------
+
+    // how light the wallpaper is across the screen (L*, 0 to 100, on a coarse
+    // grid), so a name over a white sky can turn dark instead of hiding behind
+    // a smudge of shade
+    property var luma: ({
+        "cols": 0,
+        "rows": 0,
+        "l": []
+    })
+    property string lumaFor: ""
+
+    // the average lightness of the wallpaper under a screen rectangle; -1 if
+    // it is not known yet
+    function lumaAt(x, y, w, h) {
+        var g = root.luma;
+        if (!g.cols || g.l.length !== g.cols * g.rows)
+            return -1;
+
+        var c0 = Math.max(0, Math.floor(x / root.screenW * g.cols));
+        var c1 = Math.min(g.cols - 1, Math.floor((x + w) / root.screenW * g.cols));
+        var r0 = Math.max(0, Math.floor(y / root.screenH * g.rows));
+        var r1 = Math.min(g.rows - 1, Math.floor((y + h) / root.screenH * g.rows));
+        var sum = 0;
+        var n = 0;
+        for (var r = r0; r <= r1; r++) {
+            for (var c = c0; c <= c1; c++) {
+                sum += g.l[r * g.cols + c];
+                n++;
+            }
+        }
+        return n ? sum / n : -1;
+    }
+
+    function measureWallpaper(path) {
+        if (path === "" || !root.live)
+            return ;
+
+        root.lumaFor = path;
+        lumaProc.running = false;
+        lumaProc.command = ["python3", root.script, "luma", path, String(root.screenW), String(root.screenH)];
+        lumaProc.running = true;
+    }
+
+    FileView {
+        id: wallFile
+
+        path: root.home + "/.cache/current_wallpaper"
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: root.measureWallpaper(wallFile.text().trim())
+    }
+
+    Process {
+        id: lumaProc
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    root.luma = JSON.parse(text);
+                } catch (e) {
+                }
+            }
+        }
+    }
+
+    // what a name says at rest: a file's extension left off when the icon
+    // already tells the kind (a print, a sheet with its type on a tab), the
+    // whole name under the pointer, selected, or being renamed
+    function shortLabel(it) {
+        if (!it || it.kind !== "file")
+            return it ? it.label : "";
+
+        var l = it.label;
+        var dot = l.lastIndexOf(".");
+        if (dot <= 0 || l.length - dot - 1 > 5 || l.length - dot - 1 < 1)
+            return l;
+
+        return l.slice(0, dot);
+    }
+
+    // a file's type, for the tab on its sheet: the extension, or nothing
+    function typeTag(it) {
+        if (!it || it.kind !== "file")
+            return "";
+
+        var l = it.label;
+        var dot = l.lastIndexOf(".");
+        if (dot <= 0 || l.length - dot - 1 > 5)
+            return "";
+
+        return l.slice(dot + 1).toUpperCase();
+    }
+
+    // names shown only while the pointer is among the icons: they come out in
+    // a wave from the one under it, and go after a moment away
+    readonly property bool namesOnHover: Prefs.desktopIconNames === "hover"
+    property string hoverKey: ""
+    property bool namesOut: false
+    property var namesFrom: ({
+        "c": 0,
+        "r": 0
+    })
+
+    onHoverKeyChanged: {
+        if (root.hoverKey !== "") {
+            namesAway.stop();
+            if (!root.namesOut) {
+                var p = root.placed[root.hoverKey];
+                if (p)
+                    root.namesFrom = {
+                    "c": p.c,
+                    "r": p.r
+                };
+
+                root.namesOut = true;
+            }
+        } else {
+            namesAway.restart();
+        }
+    }
+
+    // how tall each icon's card stands (a long name grows it), so the frosting
+    // behind a card fits it
+    property var cardH: ({})
+
+    function noteCard(key, h) {
+        if (key === "" || root.cardH[key] === h)
+            return ;
+
+        var m = Object.assign({}, root.cardH);
+        m[key] = h;
+        root.cardH = m;
+    }
+
+    Timer {
+        id: namesAway
+
+        interval: 700
+        onTriggered: root.namesOut = false
+    }
+
     // ---- where everything sits ---------------------------------------------
 
     // key -> [c, r]: the cell each icon calls its own, persisted
@@ -1030,6 +1172,9 @@ Singleton {
     onFromRightChanged: root.scheduleLayout()
     onLiveChanged: {
         root.restartWatcher();
+        if (root.live && root.lumaFor === "")
+            root.measureWallpaper(wallFile.text().trim());
+
         if (root.live) {
             root.collectWidgets();
             root.scheduleLayout();
