@@ -177,20 +177,6 @@ Column {
         }
 
         SettingRow {
-            title: "Play a sound when the volume changes"
-            resetKey: "soundVolumeFeedback"
-            description: "A click on every step, like turning a dial, from the keys, the bar or anywhere else, so you can hear the new level."
-
-            M3Switch {
-                checked: Prefs.soundVolumeFeedback
-                onToggled: (v) => {
-                    return Prefs.soundVolumeFeedback = v;
-                }
-            }
-
-        }
-
-        SettingRow {
             title: "Move playing apps with the output"
             resetKey: "audioMoveStreams"
             description: "Picking a different output carries anything already playing across to it. With this off, only apps that have no device of their own follow the change."
@@ -367,6 +353,114 @@ Column {
 
         }
 
+
+    }
+
+    SettingCard {
+        title: "FEEDBACK SOUNDS"
+        subtitle: "Short sounds for things you do. Pick one of the shell's own for each, or Custom to bring a file of yours: it is copied into ~/.config/lucid/sounds."
+
+        SettingRow {
+            title: "Volume changes"
+            resetKey: "soundVolumeFeedback"
+            description: "A click on every step, like turning a dial, from the keys, the bar or anywhere else, so you can hear the new level."
+            stacked: true
+
+            FeedbackSound {
+                event: "volume"
+            }
+
+        }
+
+        SettingRow {
+            title: "Brightness changes"
+            resetKey: "soundBrightness"
+            description: "A click on every step of the screen's brightness. The dimming before the screen goes idle stays quiet."
+            stacked: true
+
+            FeedbackSound {
+                event: "brightness"
+            }
+
+        }
+
+        SettingRow {
+            title: "Plugging in and pulling out"
+            resetKey: "soundPlug"
+            description: "The charger, a USB device or a Bluetooth one connecting: a sound going up as it arrives, and down as it leaves."
+            stacked: true
+
+            FeedbackSound {
+                event: "plug"
+            }
+
+        }
+
+        SettingRow {
+            title: "Locking and unlocking"
+            resetKey: "soundLock"
+            description: "As the lock screen comes up, and again as it lets you in."
+            stacked: true
+
+            FeedbackSound {
+                event: "lock"
+            }
+
+        }
+
+        SettingRow {
+            title: "Emptying the trash"
+            resetKey: "soundTrash"
+            description: "When the trash goes from full to empty, from the desktop's menu, a file manager or anywhere else."
+            stacked: true
+
+            FeedbackSound {
+                event: "trash"
+            }
+
+        }
+
+        SettingRow {
+            title: "Screenshots"
+            resetKey: "soundCapture"
+            description: "As a capture is taken, of the screen, a region or a window."
+            stacked: true
+
+            FeedbackSound {
+                event: "capture"
+            }
+
+        }
+
+        SettingRow {
+            title: "Volume"
+            resetKey: "soundFeedbackVolume"
+            description: "For all of the sounds above, on top of the output's own volume."
+            stacked: true
+            showDivider: false
+
+            M3Slider {
+                width: parent.width
+                from: 10
+                to: 100
+                stepSize: 5
+                suffix: " %"
+                value: Math.round(Prefs.soundFeedbackVolume * 100)
+                onMoved: (v) => {
+                    Prefs.soundFeedbackVolume = v / 100;
+                    feedbackVolumeTest.restart();
+                }
+            }
+
+            // one click once the slider stops, at the new level
+            Timer {
+                id: feedbackVolumeTest
+
+                interval: 250
+                onTriggered: Sounds.playFile(Sounds.fileFor("volume"))
+            }
+
+        }
 
     }
 
