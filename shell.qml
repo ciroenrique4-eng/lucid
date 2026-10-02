@@ -707,6 +707,9 @@ ShellRoot {
         id: osdMod
     }
 
+    PinnedWindows {
+    }
+
     Toast {
         id: toastMod
     }
