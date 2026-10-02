@@ -637,7 +637,11 @@ ShellRoot {
     Screenshot {
         id: screenshotMod
 
+        shotPreview: shotPreviewMod
         onCaptured: snapMod.open = false
+        onSaved: (file, kind) => {
+            return shotPreviewMod.show(file, kind, screenshotMod.screen);
+        }
         onTextResult: (status) => {
             snapMod.finishTextRead();
             if (status === "copied")
@@ -663,6 +667,7 @@ ShellRoot {
     SnapOverlay {
         id: snapMod
 
+        shotPreview: shotPreviewMod
         onFullscreenRequested: screenshotMod.captureFull(false, snapMod.freezePath)
         onRegionRequested: (x, y, w, h) => {
             return screenshotMod.captureRegion(x, y, w, h, false, snapMod.freezePath, snapMod.freezeScale);
@@ -671,6 +676,13 @@ ShellRoot {
             return screenshotMod.copyText(x, y, w, h, snapMod.freezePath, snapMod.freezeScale);
         }
         onColorPickRequested: (format) => screenshotMod.pickColor(format)
+        onRecordingSaved: (file) => {
+            return screenshotMod.announce(file, "video");
+        }
+    }
+
+    ShotPreview {
+        id: shotPreviewMod
     }
 
     WidgetLayer {
