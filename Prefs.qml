@@ -754,6 +754,7 @@ Singleton {
     property alias toastOnAudio: s.toastOnAudio
     property alias toastOnDisplays: s.toastOnDisplays
     property alias toastOnPower: s.toastOnPower
+    property alias toastOnCopy: s.toastOnCopy
     property alias toastEnabled: s.toastEnabled
     property alias toastUseAppTimeout: s.toastUseAppTimeout
     property alias toastCriticalSticky: s.toastCriticalSticky
@@ -1110,6 +1111,7 @@ Singleton {
         "toastOnAudio": true,
         "toastOnDisplays": true,
         "toastOnPower": true,
+        "toastOnCopy": true,
         "toastEnabled": true,
         "toastUseAppTimeout": true,
         "toastCriticalSticky": true,
@@ -1738,6 +1740,7 @@ Singleton {
             property bool toastOnAudio: true
             property bool toastOnDisplays: true
             property bool toastOnPower: true
+            property bool toastOnCopy: true
             property bool toastEnabled: true
             property bool toastUseAppTimeout: true
             property bool toastCriticalSticky: true
