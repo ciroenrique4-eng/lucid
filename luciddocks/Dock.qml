@@ -1526,11 +1526,34 @@ PanelWindow {
         for (var j = 0; j < targets.length; j++) Hyprland.dispatch("hl.dsp.window.close({window='address:" + targets[j] + "'})");
     }
 
+    // a fullscreen window covers a bar on the bottom edge, but the bar still
+    // holds its strip: the launcher would float that high over the window.
+    // Maximized leaves the bar showing, and the workspace's hasFullscreen
+    // says yes to both, so the window's own fullscreen state decides
+    readonly property bool barCovered: {
+        if (!Prefs.barBottom)
+            return false;
+
+        var mon = Hyprland.monitorFor(dockWindow.screen);
+        var ws = mon ? mon.activeWorkspace : null;
+        if (!ws || !ws.hasFullscreen)
+            return false;
+
+        var ts = ws.toplevels.values;
+        for (var i = 0; i < ts.length; i++) {
+            if (ts[i].wayland && ts[i].wayland.fullscreen)
+                return true;
+
+        }
+        return false;
+    }
+
     // off for a beat when displays change, so a surface torn down with an
     // unplugged one is remapped rather than staying gone until a reload
     visible: Monitors.surfacesUp
     margins.bottom: 0
-    exclusiveZone: (!Prefs.loaded || !Prefs.dockShown || Prefs.dockAutoHide) ? 0 : (shell.implicitHeight + Prefs.effectiveDockBottomMargin)
+    // -1 sits on the screen edge, past the covered bar's strip
+    exclusiveZone: dockWindow.barCovered ? -1 : ((!Prefs.loaded || !Prefs.dockShown || Prefs.dockAutoHide) ? 0 : (shell.implicitHeight + Prefs.effectiveDockBottomMargin))
     WlrLayershell.keyboardFocus: dockWindow.menuOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     WlrLayershell.layer: dockWindow.menuOpen ? WlrLayer.Overlay : WlrLayer.Top
     color: "transparent"
