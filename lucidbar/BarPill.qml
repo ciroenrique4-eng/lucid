@@ -172,7 +172,10 @@ Item {
     // pill itself only shows a hover tint
     // (with module backgrounds the layer behind draws that tint, to their shape)
     property bool tintsOnHover: true
-    readonly property color restingColor: Prefs.barFull ? Theme.alpha(Theme.text, pill.compactHovered && pill.tintsOnHover && !Prefs.barGrouping ? 0.08 : 0) : Theme.bg
+    // in a notch it shares with its neighbours, the bar draws the notch and
+    // the hover; the pill is see-through until a panel opens out of it
+    readonly property bool sharesNotch: Prefs.barNotchGrouping && pill.hostWindow !== null && pill.hostWindow.sharesNotch !== undefined && pill.hostWindow.sharesNotch(pill.moduleId())
+    readonly property color restingColor: (Prefs.barFull || pill.sharesNotch) ? Theme.alpha(Theme.text, pill.compactHovered && pill.tintsOnHover && !Prefs.barGrouping ? 0.08 : 0) : Theme.bg
     // still taller than the pill: a closing panel keeps its colour until it has
     // folded away, or on the full bar its fading contents float over the desktop
     readonly property bool surfaceOpen: pill.anyOpen || pill.height > pill.compactHeight + 0.5

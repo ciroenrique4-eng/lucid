@@ -25,9 +25,10 @@ Item {
     readonly property int laneGap: 8
     readonly property int lanePad: 7
     readonly property int chipHeight: 34
-    // with module backgrounds on, the gap between two neighbours holds the
-    // button that joins them onto one background. it overhangs the chips'
-    // padding rather than widening the gap, so a full lane keeps its names
+    // with module backgrounds or shared notches on, the gap between two
+    // neighbours holds the button that joins them onto one background (or
+    // notch). it overhangs the chips' padding rather than widening the gap,
+    // so a full lane keeps its names
     readonly property bool linking: Prefs.barGrouping
     readonly property int chipGap: editor.linking ? 10 : 6
     // grip, its gap and the padding either side of it and the name
@@ -535,7 +536,7 @@ Item {
     }
 
 
-    // the join buttons: + puts two neighbours on one background, - parts them
+    // the join buttons: + puts two neighbours on one background (one notch), - parts them
     Repeater {
         model: editor.dragging ? [] : editor.pairs
 
