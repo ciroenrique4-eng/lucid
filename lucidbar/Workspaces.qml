@@ -804,8 +804,10 @@ Item {
     readonly property bool compactHovered: root.rowHovered
     readonly property int topRadius: Prefs.barFlush && !root.popupMode ? 0 : root.cornerRadius
     readonly property int pillTopRadius: Prefs.barFlush ? 0 : Prefs.barPillRadius
-    // on the full bar the strip behind already paints the resting pill
-    readonly property color restingColor: Prefs.barFull ? Theme.alpha(Theme.text, root.compactHovered && !Prefs.barGrouping ? 0.08 : 0) : Theme.bg
+    // on the full bar the strip behind already paints the resting pill, and
+    // in a shared notch the bar draws the notch
+    readonly property bool sharesNotch: Prefs.barNotchGrouping && root.hostWindow !== null && root.hostWindow.sharesNotch !== undefined && root.hostWindow.sharesNotch("workspaces")
+    readonly property color restingColor: (Prefs.barFull || root.sharesNotch) ? Theme.alpha(Theme.text, root.compactHovered && !Prefs.barGrouping ? 0.08 : 0) : Theme.bg
     readonly property bool popupExpanding: root.popupMode && root.expanded
     readonly property bool popupOpen: root.shown && root.popupMode && Math.abs(shell.y) > 0.5
     // the side against the screen edge is the bottom one on a bottom bar
