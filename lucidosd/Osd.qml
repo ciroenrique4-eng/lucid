@@ -41,8 +41,9 @@ PanelWindow {
     property bool capsLock: false
     property bool numLock: false
     property bool kbInitialized: false
-    readonly property string clickSound: Qt.resolvedUrl("../assets/volume-click.wav").toString().replace("file://", "")
-    property double lastClickAt: 0
+    // the level the last brightness click was for: a step clicks, a jump (the
+    // idle dim, its undoing) does not
+    property int brightnessHeard: -1
 
     // m3 shape, spacing and slider metrics, shared with lucidbar/System.qml.
     // the island keeps them; a notch is a size the user sets, so its own scale
@@ -212,12 +213,7 @@ PanelWindow {
     // repeat of a held key, and a drag no more often than every 35 ms, so it
     // stays a ratchet rather than a buzz
     function volumeClick() {
-        const now = Date.now();
-        if (now - osdWindow.lastClickAt < 35)
-            return ;
-
-        osdWindow.lastClickAt = now;
-        Quickshell.execDetached(["pw-play", osdWindow.clickSound]);
+        Sounds.play("volume");
     }
 
     function showVolume() {
@@ -355,7 +351,7 @@ PanelWindow {
         if (!osdWindow.ready)
             return ;
 
-        if (Prefs.soundVolumeFeedback && !osdWindow.volMuted)
+        if (!osdWindow.volMuted)
             osdWindow.volumeClick();
 
         if (levelDrag.pressed)
@@ -370,6 +366,11 @@ PanelWindow {
         osdWindow.showVolume();
     }
     onBrightnessPercentChanged: {
+        const was = osdWindow.brightnessHeard;
+        osdWindow.brightnessHeard = osdWindow.brightnessPercent;
+        if (osdWindow.ready && was >= 0 && Math.abs(osdWindow.brightnessPercent - was) <= 10)
+            Sounds.play("brightness");
+
         if (!osdWindow.ready || levelDrag.pressed)
             return ;
 

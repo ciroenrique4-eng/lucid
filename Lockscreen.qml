@@ -138,6 +138,7 @@ Singleton {
         root.focused = false;
         root.locked = true;
         Users.probe();
+        Sounds.play("lock");
     }
 
     // if the surface never reports back — it failed to draw, or the screen it
@@ -156,6 +157,9 @@ Singleton {
 
     // the surface calls this once its exit animation has played out
     function release() {
+        if (root.locked)
+            Sounds.play("unlock");
+
         root.locked = false;
         root.leaving = false;
         root.focused = false;

@@ -329,6 +329,7 @@ PanelWindow {
                 return;
             if (grimProcess.showFlash)
                 flashAnim.restart();
+            Sounds.play("capture");
             flashWindow.captured();
             Quickshell.execDetached(["sh", "-c", "wl-copy < \"$1\"", "sh", grimProcess.targetFile]);
             flashWindow.announce(grimProcess.targetFile, "image");
@@ -341,8 +342,10 @@ PanelWindow {
         property string targetFile: ""
 
         onExited: (code) => {
-            if (code === 0)
-                flashWindow.announce(windowProcess.targetFile, "image");
+            if (code !== 0)
+                return;
+            Sounds.play("capture");
+            flashWindow.announce(windowProcess.targetFile, "image");
         }
     }
 
