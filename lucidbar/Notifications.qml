@@ -798,12 +798,20 @@ BarPill {
                     width: shadeList.width - shadeList.gutter
                     spacing: 6
 
+                    // a row still fading in when the next one lands has its add cut short
+                    // by this move, so the move finishes the fade or the row stays faint
                     move: Transition {
                         NumberAnimation {
                             properties: "x,y"
                             duration: Theme.barMs(300)
                             easing.type: Easing.Bezier
                             easing.bezierCurve: Theme.easeEmphasizedDecel
+                        }
+
+                        NumberAnimation {
+                            property: "opacity"
+                            to: 1
+                            duration: Theme.barMs(200)
                         }
 
                     }
