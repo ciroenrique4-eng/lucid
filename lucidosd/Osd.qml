@@ -289,7 +289,8 @@ PanelWindow {
     }
 
     color: "transparent"
-    exclusiveZone: 0
+    // -1 sits on the screen edge, past a bar a fullscreen window covers
+    exclusiveZone: Monitors.barCoveredOn(osdWindow.screen) ? -1 : 0
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     // remapped with the rest of the shell when displays change
