@@ -15,6 +15,7 @@
     "barModuleBackgrounds": false,
     "barGroups": "",
     "barGroupDividers": true,
+    "barNotchGroups": false,
     "barSideMargin": 17,
     "barSpacing": 8,
     "barStyle": "island",
