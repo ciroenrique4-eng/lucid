@@ -125,12 +125,18 @@ Scope {
 
     }
 
-    // only while something asks: nothing else says where it went
+    // whether a window asking sits on a workspace that is showing; one asking
+    // from elsewhere needs no reading until you go there
+    readonly property bool askingInSight: root.asking.some((t) => {
+        return t.workspace && t.workspace.active;
+    })
+
+    // only while something asks in sight: nothing else says where it went
     Timer {
         interval: 250
         repeat: true
         triggeredOnStart: true
-        running: root.asking.length > 0
+        running: root.askingInSight
         onTriggered: {
             Hyprland.refreshToplevels();
             root.readFullscreen();
