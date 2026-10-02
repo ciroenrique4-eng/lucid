@@ -35,8 +35,10 @@ Singleton {
     // the edge the bar lives on; everything that opens off it opens away from it
     readonly property bool barBottom: root.barPosition === "bottom"
     // module backgrounds on the full bar, one behind each run of modules joined
-    // in the arrangement (barGroups: "a+b" for each pair of neighbours joined)
-    readonly property bool barGrouping: root.barFull && root.barModuleBackgrounds
+    // in the arrangement (barGroups: "a+b" for each pair of neighbours joined);
+    // on notches the same runs share one notch instead
+    readonly property bool barNotchGrouping: root.barNotch && root.barNotchGroups
+    readonly property bool barGrouping: (root.barFull && root.barModuleBackgrounds) || root.barNotchGrouping
     readonly property var barGroupSet: root.setOfList(root.splitList(root.barGroups))
 
     function setOfList(list) {
@@ -586,6 +588,7 @@ Singleton {
     property alias barModuleBackgrounds: s.barModuleBackgrounds
     property alias barGroups: s.barGroups
     property alias barGroupDividers: s.barGroupDividers
+    property alias barNotchGroups: s.barNotchGroups
     property alias barPresetUndo: s.barPresetUndo
     property alias dockStyle: s.dockStyle
     property alias accentPunch: s.accentPunch
@@ -968,6 +971,7 @@ Singleton {
         "barModuleBackgrounds": false,
         "barGroups": "",
         "barGroupDividers": true,
+        "barNotchGroups": false,
         "dockStyle": "island",
         "accentPunch": 1,
         "surfaceDarkness": -1,
@@ -1572,6 +1576,7 @@ Singleton {
             property bool barModuleBackgrounds: false
             property string barGroups: ""
             property bool barGroupDividers: true
+            property bool barNotchGroups: false
             property string barPresetUndo: ""
             property string dockStyle: "island"
             property real accentPunch: 1
