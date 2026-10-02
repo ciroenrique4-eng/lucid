@@ -1056,6 +1056,9 @@ ShellRoot {
     PinnedWindows {
     }
 
+    UrgentWindows {
+    }
+
     Toast {
         id: toastMod
     }
