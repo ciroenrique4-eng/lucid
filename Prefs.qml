@@ -96,6 +96,14 @@ Singleton {
             "key": "numbers",
             "name": "Numbers",
             "blurb": "Each one's number, the empty ones quieter"
+        }, {
+            "key": "icons",
+            "name": "Icons",
+            "blurb": "A symbol for the app in each, dots for the empty ones"
+        }, {
+            "key": "track",
+            "name": "Track",
+            "blurb": "One segmented track, the accent sliding on it"
         }]
     }, {
         "id": "media",

@@ -26,6 +26,8 @@ Item {
         "media/panel/cover": mediaPanelCover,
         "workspaces/dots": workspacesDots,
         "workspaces/numbers": workspacesNumbers,
+        "workspaces/icons": workspacesIcons,
+        "workspaces/track": workspacesTrack,
         "notifications/badge": notificationsBadge,
         "notifications/dot": notificationsDot,
         "notifications/chip": notificationsChip,
@@ -411,6 +413,124 @@ Item {
 
                 }
 
+            }
+
+        }
+
+    }
+
+    Component {
+        id: workspacesIcons
+
+        Item {
+            id: iconsSample
+
+            // the first is lit, the empty ones are dots
+            readonly property var glyphs: ["terminal", "web", "", "sports_esports", ""]
+
+            implicitWidth: iconsRow.width
+            implicitHeight: 18
+
+            Row {
+                id: iconsRow
+
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 5
+
+                Repeater {
+                    model: Math.min(Prefs.workspacesShown, 5)
+
+                    Rectangle {
+                        id: iconSlot
+
+                        required property int index
+                        readonly property string glyph: iconsSample.glyphs[index]
+
+                        width: index === 0 ? 28 : (glyph !== "" ? 18 : 8)
+                        height: index === 0 || glyph !== "" ? 18 : 8
+                        radius: Theme.pill(Math.min(width, height))
+                        color: index === 0 ? Theme.accent : (glyph !== "" ? "transparent" : Theme.withBlur(Theme._darken(Theme.subtext, 0.45)))
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        Shape {
+                            anchors.centerIn: parent
+                            width: 13
+                            height: 13
+                            visible: iconSlot.glyph !== ""
+                            preferredRendererType: Shape.CurveRenderer
+
+                            ShapePath {
+                                strokeWidth: 0
+                                fillColor: iconSlot.index === 0 ? Theme.bgOpaque : Theme.cSecondary
+
+                                PathSvg {
+                                    path: Specials.glyphPath(iconSlot.glyph || "apps")
+                                }
+
+                            }
+
+                            transform: Scale {
+                                xScale: 13 / 24
+                                yScale: 13 / 24
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: workspacesTrack
+
+        Item {
+            id: trackSample
+
+            readonly property int count: Math.min(Prefs.workspacesShown, 6)
+
+            implicitWidth: trackRow.width
+            implicitHeight: 10
+
+            Row {
+                id: trackRow
+
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 2
+
+                Repeater {
+                    model: trackSample.count
+
+                    Rectangle {
+                        required property int index
+                        readonly property int seam: Math.min(Theme.rad(1), radius)
+
+                        width: 16
+                        height: 6
+                        radius: Theme.pill(height)
+                        topLeftRadius: index > 0 ? seam : radius
+                        bottomLeftRadius: index > 0 ? seam : radius
+                        topRightRadius: index < trackSample.count - 1 ? seam : radius
+                        bottomRightRadius: index < trackSample.count - 1 ? seam : radius
+                        color: Theme.withBlur(index === 2 ? Theme.cSecondary : Theme._darken(Theme.subtext, 0.45))
+                    }
+
+                }
+
+            }
+
+            Rectangle {
+                x: 18
+                anchors.verticalCenter: parent.verticalCenter
+                width: 16
+                height: 10
+                radius: Theme.pill(width < height ? width : height)
+                color: Theme.accent
             }
 
         }
