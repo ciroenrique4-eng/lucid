@@ -41,9 +41,27 @@ PanelWindow {
     property bool capsLock: false
     property bool numLock: false
     property bool kbInitialized: false
-    // the level the last brightness click was for: a step clicks, a jump (the
-    // idle dim, its undoing) does not
+    // the backlight's own value, not the rounded percentage: with the keys on
+    // an exponent (brightnessctl -e4) a step near the bottom moves it by less
+    // than a percent, and the card and the click still owe it a response
+    readonly property int brightnessRaw: osdWindow.maxBrightness > 0 ? (parseInt(brightnessFile.text()) || 0) : -1
+    // the value before the idle dim took the screen down, while it is down: the
+    // dim and its undoing are not the user's steps. The dim lands while they are
+    // idle; the undoing puts back exactly this value as they come back
+    property int brightnessBeforeIdle: -1
     property int brightnessHeard: -1
+
+    function brightnessByHand(was, now) {
+        if (brightnessIdle.isIdle) {
+            if (osdWindow.brightnessBeforeIdle < 0)
+                osdWindow.brightnessBeforeIdle = was;
+
+            return false;
+        }
+        const restored = now === osdWindow.brightnessBeforeIdle;
+        osdWindow.brightnessBeforeIdle = -1;
+        return !restored;
+    }
 
     // m3 shape, spacing and slider metrics, shared with lucidbar/System.qml.
     // the island keeps them; a notch is a size the user sets, so its own scale
@@ -365,10 +383,13 @@ PanelWindow {
 
         osdWindow.showVolume();
     }
-    onBrightnessPercentChanged: {
+    onBrightnessRawChanged: {
+        if (osdWindow.brightnessRaw < 0)
+            return ;
+
         const was = osdWindow.brightnessHeard;
-        osdWindow.brightnessHeard = osdWindow.brightnessPercent;
-        if (osdWindow.ready && was >= 0 && Math.abs(osdWindow.brightnessPercent - was) <= 10)
+        osdWindow.brightnessHeard = osdWindow.brightnessRaw;
+        if (osdWindow.ready && was >= 0 && osdWindow.brightnessByHand(was, osdWindow.brightnessRaw))
             Sounds.play("brightness");
 
         if (!osdWindow.ready || levelDrag.pressed)
@@ -472,6 +493,15 @@ PanelWindow {
             onStreamFinished: osdWindow.maxBrightness = parseInt(this.text.trim())
         }
 
+    }
+
+    // a few seconds without input: a key press ends it before its step lands,
+    // so only changes nobody made by hand fall inside
+    IdleMonitor {
+        id: brightnessIdle
+
+        timeout: 5
+        respectInhibitors: false
     }
 
     FileView {
