@@ -413,7 +413,7 @@ Column {
             resetKey: "barModuleBackgrounds"
             description: "A soft background behind each module, so they stand out on the strip. In the arrangement above, the + between two neighbours puts them on one background; the - parts them again."
             enabled: Prefs.barEnabled && Prefs.barFull
-            disabledReason: "Only on the full bar: islands and notches already give every module a shape of its own."
+            disabledReason: Prefs.barNotch ? "Only on the full bar. On notches, Shared notches below joins modules instead." : "Only on the full bar: islands already give every module a shape of its own."
             showDivider: false
 
             M3Switch {
@@ -427,11 +427,29 @@ Column {
         }
 
         SettingRow {
+            title: "Shared notches"
+            resetKey: "barNotchGroups"
+            description: "Modules joined in the arrangement above hang from one notch, as wide as they are together, instead of one notch each. The + between two neighbours joins them; the - parts them again."
+            enabled: Prefs.barEnabled && Prefs.barNotch
+            disabledReason: "Only when the bar is notches."
+            showDivider: false
+
+            M3Switch {
+                enabled: Prefs.barEnabled && Prefs.barNotch
+                checked: Prefs.barNotchGroups
+                onToggled: (v) => {
+                    return Prefs.barNotchGroups = v;
+                }
+            }
+
+        }
+
+        SettingRow {
             title: "Lines between joined modules"
             resetKey: "barGroupDividers"
-            description: "A thin line between modules that share a background."
+            description: "A thin line between modules that share a background or a notch."
             enabled: Prefs.barEnabled && Prefs.barGrouping
-            disabledReason: "Turn on module backgrounds, on the full bar, first."
+            disabledReason: "Turn on module backgrounds on the full bar, or shared notches, first."
             showDivider: false
 
             M3Switch {
