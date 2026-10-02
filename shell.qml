@@ -69,7 +69,24 @@ ShellRoot {
             visible: Prefs.loaded && Prefs.barEnabled && Monitors.surfacesUp
             property bool laidOut: false
             readonly property bool anyModuleShown: bar.leftGroupWidth + bar.centerGroupWidth + bar.rightGroupWidth > 0.5
-            function placeGroup(widths, originX) {
+            // in a shared notch, a module and the next one shown sit flush when
+            // the chain between them holds (one switched off or away keeps it)
+            function joinedToNext(ids, widths, i) {
+                if (!Prefs.barNotchGrouping)
+                    return false;
+
+                for (let k = i + 1; k < ids.length; k++) {
+                    if (!Prefs.barJoined(ids[k - 1], ids[k]))
+                        return false;
+
+                    if (widths[k] > 0.5)
+                        return true;
+
+                }
+                return false;
+            }
+
+            function placeGroup(ids, widths, originX) {
                 const gap = Prefs.barSpacing;
                 const out = [];
                 let x = originX;
@@ -78,7 +95,7 @@ ShellRoot {
                     out.push(x);
                     const w = widths[i];
                     if (w > 0.5) {
-                        x += w + (gap > 0 ? gap * Math.min(1, w / gap) : 0);
+                        x += w + (gap > 0 && !bar.joinedToNext(ids, widths, i) ? gap * Math.min(1, w / gap) : 0);
                         any = true;
                     }
                 }
@@ -135,9 +152,9 @@ ShellRoot {
                 const rw = g.right.map((id) => {
                     return bar.widthOf(id);
                 });
-                const left = bar.placeGroup(lw, 0)[lw.length];
-                const center = bar.placeGroup(cw, 0)[cw.length];
-                const right = bar.placeGroup(rw, 0)[rw.length];
+                const left = bar.placeGroup(g.left, lw, 0)[lw.length];
+                const center = bar.placeGroup(g.center, cw, 0)[cw.length];
+                const right = bar.placeGroup(g.right, rw, 0)[rw.length];
                 // centred on the screen, but kept clear of the side groups
                 const centerX = Math.min(Math.max((bar.width - center) / 2, bar.sideMargin + left + bar.centerGap), bar.width - right - bar.sideMargin - center - bar.centerGap);
                 const out = {
@@ -149,9 +166,9 @@ ShellRoot {
                 const put = (ids, places) => {
                     for (let i = 0; i < ids.length; i++) out.x[ids[i]] = places[i]
                 };
-                put(g.left, bar.placeGroup(lw, bar.sideMargin));
-                put(g.center, bar.placeGroup(cw, centerX));
-                put(g.right, bar.placeGroup(rw, bar.width - right - bar.sideMargin));
+                put(g.left, bar.placeGroup(g.left, lw, bar.sideMargin));
+                put(g.center, bar.placeGroup(g.center, cw, centerX));
+                put(g.right, bar.placeGroup(g.right, rw, bar.width - right - bar.sideMargin));
                 return out;
             }
             readonly property real leftGroupWidth: bar.placement.left
@@ -305,9 +322,10 @@ ShellRoot {
                 z: -2
             }
 
-            // module backgrounds on the full bar: the modules of each group, in
-            // the arrangement's order, split wherever two neighbours are not
-            // joined; one switched off or away keeps a chain through it
+            // module backgrounds on the full bar, or shared notches: the modules
+            // of each group, in the arrangement's order, split wherever two
+            // neighbours are not joined; one switched off or away keeps a chain
+            // through it
             readonly property var clusters: {
                 if (!Prefs.barGrouping)
                     return [];
@@ -318,9 +336,11 @@ ShellRoot {
                     const ids = g[side];
                     let run = [];
                     const flush = () => {
+                        // by the room each keeps in the bar: the workspaces
+                        // leave it while the overview is open
                         const shown = run.filter((id) => {
                             const m = bar.moduleById[id];
-                            return m && m.visible && m.width > 0.5;
+                            return m && m.visible && bar.widthOf(id) > 0.5;
                         });
                         if (shown.length > 0)
                             out.push(shown);
@@ -337,10 +357,34 @@ ShellRoot {
                 }
                 return out;
             }
+            // the modules sharing a notch with another, by id: whether each ends
+            // it on the left and on the right. A notch of its own is the pill's
+            readonly property var sharedNotch: {
+                const out = {};
+                if (!Prefs.barNotchGrouping)
+                    return out;
+
+                for (const run of bar.clusters) {
+                    if (run.length < 2)
+                        continue;
+
+                    for (let i = 0; i < run.length; i++) out[run[i]] = {
+                        "first": i === 0,
+                        "last": i === run.length - 1
+                    }
+                }
+                return out;
+            }
+
+            function sharesNotch(id) {
+                return bar.sharedNotch[id] !== undefined;
+            }
+
             // as tall as the apps module's own highlights, so they line up; and
-            // short of each end, so two groups stay apart with no bar spacing
-            readonly property int groupInset: 4
-            readonly property int groupEndInset: 3
+            // short of each end, so two groups stay apart with no bar spacing.
+            // a shared notch is the whole notch, flush with the edge
+            readonly property int groupInset: Prefs.barNotchGrouping ? 0 : 4
+            readonly property int groupEndInset: Prefs.barNotchGrouping ? 0 : 3
 
             // repeated by count: the list is rebuilt as the pills change width
             Repeater {
@@ -351,46 +395,79 @@ ShellRoot {
 
                     required property int index
 
-                    readonly property var mods: (bar.clusters[group.index] || []).map((id) => {
+                    readonly property var ids: bar.clusters[group.index] || []
+                    readonly property var mods: group.ids.map((id) => {
                         return bar.moduleById[id];
                     })
-                    readonly property real x0: group.mods.length > 0 ? Math.min.apply(null, group.mods.map((m) => {
-                        return m.x;
+                    // a notch of one is drawn by its own pill
+                    readonly property bool drawn: !Prefs.barNotchGrouping || group.mods.length > 1
+                    // from the places the modules keep in the bar, not where
+                    // they are: the workspaces go elsewhere for the overview
+                    readonly property real x0: group.ids.length > 0 ? Math.min.apply(null, group.ids.map((id) => {
+                        return bar.xOf(id);
                     })) + bar.groupEndInset : 0
-                    readonly property real x1: group.mods.length > 0 ? Math.max.apply(null, group.mods.map((m) => {
-                        return m.x + m.width;
+                    readonly property real x1: group.ids.length > 0 ? Math.max.apply(null, group.ids.map((id) => {
+                        return bar.xOf(id) + bar.widthOf(id);
                     })) - bar.groupEndInset : 0
                     readonly property real y0: bar.edgeY(Prefs.barHeight) + bar.groupInset
                     readonly property real tall: Math.max(0, Prefs.barHeight - bar.groupInset * 2)
+                    // the notch's corners away from the edge, as a pill's own
+                    readonly property int notchRadius: Prefs.barPillRadius
 
                     anchors.fill: parent
                     z: -1
+                    visible: group.drawn
 
                     Rectangle {
                         x: group.x0
                         y: group.y0
                         width: Math.max(0, group.x1 - group.x0)
                         height: group.tall
-                        radius: Theme.pill(height)
-                        color: Theme.alpha(Theme.text, 0.07)
+                        radius: Prefs.barNotchGrouping ? group.notchRadius : Theme.pill(height)
+                        topLeftRadius: Prefs.barNotchGrouping && !bar.atBottom ? 0 : radius
+                        topRightRadius: Prefs.barNotchGrouping && !bar.atBottom ? 0 : radius
+                        bottomLeftRadius: Prefs.barNotchGrouping && bar.atBottom ? 0 : radius
+                        bottomRightRadius: Prefs.barNotchGrouping && bar.atBottom ? 0 : radius
+                        color: Prefs.barNotchGrouping ? Theme.bg : Theme.alpha(Theme.text, 0.07)
+
+                        Behavior on color {
+                            enabled: bar.laidOut && Prefs.barNotchGrouping
+
+                            ColorAnimation {
+                                duration: Theme.barMs(260)
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
                     }
 
-                    // each module's hover, to the background's shape
+                    // each module's hover, to the background's shape: on a shared
+                    // notch, a slice of it, rounded where it ends the notch
                     Repeater {
                         model: group.mods.length
 
                         Rectangle {
+                            id: lift
+
                             required property int index
 
                             readonly property var mod: group.mods[index]
+                            readonly property string id: group.ids[index] || ""
                             readonly property bool lit: !!mod && (mod.compactHovered === true) && mod.tintsOnHover !== false && !(mod.anyOpen === true)
+                            readonly property bool endsLeft: lift.index === 0
+                            readonly property bool endsRight: lift.index === group.mods.length - 1
 
-                            x: mod ? Math.max(mod.x, group.x0) : 0
+                            x: mod ? Math.max(bar.xOf(lift.id), group.x0) : 0
                             y: group.y0
-                            width: mod ? Math.max(0, Math.min(mod.x + mod.width, group.x1) - x) : 0
+                            width: mod ? Math.max(0, Math.min(bar.xOf(lift.id) + bar.widthOf(lift.id), group.x1) - x) : 0
                             height: group.tall
-                            radius: Theme.pill(height)
-                            color: Theme.alpha(Theme.text, lit ? 0.07 : 0)
+                            radius: Prefs.barNotchGrouping ? group.notchRadius : Theme.pill(height)
+                            topLeftRadius: Prefs.barNotchGrouping ? (bar.atBottom && lift.endsLeft ? radius : 0) : radius
+                            topRightRadius: Prefs.barNotchGrouping ? (bar.atBottom && lift.endsRight ? radius : 0) : radius
+                            bottomLeftRadius: Prefs.barNotchGrouping ? (!bar.atBottom && lift.endsLeft ? radius : 0) : radius
+                            bottomRightRadius: Prefs.barNotchGrouping ? (!bar.atBottom && lift.endsRight ? radius : 0) : radius
+                            color: Theme.alpha(Theme.text, lit ? (Prefs.barNotchGrouping ? 0.08 : 0.07) : 0)
 
                             Behavior on color {
                                 ColorAnimation {
@@ -413,13 +490,72 @@ ShellRoot {
                             readonly property var a: group.mods[index]
                             readonly property var b: group.mods[index + 1]
 
-                            x: Math.round(((a.x + a.width) + b.x) / 2)
+                            // not across a panel opening out of either
+                            visible: !(a.surfaceOpen === true || b.surfaceOpen === true)
+                            x: Math.round(((bar.xOf(group.ids[index]) + bar.widthOf(group.ids[index])) + bar.xOf(group.ids[index + 1])) / 2)
                             y: Math.round(group.y0 + group.tall * 0.25)
                             width: 1
                             height: Math.round(group.tall * 0.5)
                             color: Theme.alpha(Theme.text, 0.22)
                         }
 
+                    }
+
+                }
+
+            }
+
+            // shared notch: a panel opening out of one of its modules hangs off
+            // the notch's inner edge, so round the concave corners where its sides
+            // meet it - but not at the notch's own ends, which hang off the edge
+            Repeater {
+                model: (Prefs.barNotchGrouping && !Prefs.barPopupMode) ? bar.modules.filter((m) => {
+                    return m && m !== workspacesMod;
+                }) : []
+
+                Item {
+                    id: notchPanelFlares
+
+                    required property var modelData
+
+                    readonly property var place: bar.sharedNotch[notchPanelFlares.modelData.moduleId()]
+                    readonly property real reach: (notchPanelFlares.place && notchPanelFlares.modelData.visible && notchPanelFlares.modelData.surfaceOpen === true) ? notchPanelFlares.modelData.height - Prefs.barHeight : 0
+
+                    // short of the notch's own rounded corner at that end
+                    function sizeFor(toTheLeft) {
+                        const p = notchPanelFlares.place;
+                        if (!p || (toTheLeft ? p.first : p.last))
+                            return 0;
+
+                        const m = notchPanelFlares.modelData;
+                        const run = bar.clusters.find((r) => {
+                            return r.indexOf(m.moduleId()) >= 0;
+                        }) || [];
+                        const end = toTheLeft ? Math.min.apply(null, run.map((id) => {
+                            return bar.xOf(id);
+                        })) : Math.max.apply(null, run.map((id) => {
+                            return bar.xOf(id) + bar.widthOf(id);
+                        }));
+                        const room = (toTheLeft ? m.x - end : end - m.x - m.width) - Prefs.barPillRadius;
+                        return Math.max(0, Math.floor(Math.min(Prefs.barNotchFlare, notchPanelFlares.reach, room)));
+                    }
+
+                    anchors.fill: parent
+                    z: -1
+
+                    BarFlare {
+                        flipped: bar.atBottom
+                        size: notchPanelFlares.sizeFor(true)
+                        x: notchPanelFlares.modelData.x - width + 0.5
+                        y: bar.atBottom ? bar.edgeY(Prefs.barHeight) - height : bar.edgeY(Prefs.barHeight) + Prefs.barHeight
+                    }
+
+                    BarFlare {
+                        mirrored: true
+                        flipped: bar.atBottom
+                        size: notchPanelFlares.sizeFor(false)
+                        x: notchPanelFlares.modelData.x + notchPanelFlares.modelData.width - 0.5
+                        y: bar.atBottom ? bar.edgeY(Prefs.barHeight) - height : bar.edgeY(Prefs.barHeight) + Prefs.barHeight
                     }
 
                 }
@@ -610,8 +746,14 @@ ShellRoot {
                     readonly property bool present: flares.modelData && flares.modelData.width > 0.5 && flares.modelData.visible
                     readonly property bool modHovered: flares.modelData ? (flares.modelData.compactHovered === true && flares.modelData !== workspacesMod) : false
 
+                    // in a shared notch only its two ends hang off the edge
+                    readonly property var place: flares.modelData ? bar.sharedNotch[flares.modelData === workspacesMod ? "workspaces" : flares.modelData.moduleId()] : undefined
+
                     function flareFor(toTheLeft) {
                         if (!flares.present)
+                            return 0;
+
+                        if (flares.place && !(toTheLeft ? flares.place.first : flares.place.last))
                             return 0;
 
                         var mods = bar.modules;
