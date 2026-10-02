@@ -962,7 +962,9 @@ ShellRoot {
     PanelWindow {
         id: clickCatcher
 
-        visible: dock.menuOpen && Monitors.surfacesUp
+        // gone while an app is dragged out of the launcher, or it would take
+        // the drop meant for the desktop under it
+        visible: dock.menuOpen && !dock.appDragging && Monitors.surfacesUp
         color: "transparent"
         exclusiveZone: 0
         WlrLayershell.layer: WlrLayer.Top
