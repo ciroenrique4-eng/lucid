@@ -353,7 +353,7 @@ Scope {
             const now = root.liveBtConnected;
             const before = root.btLast;
             root.btLast = now;
-            if (root.armed) {
+            if (root.armed && !root.justWoke()) {
                 if (now.some((a) => {
                     return before.indexOf(a) < 0;
                 }))
@@ -386,6 +386,28 @@ Scope {
     // its devices along in one burst, so the burst is one event
     // whether anything in the burst arrived; a burst of removals only is a pull
     property bool usbArrived: false
+    // waking from sleep, devices come back on their own: no sound for them. A
+    // timer that missed its ticks says the machine slept, whichever of the two
+    // gets to run first after it wakes
+    property real tickAt: Date.now()
+    property real wokeAt: 0
+
+    function justWoke() {
+        if (Date.now() - root.tickAt > 15000)
+            root.wokeAt = Date.now();
+
+        return Date.now() - root.wokeAt < 8000;
+    }
+
+    Timer {
+        interval: 5000
+        repeat: true
+        running: Prefs.soundPlug
+        onTriggered: {
+            root.justWoke();
+            root.tickAt = Date.now();
+        }
+    }
 
     Process {
         running: Prefs.soundPlug
@@ -411,7 +433,9 @@ Scope {
 
         interval: 350
         onTriggered: {
-            Sounds.play(root.usbArrived ? "plugIn" : "plugOut");
+            if (!root.justWoke())
+                Sounds.play(root.usbArrived ? "plugIn" : "plugOut");
+
             root.usbArrived = false;
         }
     }
