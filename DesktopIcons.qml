@@ -888,7 +888,7 @@ Singleton {
         if (it.kind === "app")
             root.run(["gio", "launch", it.path]);
         else if (it.kind === "trash")
-            root.run(["sh", "-c", "gio open trash:/// 2>/dev/null || xdg-open \"$0\"", root.home + "/.local/share/Trash/files"]);
+            root.run(["python3", root.script, "open-trash"]);
         else
             root.run(["gio", "open", it.uri]);
     }
