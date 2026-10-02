@@ -515,6 +515,8 @@ Singleton {
     property alias specialGaps: s.specialGaps
     // the workspaces you made, a JSON list of { key, label, glyph, on, apps }
     property alias specialCustom: s.specialCustom
+    // Hyprland options set from Settings > Windows, as JSON { "general.gaps_in": 8, ... }
+    property alias hyprOptions: s.hyprOptions
 
     property alias glassApps: s.glassApps
     property alias glassValues: s.glassValues
@@ -833,6 +835,7 @@ Singleton {
         "specialBlur": false,
         "specialGaps": 0,
         "specialCustom": "[]",
+        "hyprOptions": "{}",
         "glassApps": "vscodium",
         "glassValues": "vscodium=0.9",
         "monitorSetups": "{}",
@@ -1386,6 +1389,7 @@ Singleton {
             property bool specialBlur: false
             property int specialGaps: 0
             property string specialCustom: "[]"
+            property string hyprOptions: "{}"
             // the apps on the Glass page, and the ones given their own value
             property string glassApps: "vscodium"
             property string glassValues: "vscodium=0.9"
