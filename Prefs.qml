@@ -824,6 +824,26 @@ Singleton {
     property alias btReceiveAutoPaired: s.btReceiveAutoPaired
     property alias audioMoveStreams: s.audioMoveStreams
     property alias soundVolumeFeedback: s.soundVolumeFeedback
+    property alias soundVolumeStyle: s.soundVolumeStyle
+    property alias soundBrightness: s.soundBrightness
+    property alias soundBrightnessStyle: s.soundBrightnessStyle
+    property alias soundPlug: s.soundPlug
+    property alias soundPlugStyle: s.soundPlugStyle
+    property alias soundLock: s.soundLock
+    property alias soundLockStyle: s.soundLockStyle
+    property alias soundTrash: s.soundTrash
+    property alias soundTrashStyle: s.soundTrashStyle
+    property alias soundCapture: s.soundCapture
+    property alias soundCaptureStyle: s.soundCaptureStyle
+    property alias soundCustomVolume: s.soundCustomVolume
+    property alias soundCustomBrightness: s.soundCustomBrightness
+    property alias soundCustomPlugIn: s.soundCustomPlugIn
+    property alias soundCustomPlugOut: s.soundCustomPlugOut
+    property alias soundCustomLock: s.soundCustomLock
+    property alias soundCustomUnlock: s.soundCustomUnlock
+    property alias soundCustomTrash: s.soundCustomTrash
+    property alias soundCustomCapture: s.soundCustomCapture
+    property alias soundFeedbackVolume: s.soundFeedbackVolume
     property alias kdeConnectEnabled: s.kdeConnectEnabled
     property alias updateCheck: s.updateCheck
 
@@ -1153,6 +1173,26 @@ Singleton {
         "btReceiveAutoPaired": false,
         "audioMoveStreams": true,
         "soundVolumeFeedback": false,
+        "soundVolumeStyle": "snap",
+        "soundBrightness": false,
+        "soundBrightnessStyle": "high",
+        "soundPlug": false,
+        "soundPlugStyle": "pips",
+        "soundLock": false,
+        "soundLockStyle": "latch",
+        "soundTrash": false,
+        "soundTrashStyle": "crunch",
+        "soundCapture": false,
+        "soundCaptureStyle": "pop",
+        "soundCustomVolume": "",
+        "soundCustomBrightness": "",
+        "soundCustomPlugIn": "",
+        "soundCustomPlugOut": "",
+        "soundCustomLock": "",
+        "soundCustomUnlock": "",
+        "soundCustomTrash": "",
+        "soundCustomCapture": "",
+        "soundFeedbackVolume": 1.0,
         "kdeConnectEnabled": true,
         "updateCheck": true,
         "idleEnabled": false,
@@ -1760,6 +1800,26 @@ Singleton {
             property bool btReceiveAutoPaired: false
             property bool audioMoveStreams: true
             property bool soundVolumeFeedback: false
+            property string soundVolumeStyle: "snap"
+            property bool soundBrightness: false
+            property string soundBrightnessStyle: "high"
+            property bool soundPlug: false
+            property string soundPlugStyle: "pips"
+            property bool soundLock: false
+            property string soundLockStyle: "latch"
+            property bool soundTrash: false
+            property string soundTrashStyle: "crunch"
+            property bool soundCapture: false
+            property string soundCaptureStyle: "pop"
+            property string soundCustomVolume: ""
+            property string soundCustomBrightness: ""
+            property string soundCustomPlugIn: ""
+            property string soundCustomPlugOut: ""
+            property string soundCustomLock: ""
+            property string soundCustomUnlock: ""
+            property string soundCustomTrash: ""
+            property string soundCustomCapture: ""
+            property real soundFeedbackVolume: 1.0
             property bool kdeConnectEnabled: true
             property bool updateCheck: true
             property bool idleEnabled: false
