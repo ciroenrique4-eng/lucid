@@ -477,6 +477,104 @@ Scope {
         ignoreUnknownSignals: true
     }
 
+    // the clipboard: what was just copied, said back. Something the user just
+    // did, so it cuts in at once; an image waits a moment for its thumbnail
+    readonly property string linkPath: "M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0 0 10h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1ZM8 13h8v-2H8v2Zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 0-10Z"
+    readonly property string mailPath: "M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6Zm-2 0-8 5-8-5h16Zm0 12H4V8l8 5 8-5v10Z"
+    readonly property string lockPath: "M18 8h-1V6A5 5 0 0 0 7 6v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2ZM9 6a3 3 0 0 1 6 0v2H9V6Zm3 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"
+    property var copyWaiting: null
+
+    function copyEntry(e, secret) {
+        if (secret)
+            return {
+                "icon": root.lockPath,
+                "label": "Copied",
+                "detail": "Hidden, it was marked secret"
+            };
+
+        const text = String(e.preview || "").replace(/\s+/g, " ").trim();
+        switch (e.kind) {
+        case "image":
+            return {
+                "icon": "copy",
+                "image": Clip.thumbs[e.id] || "",
+                "label": "Image copied",
+                "detail": e.width > 0 ? e.width + "×" + e.height : ""
+            };
+        case "color":
+            return {
+                "swatch": e.color,
+                "label": "Colour copied",
+                "detail": text
+            };
+        case "url":
+            return {
+                "icon": root.linkPath,
+                "label": "Link copied",
+                "detail": text.replace(/^[a-z][a-z0-9+.-]*:\/\//i, "")
+            };
+        case "email":
+            return {
+                "icon": root.mailPath,
+                "label": "Address copied",
+                "detail": text
+            };
+        case "binary":
+            return {
+                "icon": "copy",
+                "label": "Copied",
+                "detail": e.meta || ""
+            };
+        default:
+            return {
+                "icon": "copy",
+                "label": "Copied",
+                "detail": text
+            };
+        }
+    }
+
+    Connections {
+        function onCopied(entry, secret) {
+            if (!root.armed || !Prefs.toastOnCopy)
+                return ;
+
+            if (!secret && entry.kind === "image" && Clip.thumbs[entry.id] === undefined) {
+                root.copyWaiting = entry;
+                Clip.requestThumb(entry.id);
+                copyThumbWait.restart();
+                return ;
+            }
+            root.copyWaiting = null;
+            root.toast.present(root.copyEntry(entry, secret));
+        }
+
+        function onThumbsChanged() {
+            const e = root.copyWaiting;
+            if (e && Clip.thumbs[e.id] !== undefined) {
+                root.copyWaiting = null;
+                copyThumbWait.stop();
+                root.toast.present(root.copyEntry(e, false));
+            }
+        }
+
+        target: Clip
+    }
+
+    // a thumbnail slow to come is not worth holding the toast for
+    Timer {
+        id: copyThumbWait
+
+        interval: 700
+        onTriggered: {
+            const e = root.copyWaiting;
+            root.copyWaiting = null;
+            if (e)
+                root.toast.present(root.copyEntry(e, false));
+
+        }
+    }
+
     IpcHandler {
         target: "toastevents"
 
@@ -496,6 +594,8 @@ Scope {
                 root.send("preview-mic", mic.icon, mic.label, "");
             }
             root.send("preview-game", "game", "Game mode on", "");
+            if (Prefs.toastOnCopy)
+                root.send("preview-copy", "copy", "Copied", "the quick brown fox");
             root.send("preview-charger", root.chargingPath, "Charging", pct + "%");
             root.send("preview-low", root.batteryAlertPath, "Battery low", "20% left", true);
             root.send("preview-bt", root.glyphPath("headphones"), "Headphones", "Connected · 80%");

@@ -171,6 +171,8 @@ PanelWindow {
         if (t === "")
             return ;
 
+        // the picker says "Copied" itself
+        Clip.hushCopy();
         Quickshell.execDetached(["wl-copy", "--", t]);
         mojiWindow.lastCopied = t;
         mojiWindow.lastAction = "Copied";
@@ -241,6 +243,8 @@ PanelWindow {
         mojiWindow.typeQueue = q;
         if (mojiWindow.needsPaste()) {
             mojiWindow.clipReady = false;
+            // the clipboard only carries it across to the paste, then is put back
+            Clip.hushCopy();
             clipProc.command = ["sh", "-c", "d=\"$2\"; rm -rf \"$d\"; mkdir -p \"$d\"; t=$(wl-paste --list-types 2>/dev/null | head -1); if [ -n \"$t\" ]; then printf '%s' \"$t\" > \"$d/type\"; wl-paste --type \"$t\" > \"$d/data\" 2>/dev/null; fi; printf '%s' \"$1\" | wl-copy", "sh", next, mojiWindow.clipDir];
             clipProc.running = true;
             return ;
@@ -260,6 +264,7 @@ PanelWindow {
     }
 
     function copyGifFile(path) {
+        Clip.hushCopy();
         Quickshell.execDetached(["sh", "-c", "wl-copy --type image/gif < \"$1\"", "sh", path]);
         mojiWindow.lastCopied = path;
         copiedTimer.restart();
@@ -333,6 +338,7 @@ PanelWindow {
 
         interval: 450
         onTriggered: {
+            Clip.hushCopy();
             restoreProc.command = ["sh", "-c", "d=\"$1\"; t=$(cat \"$d/type\" 2>/dev/null); if [ -n \"$t\" ] && [ -s \"$d/data\" ]; then wl-copy --type \"$t\" < \"$d/data\"; fi; rm -rf \"$d\"", "sh", mojiWindow.clipDir];
             restoreProc.running = true;
         }

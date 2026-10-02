@@ -86,6 +86,7 @@ Settings still follows upstream's releases, and this branch follows them too.
 |  | A Palettes page: a gallery of base16/base24 schemes, themes from a file, an editor and export | [#40](https://github.com/Sn3akyy1/lucid/pull/40) |
 | **Everyday** | Night light through hyprsunset, by hand or on a schedule | [#53](https://github.com/Sn3akyy1/lucid/pull/53) |
 |  | A preview card in the corner after each screenshot or recording | [#52](https://github.com/Sn3akyy1/lucid/pull/52) |
+|  | A quick toast for whatever you copy: the text, a link, a colour swatch or an image thumbnail; secrets stay hidden | this fork only |
 |  | Share a saved Wi-Fi network as a QR code | [#51](https://github.com/Sn3akyy1/lucid/pull/51) |
 |  | OSD: a notch style, a draggable level, the keyboard backlight, lock keys as toasts | [#22](https://github.com/Sn3akyy1/lucid/pull/22) |
 |  | Phone widget: browse its files, plugin-aware buttons and a second phone | [#15](https://github.com/Sn3akyy1/lucid/pull/15) |

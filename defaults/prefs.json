@@ -134,6 +134,7 @@
     "toastOnGameMode": true,
     "toastOnLayout": true,
     "toastOnPower": true,
+    "toastOnCopy": true,
     "toastOnWifi": true,
     "toastTimeout": 5,
     "wallpaperFolder": ""
