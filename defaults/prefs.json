@@ -45,6 +45,7 @@
     "launcherWidth": 560,
     "launcherWindows": true,
     "motionScale": 1,
+    "radiusScale": 1,
     "showClock": true,
     "showKbLayout": true,
     "showMedia": true,
