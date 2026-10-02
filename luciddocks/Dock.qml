@@ -1526,27 +1526,8 @@ PanelWindow {
         for (var j = 0; j < targets.length; j++) Hyprland.dispatch("hl.dsp.window.close({window='address:" + targets[j] + "'})");
     }
 
-    // a fullscreen window covers a bar on the bottom edge, but the bar still
-    // holds its strip: the launcher would float that high over the window.
-    // Maximized leaves the bar showing, and the workspace's hasFullscreen
-    // says yes to both, so the window's own fullscreen state decides
-    readonly property bool barCovered: {
-        if (!Prefs.barBottom)
-            return false;
-
-        var mon = Hyprland.monitorFor(dockWindow.screen);
-        var ws = mon ? mon.activeWorkspace : null;
-        if (!ws || !ws.hasFullscreen)
-            return false;
-
-        var ts = ws.toplevels.values;
-        for (var i = 0; i < ts.length; i++) {
-            if (ts[i].wayland && ts[i].wayland.fullscreen)
-                return true;
-
-        }
-        return false;
-    }
+    // see Monitors.barCoveredOn: the launcher goes down to the screen edge
+    readonly property bool barCovered: Monitors.barCoveredOn(dockWindow.screen)
 
     // off for a beat when displays change, so a surface torn down with an
     // unplugged one is remapped rather than staying gone until a reload
