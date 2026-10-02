@@ -129,7 +129,9 @@ PanelWindow {
     function act(what) {
         const f = preview.file;
         if (what === "copy") {
-            // an image goes on as itself; a video as a file other apps can paste
+            // an image goes on as itself; a video as a file other apps can paste.
+            // the card says "Copied" itself
+            Clip.hushCopy();
             if (preview.kind === "image")
                 preview.run(["sh", "-c", "wl-copy --type image/png < \"$1\"", "sh", f]);
             else
