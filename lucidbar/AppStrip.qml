@@ -56,6 +56,7 @@ BarPill {
                     "key": key,
                     "appId": p.appId,
                     "base": pe ? String(pe.base).toLowerCase() : key,
+                    "entry": pe ? String(pe.base) : "",
                     "name": p.name || p.appId,
                     "icon": IconTheme.resolve(p.iconName),
                     "command": p.command || "",
@@ -76,6 +77,7 @@ BarPill {
                     "key": key,
                     "appId": c.class,
                     "base": e ? String(e.base).toLowerCase() : key,
+                    "entry": e ? String(e.base) : "",
                     "name": e ? e.name : c.class,
                     "icon": root.dockMod ? root.dockMod.iconForClass(c.class) : "",
                     "command": e ? e.command : "",
@@ -663,6 +665,22 @@ BarPill {
             }
 
         },
+        // what rides under the pointer when an app is pulled off the bar
+        Item {
+            id: outProxy
+
+            width: 40
+            height: 40
+            Drag.dragType: Drag.Automatic
+            Drag.supportedActions: Qt.CopyAction
+            Drag.proposedAction: Qt.CopyAction
+            Drag.imageSourceSize: Qt.size(40, 40)
+            Drag.hotSpot.x: 20
+            Drag.hotSpot.y: 20
+            Drag.onDragFinished: (action) => {
+                outProxy.Drag.active = false;
+            }
+        },
         // one area over the whole face: the pill's own is off, since every click
         // here means something for the app under the pointer
         MouseArea {
@@ -735,6 +753,23 @@ BarPill {
             onEntered: faceArea.hoverAt(faceArea.mouseX, faceArea.mouseY)
             onPositionChanged: (mouse) => {
                 if (faceArea.pressed && faceArea.pressedIndex >= 0 && (mouse.buttons & Qt.LeftButton)) {
+                    // pulled off the bar, an app with a desktop entry becomes a
+                    // drag the desktop takes as a launcher
+                    const app = root.apps[faceArea.pressedIndex];
+                    if ((mouse.y < -20 || mouse.y > faceArea.height + 20) && app && app.entry !== "" && !outProxy.Drag.active) {
+                        faceArea.dragIndex = -1;
+                        faceArea.dragDx = 0;
+                        faceArea.dragEnded = true;
+                        // the drag takes the pointer without a word to the bar
+                        faceArea.hoverIndex = -1;
+                        root.hidePreview();
+                        const data = {};
+                        data[DesktopIcons.appMime] = app.entry;
+                        outProxy.Drag.mimeData = data;
+                        outProxy.Drag.imageSource = app.icon;
+                        outProxy.Drag.active = true;
+                        return ;
+                    }
                     const dx = mouse.x - faceArea.pressX;
                     if (faceArea.dragIndex < 0 && Math.abs(dx) > 6) {
                         const t = root.tileFor(faceArea.pressedIndex);
