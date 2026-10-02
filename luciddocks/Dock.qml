@@ -60,6 +60,8 @@ PanelWindow {
     // menuOpen long enough to show it — with the dock disabled it would
     // otherwise vanish on the same frame
     property bool launcherClosing: false
+    // an app row being dragged out of the launcher
+    property bool appDragging: false
 
     onMenuOpenChanged: {
         dockWindow.pulseMorph();
@@ -656,7 +658,9 @@ PanelWindow {
             "selectable": opts.selectable !== false,
             "nested": opts.nested === true,
             "starred": opts.starred === true,
-            "payload": opts.payload || ""
+            "payload": opts.payload || "",
+            // an app's desktop entry, so its row can be dragged onto the desktop
+            "desktopId": opts.desktopId || ""
         };
     }
 
@@ -732,7 +736,8 @@ PanelWindow {
         return dockWindow.makeRow("app", "app-" + app.name, app.name, Prefs.launcherAppDescriptions ? (app.desc || "") : "", {
             "iconName": app.iconName,
             "starred": Apps.isFav(app),
-            "payload": app.command
+            "payload": app.command,
+            "desktopId": app.base || ""
         });
     }
 
@@ -1714,9 +1719,11 @@ PanelWindow {
         id: launcherGrab
 
         windows: [dockWindow]
-        active: dockWindow.menuOpen && grabArm.armed
+        // let go while an app is dragged out: the grab keeps a drop from
+        // reaching any other surface, the desktop included
+        active: dockWindow.menuOpen && grabArm.armed && !dockWindow.appDragging
         onCleared: {
-            if (grabArm.armed)
+            if (grabArm.armed && !dockWindow.appDragging)
                 dockWindow.menuOpen = false;
 
         }
@@ -2393,6 +2400,12 @@ PanelWindow {
             onDeleteRequested: (index) => dockWindow.deleteResult(index)
             onClearRequested: Clip.wipe()
             onFavToggleRequested: (index) => dockWindow.toggleFavAt(index)
+            onAppDragStarted: dockWindow.appDragging = true
+            // dropped on the desktop or anywhere else, the launcher steps aside
+            onAppDragEnded: {
+                dockWindow.appDragging = false;
+                dockWindow.menuOpen = false;
+            }
             onWallpaperPreviewed: (path) => dockWindow.requestWallpaper(path)
             onWallpaperChosen: (path) => {
                 dockWindow.applyWallpaper(path);
