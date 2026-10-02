@@ -88,6 +88,7 @@ Settings still follows upstream's releases, and this branch follows them too.
 |  | A preview card in the corner after each screenshot or recording | [#52](https://github.com/Sn3akyy1/lucid/pull/52) |
 |  | Share a saved Wi-Fi network as a QR code | [#51](https://github.com/Sn3akyy1/lucid/pull/51) |
 |  | OSD: a notch style, a draggable level, the keyboard backlight, lock keys as toasts | [#22](https://github.com/Sn3akyy1/lucid/pull/22) |
+|  | Feedback sounds: a click for brightness like the volume's, and sounds for plugging in and pulling out, locking, emptying the trash and screenshots; a few of each to pick from, or a file of your own | this fork only |
 |  | Phone widget: browse its files, plugin-aware buttons and a second phone | [#15](https://github.com/Sn3akyy1/lucid/pull/15) |
 |  | Receive files over Bluetooth, with Accept and Decline in a notification | this fork only |
 |  | Pinned windows wear a border of their own, a pin tab in the corner that unpins them, and a ripple when pinned | this fork only |
