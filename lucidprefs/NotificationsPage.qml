@@ -738,6 +738,20 @@ Column {
         }
 
         SettingRow {
+            title: "Copying"
+            resetKey: "toastOnCopy"
+            description: "What you just copied, said back: the start of the text, a link, a colour as itself or an image as a thumbnail. Something marked secret, like a password, shows only that it was copied."
+
+            M3Switch {
+                checked: Prefs.toastOnCopy
+                onToggled: (v) => {
+                    return Prefs.toastOnCopy = v;
+                }
+            }
+
+        }
+
+        SettingRow {
             title: "Preview"
             description: "Plays one of each, one after another, with made-up details."
             showDivider: false
