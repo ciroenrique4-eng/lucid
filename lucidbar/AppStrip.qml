@@ -514,6 +514,22 @@ BarPill {
                     })
 
                     readonly property int badge: root.badgeOf(tile.app)
+                    // the dock's hover: the icon swells and lifts away from the screen
+                    // edge under the pointer (an open app overshoots), pressed it sinks
+                    // and, with magnify, its neighbours swell in a ripple
+                    readonly property bool pressedNow: faceArea.pressedIndex === tile.index
+                    readonly property int hoverDist: faceArea.hoverIndex < 0 || faceArea.dragIndex >= 0 ? -1 : Math.abs(tile.index - faceArea.hoverIndex)
+                    readonly property real boost: {
+                        if (!Prefs.appsModuleMagnify)
+                            return 0;
+
+                        if (tile.hoverDist === 1)
+                            return 0.06 * Prefs.appsModuleHoverEffect;
+
+                        return tile.hoverDist === 2 ? 0.025 * Prefs.appsModuleHoverEffect : 0;
+                    }
+                    property real swell: tile.pressedNow ? -0.06 : (tile.hovered ? (tile.count > 0 ? 0.12 : 0.08) * Prefs.appsModuleHoverEffect : tile.boost)
+                    property real lift: tile.pressedNow ? 2 : (tile.hovered ? (tile.count > 0 ? 9 : 6) * Prefs.appsModuleHoverEffect : 0)
                     readonly property bool lifted: faceArea.dragIndex === tile.index
                     // while one is dragged: it follows the pointer, and the ones
                     // between where it was and where it would land make room
@@ -554,6 +570,24 @@ BarPill {
 
                     }
 
+                    Behavior on swell {
+                        NumberAnimation {
+                            duration: Theme.durShort
+                            easing.type: tile.count > 0 && tile.hovered ? Easing.OutBack : Easing.OutCubic
+                            easing.overshoot: 0.6
+                        }
+
+                    }
+
+                    Behavior on lift {
+                        NumberAnimation {
+                            duration: Theme.durShort
+                            easing.type: tile.count > 0 && tile.hovered ? Easing.OutBack : Easing.OutCubic
+                            easing.overshoot: 0.6
+                        }
+
+                    }
+
                     Rectangle {
                         anchors.centerIn: parent
                         width: parent.width
@@ -579,34 +613,20 @@ BarPill {
                         height: tileIcon.height + 8
                         radius: Theme.rad(8)
                         color: Theme.bgTile
+                        scale: 1 + tile.swell
+                        transform: Translate {
+                            y: root.atBottom ? -tile.lift : tile.lift
+                        }
                     }
 
                     AppIcon {
                         id: tileIcon
 
-                        // the dock's hover: it swells under the pointer and, with
-                        // magnify, its neighbours follow in a ripple
-                        readonly property int hoverDist: faceArea.hoverIndex < 0 || faceArea.dragIndex >= 0 ? -1 : Math.abs(tile.index - faceArea.hoverIndex)
-                        readonly property real boost: {
-                            if (!Prefs.appsModuleMagnify)
-                                return 0;
-
-                            if (tileIcon.hoverDist === 1)
-                                return 0.06 * Prefs.appsModuleHoverEffect;
-
-                            return tileIcon.hoverDist === 2 ? 0.025 * Prefs.appsModuleHoverEffect : 0;
-                        }
-
                         app: tile.app
                         size: root.iconSize
-                        scale: faceArea.pressedIndex === tile.index ? 0.94 : (tile.hovered ? 1 + (tile.count > 0 ? 0.12 : 0.08) * Prefs.appsModuleHoverEffect : 1 + tileIcon.boost)
-
-                        Behavior on scale {
-                            NumberAnimation {
-                                duration: Theme.durShort
-                                easing.type: Easing.OutCubic
-                            }
-
+                        scale: 1 + tile.swell
+                        transform: Translate {
+                            y: root.atBottom ? -tile.lift : tile.lift
                         }
 
                         x: root.namesFace ? 9 : (parent.width - width) / 2
