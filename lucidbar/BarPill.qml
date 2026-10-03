@@ -324,7 +324,7 @@ Item {
         width: pill.compactWidth + pill.hoverGrow * 2
         height: pill.compactHeight
         color: pill.restingColor
-        clip: true
+        clip: !pill.overflowCompact
         radius: Prefs.barPillRadius
         topLeftRadius: pill.atBottom ? Prefs.barPillRadius : pill.pillTopRadius
         topRightRadius: pill.atBottom ? Prefs.barPillRadius : pill.pillTopRadius
