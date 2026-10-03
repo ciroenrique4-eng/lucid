@@ -57,11 +57,20 @@ Item {
         }
         return -1;
     }
+    // the last workspace in use: one with windows, or in view on a monitor. hyprland keeps
+    // workspaces alive while empty (lucid's gestures make 1-6 persistent), so counting every
+    // one that exists kept the module from ever showing fewer than six
     readonly property int highestWorkspaceId: {
         let max = 0;
         for (const w of Hyprland.workspaces.values) {
-            if (w.id > max)
+            if (w.id > max && w.active)
                 max = w.id;
+
+        }
+        for (const t of root.liveToplevels) {
+            const ws = t.workspace;
+            if (ws && ws.id > max)
+                max = ws.id;
 
         }
         return max;
