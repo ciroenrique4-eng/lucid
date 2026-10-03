@@ -100,10 +100,40 @@ Item {
         return -1;
     }
     readonly property int activeSlot: root.shownSpecialSlot >= 0 ? root.shownSpecialSlot : root.activeWsId - 1
+    // quickshell drops a window only on its closewindow event, never on a refresh, so one
+    // that missed it (an electron app quitting, seen with feishin) stays listed for good.
+    // its wayland handle goes with the window, so a window without one is not counted
+    readonly property var liveToplevels: Hyprland.toplevels.values.filter((t) => {
+        return !!t.wayland;
+    })
+    // each regular slot's windows, in the order they opened
+    readonly property var slotWindows: {
+        const out = [];
+        for (let i = 0; i < root.slotCount; i++) out.push([])
+        for (const t of root.liveToplevels) {
+            const ws = t.workspace;
+            if (ws && ws.id > 0 && ws.id <= root.slotCount)
+                out[ws.id - 1].push(t);
+
+        }
+        return out;
+    }
+    // icons: a material symbol per window, the last place a "+n" once they pass iconMax
+    readonly property var slotGlyphs: {
+        // desktop entries stream in over a few seconds
+        void Specials.entryCount;
+        return root.slotWindows.map((list) => {
+            const all = list.map((t) => {
+                const o = t.lastIpcObject;
+                return Specials.appGlyph((t.wayland && t.wayland.appId) || (o && o.class) || "", "");
+            });
+            return all.length > root.iconMax ? all.slice(0, root.iconMax - 1).concat(["+" + (all.length - root.iconMax + 1)]) : all;
+        });
+    }
     // apps stashed in each special workspace, one entry per app, parallel to specialList
     readonly property var specialApps: {
         const byName = ({});
-        for (const t of Hyprland.toplevels.values) {
+        for (const t of root.liveToplevels) {
             const ws = t.workspace;
             if (!ws || ws.id >= 0)
                 continue;
@@ -148,10 +178,12 @@ Item {
     readonly property int hoverActiveDotWidth: 38
     readonly property int sunkDotSize: 6
     readonly property int sunkActiveWidth: 14
-    // icons: a material symbol for the app in each workspace, a dot for an empty one
+    // icons: a material symbol for each window in a workspace, side by side, a dot for an empty one
     readonly property int iconSlot: 22
     readonly property int iconActiveWidth: 34
     readonly property int iconGlyph: 16
+    readonly property int iconGap: 2
+    readonly property int iconMax: 4
     // track: equal segments, the accent pill a thumb a little taller than it
     readonly property int trackWidth: 16
     readonly property int trackHeight: 6
@@ -299,7 +331,7 @@ Item {
     readonly property int pendingCount: Object.keys(root.pendingMoves).length + Object.keys(root.pendingSwaps).length
     readonly property var windowList: {
         const out = [];
-        for (const t of Hyprland.toplevels.values) {
+        for (const t of root.liveToplevels) {
             const o = t.lastIpcObject;
             if (!o || !o.address || !o.at || !o.size || !o.workspace)
                 continue;
@@ -389,10 +421,11 @@ Item {
         const ws = root.wsAt(index);
         const wide = index === root.activeSlot || (ws && (ws.active || ws.urgent));
         if (root.iconsStyle && !root.sunk) {
-            if (wide)
-                return root.iconActiveWidth;
+            const n = root.glyphCount(index);
+            if (n === 0)
+                return wide ? root.iconActiveWidth : root.dotSize;
 
-            return root.slotGlyph(index) !== "" ? root.iconSlot : root.dotSize;
+            return n * root.iconGlyph + (n - 1) * root.iconGap + (wide ? root.iconActiveWidth : root.iconSlot) - root.iconGlyph;
         }
         if (root.sunk)
             return wide ? root.sunkActiveWidth : root.sunkDotSize;
@@ -410,34 +443,15 @@ Item {
         if (root.trackStyle)
             return root.sunk ? root.sunkTrackHeight : root.trackHeight;
 
-        if (root.iconsStyle && !root.sunk && (index === root.activeSlot || root.slotGlyph(index) !== ""))
+        if (root.iconsStyle && !root.sunk && (index === root.activeSlot || root.glyphCount(index) > 0))
             return root.iconSlot;
 
         return root.sunk ? root.sunkDotSize : root.dotSize;
     }
 
-    // the symbol for the window last used in a workspace, "" while it is empty
-    function slotGlyph(index) {
-        const ws = root.wsAt(index);
-        const list = ws ? ws.toplevels.values : [];
-        if (list.length === 0)
-            return "";
-
-        let pick = list[0];
-        let best = Infinity;
-        for (const t of list) {
-            const o = t.lastIpcObject;
-            const h = o && o.focusHistoryID !== undefined ? o.focusHistoryID : Infinity;
-            if (h < best) {
-                best = h;
-                pick = t;
-            }
-        }
-        const o = pick.lastIpcObject;
-        const cls = (pick.wayland && pick.wayland.appId) || (o && o.class) || "";
-        // desktop entries stream in over a few seconds
-        void Specials.entryCount;
-        return Specials.appGlyph(cls, "");
+    function glyphCount(index) {
+        const g = root.slotGlyphs[index];
+        return g ? g.length : 0;
     }
 
     function chipOpen(index) {
@@ -1263,10 +1277,10 @@ Item {
                         readonly property bool isActive: dot.wsId === root.activeWsId
                         readonly property bool isUrgent: dot.wsObj ? dot.wsObj.urgent : false
                         // workspaces can exist while empty, so count windows rather than trusting wsObj
-                        readonly property bool isOccupied: dot.wsObj ? dot.wsObj.toplevels.values.length > 0 : false
+                        readonly property bool isOccupied: (root.slotWindows[dot.index] || []).length > 0
                         readonly property bool isLit: root.spread && root.pillCovers(dot.x, dot.width)
-                        readonly property string glyph: root.iconsStyle ? root.slotGlyph(dot.index) : ""
-                        readonly property bool glyphShown: dot.glyph !== "" && !root.spread && !root.sunk
+                        readonly property var glyphs: root.iconsStyle ? (root.slotGlyphs[dot.index] || []) : []
+                        readonly property bool glyphShown: dot.glyphs.length > 0 && !root.spread && !root.sunk
                         // the track is round at its two ends only, its seams nearly square
                         readonly property int seam: root.trackStyle && !root.spread ? Math.min(Theme.rad(1), dot.radius) : dot.radius
 
@@ -1286,7 +1300,7 @@ Item {
                             anchors.centerIn: parent
                             text: dot.wsId
                             // numbered, an empty workspace's number is quieter
-                            opacity: root.spread ? (root.numbered && !root.rowHovered && !(dot.wsObj && dot.wsObj.toplevels.values.length > 0) && !dot.isActive ? 0.5 : 1) : 0
+                            opacity: root.spread ? (root.numbered && !root.rowHovered && !dot.isOccupied && !dot.isActive ? 0.5 : 1) : 0
                             color: dot.isLit ? Theme.bgOpaque : (dot.isOccupied ? Theme.cSecondary : Theme.subtext)
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -1302,27 +1316,61 @@ Item {
 
                         }
 
-                        Shape {
+                        Row {
                             anchors.centerIn: parent
-                            width: root.iconGlyph
-                            height: root.iconGlyph
-                            preferredRendererType: Shape.CurveRenderer
+                            spacing: root.iconGap
                             opacity: dot.glyphShown ? 1 : 0
                             visible: opacity > 0.01
 
-                            ShapePath {
-                                strokeWidth: 0
-                                fillColor: dot.isUrgent || root.pillCovers(dot.x, dot.width) ? Theme.bgOpaque : Theme.cSecondary
+                            // by count, so a window's title changing does not rebuild them
+                            Repeater {
+                                model: dot.glyphs.length
 
-                                PathSvg {
-                                    path: Specials.glyphPath(dot.glyph)
+                                Item {
+                                    id: glyphItem
+
+                                    required property int index
+                                    readonly property string name: dot.glyphs[glyphItem.index] || ""
+                                    readonly property bool more: glyphItem.name.charAt(0) === "+"
+                                    readonly property color ink: dot.isUrgent || root.pillCovers(dot.x, dot.width) ? Theme.bgOpaque : Theme.cSecondary
+
+                                    width: root.iconGlyph
+                                    height: root.iconGlyph
+
+                                    Shape {
+                                        anchors.fill: parent
+                                        visible: !glyphItem.more
+                                        preferredRendererType: Shape.CurveRenderer
+
+                                        ShapePath {
+                                            strokeWidth: 0
+                                            fillColor: glyphItem.ink
+
+                                            PathSvg {
+                                                path: Specials.glyphPath(glyphItem.more ? "apps" : glyphItem.name)
+                                            }
+
+                                        }
+
+                                        transform: Scale {
+                                            xScale: root.iconGlyph / 24
+                                            yScale: root.iconGlyph / 24
+                                        }
+
+                                    }
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        visible: glyphItem.more
+                                        text: glyphItem.name
+                                        color: glyphItem.ink
+                                        font.family: Theme.fontFamily
+                                        font.bold: true
+                                        font.pixelSize: Theme.fs(10)
+                                    }
+
                                 }
 
-                            }
-
-                            transform: Scale {
-                                xScale: root.iconGlyph / 24
-                                yScale: root.iconGlyph / 24
                             }
 
                             Behavior on opacity {
