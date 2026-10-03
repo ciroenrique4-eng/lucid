@@ -43,7 +43,13 @@ Item {
         }
         return m;
     }
+    // the workspace on this bar's own monitor: with more than one monitor,
+    // several workspaces are active at once
     readonly property int activeWsId: {
+        const m = root.refMonitor;
+        if (m && m.activeWorkspace)
+            return m.activeWorkspace.id;
+
         for (const w of Hyprland.workspaces.values) {
             if (w.active)
                 return w.id;
@@ -837,22 +843,7 @@ Item {
         font.bold: true
     }
 
-    IpcHandler {
-        target: "workspaces"
-
-        function toggle(): void {
-            root.expanded = !root.expanded;
-        }
-
-        function open(): void {
-            root.expanded = true;
-        }
-
-        function close(): void {
-            root.expanded = false;
-        }
-
-    }
+    // the "workspaces" ipc target lives in shell.qml, which can have a bar per display
 
     Timer {
         interval: root.trackInterval
@@ -1173,7 +1164,7 @@ Item {
                         required property int index
                         readonly property int wsId: dot.index + 1
                         readonly property var wsObj: root.wsAt(dot.index)
-                        readonly property bool isActive: dot.wsObj ? dot.wsObj.active : false
+                        readonly property bool isActive: dot.wsId === root.activeWsId
                         readonly property bool isUrgent: dot.wsObj ? dot.wsObj.urgent : false
                         readonly property bool isLit: root.rowHovered && root.pillCovers(dot.x, dot.width)
 
@@ -1568,7 +1559,7 @@ Item {
                         required property int index
                         readonly property var wsObj: root.wsAt(tile.index)
                         readonly property bool isSpecial: tile.index >= root.slotCount
-                        readonly property bool isActive: tile.isSpecial ? tile.index === root.shownSpecialSlot : (tile.wsObj ? tile.wsObj.active : false)
+                        readonly property bool isActive: tile.isSpecial ? tile.index === root.shownSpecialSlot : tile.index + 1 === root.activeWsId
                         readonly property bool isUrgent: tile.wsObj ? tile.wsObj.urgent : false
                         readonly property bool isDropTarget: root.dragging && root.dropSlot === tile.index
                         readonly property bool highlighted: tileHover.hovered || root.selectedIndex === tile.index
