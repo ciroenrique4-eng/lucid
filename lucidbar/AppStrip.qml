@@ -320,6 +320,7 @@ BarPill {
 
     // its own row of things to click: hovering must not open the panel over it
     opensOnHover: false
+    overflowCompact: true
     // each icon lights up on its own
     tintsOnHover: false
     compactInteractive: false
