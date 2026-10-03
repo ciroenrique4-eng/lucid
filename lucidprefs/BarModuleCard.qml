@@ -1003,6 +1003,152 @@ SettingCard {
     }
 
     SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Icon size"
+        resetKey: "appsModuleIconSize"
+        description: "The size of each icon, as the dock's. The bar's height caps it."
+        stacked: true
+        showDivider: false
+
+        M3Slider {
+            width: parent.width
+            from: 16
+            to: 40
+            stepSize: 1
+            suffix: " px"
+            value: Prefs.appsModuleIconSize
+            onMoved: (v) => {
+                return Prefs.appsModuleIconSize = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Icon spacing"
+        resetKey: "appsModuleSpacing"
+        description: "The gap between neighbouring icons."
+        stacked: true
+        showDivider: false
+
+        M3Slider {
+            width: parent.width
+            from: 0
+            to: 20
+            stepSize: 1
+            suffix: " px"
+            value: Prefs.appsModuleSpacing
+            onMoved: (v) => {
+                return Prefs.appsModuleSpacing = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Show running applications"
+        resetKey: "appsModuleShowRunning"
+        description: "Apps with a window open show beside the pinned ones. Off, only the pinned apps show (with their windows marked)."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.appsModuleShowRunning
+            onToggled: (v) => {
+                return Prefs.appsModuleShowRunning = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Icon tiles"
+        resetKey: "appsModuleIconTiles"
+        description: "A tile behind each icon, as the dock's."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.appsModuleIconTiles
+            onToggled: (v) => {
+                return Prefs.appsModuleIconTiles = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Running indicator"
+        resetKey: "appsModuleIndicators"
+        description: "The marks under an app that has windows."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.appsModuleIndicators
+            onToggled: (v) => {
+                return Prefs.appsModuleIndicators = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Tooltips"
+        resetKey: "appsModuleTooltips"
+        description: "Resting on an icon opens the preview of its windows."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.appsModuleTooltips
+            onToggled: (v) => {
+                return Prefs.appsModuleTooltips = v;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Hover strength"
+        resetKey: "appsModuleHoverEffect"
+        description: "How far an icon swells under the pointer. At 0 the icons stay put; hovering still highlights them."
+        stacked: true
+        showDivider: false
+
+        M3Slider {
+            width: parent.width
+            from: 0
+            to: 2
+            stepSize: 0.1
+            suffix: "x"
+            value: Prefs.appsModuleHoverEffect
+            onMoved: (v) => {
+                return Prefs.appsModuleHoverEffect = Math.round(v * 10) / 10;
+            }
+        }
+
+    }
+
+    SettingRow {
+        visible: card.moduleId === "apps"
+        title: "Magnify on hover"
+        resetKey: "appsModuleMagnify"
+        description: "Icons swell as the pointer passes over them, and their neighbours follow in a ripple."
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.appsModuleMagnify
+            onToggled: (v) => {
+                return Prefs.appsModuleMagnify = v;
+            }
+        }
+
+    }
+
+    SettingRow {
         id: moreRow
 
         visible: !!card.mod && !!card.mod.more
