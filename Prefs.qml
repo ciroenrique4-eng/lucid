@@ -99,7 +99,7 @@ Singleton {
         }, {
             "key": "icons",
             "name": "Icons",
-            "blurb": "A symbol for the app in each, dots for the empty ones"
+            "blurb": "A symbol for each window, side by side, dots for the empty ones"
         }, {
             "key": "track",
             "name": "Track",
