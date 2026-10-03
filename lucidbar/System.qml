@@ -1441,7 +1441,9 @@ BarPill {
                         // bottom - they start under the SYSTEM line and grow to end
                         // with the left column
                         readonly property real tilesTop: root.wideMain ? sysOverline.height + systemSection.spacing : 0
-                        readonly property int tileRows: Math.max(1, Math.ceil(tilesGrid.visibleChildren.length / tilesGrid.columns))
+                        // children, not visibleChildren: that list empties while the panel is
+                        // hidden, so on open the rows read 1 and each tile took the whole column
+                        readonly property int tileRows: Math.max(1, Math.ceil(tilesGrid.children.length / tilesGrid.columns))
                         readonly property real wideTileHeight: Math.max(56, Math.floor((mainColumn.leftHeight - mainColumn.tilesTop - tilesGrid.rowSpacing * (mainColumn.tileRows - 1)) / mainColumn.tileRows))
                         // the last section down, for the one-column looks
                         readonly property Item lastDown: systemSection.visible ? systemSection : (mediaSection.visible ? mediaSection : soundSection)
