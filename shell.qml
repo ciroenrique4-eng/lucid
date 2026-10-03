@@ -84,7 +84,10 @@ ShellRoot {
                 "tray": sysTrayMod,
                 "clock": clockMod,
                 "notifications": notifMod,
-                "system": systemMod
+                "system": systemMod,
+                "privacy": privacyMod,
+                "power": powerMod,
+                "window": windowMod
             })
             readonly property var modules: Prefs.barModules.map((m) => {
                 return bar.moduleById[m.id];
@@ -379,8 +382,43 @@ ShellRoot {
 
             }
 
+            Privacy {
+                id: privacyMod
 
+                popupAlign: bar.alignOf("privacy")
 
+                hostWindow: bar
+                toast: toastMod
+                recorder: snapMod
+                x: bar.xOf("privacy")
+                anchors.top: parent.top
+                anchors.topMargin: bar.hiddenOffset
+
+            }
+
+            SessionMenu {
+                id: powerMod
+
+                popupAlign: bar.alignOf("power")
+
+                hostWindow: bar
+                x: bar.xOf("power")
+                anchors.top: parent.top
+                anchors.topMargin: bar.hiddenOffset
+
+            }
+
+            ActiveWindow {
+                id: windowMod
+
+                popupAlign: bar.alignOf("window")
+
+                hostWindow: bar
+                x: bar.xOf("window")
+                anchors.top: parent.top
+                anchors.topMargin: bar.hiddenOffset
+
+            }
 
             Repeater {
                 model: Prefs.barNotch ? bar.modules : []
@@ -495,8 +533,17 @@ ShellRoot {
                     mod: systemMod
                 }
 
+                ModuleRegion {
+                    mod: privacyMod
+                }
 
+                ModuleRegion {
+                    mod: powerMod
+                }
 
+                ModuleRegion {
+                    mod: windowMod
+                }
 
                 Region {
                     item: Prefs.barAutoHide ? revealArea : null
@@ -560,8 +607,20 @@ ShellRoot {
                     mod: systemMod
                 }
 
+                ModuleRegion {
+                    blur: true
+                    mod: privacyMod
+                }
 
+                ModuleRegion {
+                    blur: true
+                    mod: powerMod
+                }
 
+                ModuleRegion {
+                    blur: true
+                    mod: windowMod
+                }
 
             }
 
