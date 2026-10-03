@@ -168,7 +168,9 @@ PanelWindow {
         var tl = Hyprland.toplevels.values;
         for (var i = 0; i < tl.length; i++) {
             var o = tl[i].lastIpcObject;
-            if (o && o.class)
+            // quickshell keeps a window whose closewindow it missed (a refresh never drops
+            // one); its wayland handle is gone with it, so that is what tells it from a live one
+            if (o && o.class && tl[i].wayland)
                 out.push(o);
 
         }
