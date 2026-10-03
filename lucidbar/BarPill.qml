@@ -22,6 +22,8 @@ Item {
     property bool focusGrabs: true
     property bool panelFades: true
     property bool surfaceLayered: false
+    // the compact face may draw past the pill (a lifted icon) while no panel is open
+    property bool overflowCompact: false
 
     signal compactClicked()
 
@@ -378,7 +380,7 @@ Item {
         topRightRadius: pill.atBottom ? shell.radius : pill.topRadius
         bottomLeftRadius: pill.atBottom ? pill.topRadius : shell.radius
         bottomRightRadius: pill.atBottom ? pill.topRadius : shell.radius
-        clip: true
+        clip: !(pill.overflowCompact && !pill.anyOpen)
         layer.enabled: pill.surfaceLayered
         layer.samples: 4
 
