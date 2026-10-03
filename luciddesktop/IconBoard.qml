@@ -148,7 +148,53 @@ Item {
 
     }
 
-    // where a drag of our own icons would put each of them
+    // while our icons are dragged, the widgets' hitboxes: icons never go
+    // under a widget, and some (a silent visualiser) show nothing to say so
+    Repeater {
+        model: DesktopIcons.dragOver && DesktopIcons.dragKey !== "" ? DesktopIcons.widgetRects : []
+
+        Rectangle {
+            id: hitbox
+
+            required property var modelData
+            required property int index
+            readonly property bool blocking: DesktopIcons.dragBlockers.indexOf(hitbox.index) >= 0
+            readonly property color tone: hitbox.blocking ? Theme.error : Theme.text
+
+            x: hitbox.modelData.x
+            y: hitbox.modelData.y
+            width: hitbox.modelData.w
+            height: hitbox.modelData.h
+            radius: Theme.radiusSm
+            color: Theme.alpha(hitbox.tone, hitbox.blocking ? 0.14 : 0.05)
+            border.width: hitbox.blocking ? 2 : 1
+            border.color: Theme.alpha(hitbox.tone, hitbox.blocking ? 0.85 : 0.35)
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 120
+                }
+
+            }
+
+            Text {
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.margins: 10
+                visible: hitbox.blocking && text !== ""
+                text: hitbox.modelData.name
+                color: Theme.error
+                font.family: Theme.fontFamily
+                font.pixelSize: 13
+                font.weight: Font.DemiBold
+            }
+
+        }
+
+    }
+
+    // where a drag of our own icons would put each of them; when a widget
+    // holds the cell, the nearest free one the drop steps aside to
     Repeater {
         model: DesktopIcons.dragOver && DesktopIcons.dragKey !== "" && DesktopIcons.dropInto === "" ? DesktopIcons.dragKeys : []
 
@@ -157,15 +203,11 @@ Item {
 
             required property var modelData
 
-            readonly property var from: DesktopIcons.placed[ghost.modelData] || null
-            readonly property var anchorSpot: DesktopIcons.placed[DesktopIcons.dragKey] || null
-            readonly property var to: DesktopIcons.cellAt(DesktopIcons.dragX, DesktopIcons.dragY)
-            readonly property int c: (ghost.from && ghost.anchorSpot) ? Math.max(0, Math.min(DesktopIcons.cols - 1, ghost.from.c + ghost.to.c - ghost.anchorSpot.c)) : 0
-            readonly property int r: (ghost.from && ghost.anchorSpot) ? Math.max(0, Math.min(DesktopIcons.rows - 1, ghost.from.r + ghost.to.r - ghost.anchorSpot.r)) : 0
+            readonly property var spot: DesktopIcons.dragSpot(ghost.modelData)
 
-            visible: ghost.from !== null && ghost.anchorSpot !== null
-            x: DesktopIcons.tileX(ghost.c) + 4
-            y: DesktopIcons.tileY(ghost.r) + 2
+            visible: ghost.spot !== null
+            x: ghost.spot ? DesktopIcons.tileX(ghost.spot.lc) + 4 : 0
+            y: ghost.spot ? DesktopIcons.tileY(ghost.spot.lr) + 2 : 0
             width: DesktopIcons.tileW - 8
             height: DesktopIcons.tileH - 4
             radius: Theme.radiusSm
