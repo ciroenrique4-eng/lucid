@@ -335,7 +335,9 @@ Singleton {
                     w = Widgets.liveRect.width;
                     h = Widgets.liveRect.height;
                 }
+                var t = Widgets.typeAt(e.wtype);
                 out.push({
+                    "name": t ? t.name : "",
                     "x": x - root.widgetGap,
                     "y": y - root.widgetGap,
                     "w": w + 2 * root.widgetGap,
@@ -348,22 +350,81 @@ Singleton {
 
     function blockedGrid() {
         var b = new Array(root.cols * root.rows);
-        var rects = root.widgetRects;
         for (var c = 0; c < root.cols; c++) {
-            var x0 = root.tileX(c) + 4;
-            var x1 = x0 + root.tileW - 8;
-            for (var r = 0; r < root.rows; r++) {
-                var y0 = root.tileY(r) + 4;
-                var y1 = y0 + root.tileH - 8;
-                var hit = false;
-                for (var i = 0; i < rects.length && !hit; i++) {
-                    var q = rects[i];
-                    hit = x0 < q.x + q.w && x1 > q.x && y0 < q.y + q.h && y1 > q.y;
-                }
-                b[c * root.rows + r] = hit;
-            }
+            for (var r = 0; r < root.rows; r++)
+                b[c * root.rows + r] = root.widgetOn(c, r) >= 0;
         }
         return b;
+    }
+
+    // which of the widget rectangles covers a cell, or -1
+    function widgetOn(c, r) {
+        var x0 = root.tileX(c) + 4;
+        var x1 = x0 + root.tileW - 8;
+        var y0 = root.tileY(r) + 4;
+        var y1 = y0 + root.tileH - 8;
+        var rects = root.widgetRects;
+        for (var i = 0; i < rects.length; i++) {
+            var q = rects[i];
+            if (x0 < q.x + q.w && x1 > q.x && y0 < q.y + q.h && y1 > q.y)
+                return i;
+
+        }
+        return -1;
+    }
+
+    // where a drag of our own icons would put one of them, from the cell under
+    // the pointer: { c, r, widget, lc, lr } - widget = the rectangle in the way
+    // (or -1), lc/lr = where it lands then: the nearest free cell, the way
+    // relayout() steps it aside once the icons that stay have their cells
+    function dragSpot(key) {
+        var from = root.placed[key];
+        var anchor = root.placed[root.dragKey];
+        if (!from || !anchor)
+            return null;
+
+        var to = root.cellAt(root.dragX, root.dragY);
+        var c = Math.max(0, Math.min(root.cols - 1, from.c + to.c - anchor.c));
+        var r = Math.max(0, Math.min(root.rows - 1, from.r + to.r - anchor.r));
+        var w = root.widgetOn(c, r);
+        var lc = c;
+        var lr = r;
+        if (w >= 0) {
+            var taken = new Array(root.cols * root.rows);
+            var keys = Object.keys(root.placed);
+            for (var i = 0; i < keys.length; i++) {
+                if (root.dragKeys.indexOf(keys[i]) < 0)
+                    taken[root.placed[keys[i]].c * root.rows + root.placed[keys[i]].r] = true;
+
+            }
+            var spot = root.nearestFree(c, r, root.blockedGrid(), taken);
+            if (spot >= 0) {
+                lc = Math.floor(spot / root.rows);
+                lr = spot % root.rows;
+            }
+        }
+        return {
+            "c": c,
+            "r": r,
+            "widget": w,
+            "lc": lc,
+            "lr": lr
+        };
+    }
+
+    // the widgets a drag of our own icons is running into, by index
+    readonly property var dragBlockers: {
+        if (!root.dragOver || root.dragKey === "" || root.dropInto !== "")
+            return [];
+
+        var hit = [];
+        for (var i = 0; i < root.dragKeys.length; i++) {
+            var s = root.dragSpot(root.dragKeys[i]);
+            if (s && s.widget >= 0 && hit.indexOf(s.widget) < 0)
+                hit.push(s.widget);
+
+        }
+        return hit;
     }
 
     // whether a rectangle in screen pixels would cover an icon, for widgets
