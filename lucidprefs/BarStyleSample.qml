@@ -425,8 +425,8 @@ Item {
         Item {
             id: iconsSample
 
-            // the first is lit, the empty ones are dots
-            readonly property var glyphs: ["terminal", "web", "", "sports_esports", ""]
+            // a symbol per window: the first is lit, the empty ones are dots
+            readonly property var glyphs: [["terminal", "web"], ["code"], [], ["sports_esports"], []]
 
             implicitWidth: iconsRow.width
             implicitHeight: 18
@@ -444,34 +444,48 @@ Item {
                         id: iconSlot
 
                         required property int index
-                        readonly property string glyph: iconsSample.glyphs[index]
+                        readonly property var glyphs: iconsSample.glyphs[index] || []
+                        readonly property int n: iconSlot.glyphs.length
 
-                        width: index === 0 ? 28 : (glyph !== "" ? 18 : 8)
-                        height: index === 0 || glyph !== "" ? 18 : 8
+                        width: iconSlot.n === 0 ? 8 : iconSlot.n * 13 + (iconSlot.n - 1) * 2 + (index === 0 ? 14 : 5)
+                        height: iconSlot.n > 0 ? 18 : 8
                         radius: Theme.pill(Math.min(width, height))
-                        color: index === 0 ? Theme.accent : (glyph !== "" ? "transparent" : Theme.withBlur(Theme._darken(Theme.subtext, 0.45)))
+                        color: index === 0 ? Theme.accent : (iconSlot.n > 0 ? "transparent" : Theme.withBlur(Theme._darken(Theme.subtext, 0.45)))
                         anchors.verticalCenter: parent.verticalCenter
 
-                        Shape {
+                        Row {
                             anchors.centerIn: parent
-                            width: 13
-                            height: 13
-                            visible: iconSlot.glyph !== ""
-                            preferredRendererType: Shape.CurveRenderer
+                            spacing: 2
 
-                            ShapePath {
-                                strokeWidth: 0
-                                fillColor: iconSlot.index === 0 ? Theme.bgOpaque : Theme.cSecondary
+                            Repeater {
+                                model: iconSlot.n
 
-                                PathSvg {
-                                    path: Specials.glyphPath(iconSlot.glyph || "apps")
+                                Shape {
+                                    id: sampleGlyph
+
+                                    required property int index
+
+                                    width: 13
+                                    height: 13
+                                    preferredRendererType: Shape.CurveRenderer
+
+                                    ShapePath {
+                                        strokeWidth: 0
+                                        fillColor: iconSlot.index === 0 ? Theme.bgOpaque : Theme.cSecondary
+
+                                        PathSvg {
+                                            path: Specials.glyphPath(iconSlot.glyphs[sampleGlyph.index])
+                                        }
+
+                                    }
+
+                                    transform: Scale {
+                                        xScale: 13 / 24
+                                        yScale: 13 / 24
+                                    }
+
                                 }
 
-                            }
-
-                            transform: Scale {
-                                xScale: 13 / 24
-                                yScale: 13 / 24
                             }
 
                         }
