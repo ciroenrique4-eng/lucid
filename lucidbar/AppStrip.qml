@@ -22,7 +22,7 @@ BarPill {
     // the looks and options, from its card on the Bar page
     readonly property bool namesFace: Prefs.appsModuleStyle === "names"
     readonly property bool thisWorkspaceOnly: Prefs.appsModuleScope === "workspace"
-    readonly property int iconSize: Math.max(16, Math.min(24, root.compactHeight - 14))
+    readonly property int iconSize: Math.max(16, Math.min(Prefs.appsModuleIconSize, root.compactHeight - 6))
     readonly property int slotWidth: root.iconSize + 14
 
     function inScope(c) {
@@ -72,6 +72,10 @@ BarPill {
             const key = c.class.toLowerCase();
             let app = byKey[key];
             if (!app) {
+                // with running apps off, only the pinned ones show
+                if (!Prefs.appsModuleShowRunning)
+                    continue;
+
                 const e = root.dockMod ? root.dockMod.entryForClass(c.class) : null;
                 app = {
                     "key": key,
@@ -191,6 +195,9 @@ BarPill {
     }
 
     function showPreview(index) {
+        if (!Prefs.appsModuleTooltips)
+            return ;
+
         const app = index >= 0 && index < root.apps.length ? root.apps[index] : null;
         const tileItem = root.tileFor(index);
         if (!app || !tileItem)
@@ -486,7 +493,7 @@ BarPill {
             id: appRow
 
             anchors.centerIn: parent
-            spacing: 2
+            spacing: Prefs.appsModuleSpacing
 
             // by count, not by the list: the list is rebuilt whenever a window
             // changes title, and a list model would rebuild every icon with it
@@ -563,11 +570,45 @@ BarPill {
 
                     }
 
+                    // the dock's tile behind the icon
+                    Rectangle {
+                        visible: Prefs.appsModuleIconTiles
+                        x: tileIcon.x - 4
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: tileIcon.width + 8
+                        height: tileIcon.height + 8
+                        radius: Theme.rad(8)
+                        color: Theme.bgTile
+                    }
+
                     AppIcon {
                         id: tileIcon
 
+                        // the dock's hover: it swells under the pointer and, with
+                        // magnify, its neighbours follow in a ripple
+                        readonly property int hoverDist: faceArea.hoverIndex < 0 || faceArea.dragIndex >= 0 ? -1 : Math.abs(tile.index - faceArea.hoverIndex)
+                        readonly property real boost: {
+                            if (!Prefs.appsModuleMagnify)
+                                return 0;
+
+                            if (tileIcon.hoverDist === 1)
+                                return 0.06 * Prefs.appsModuleHoverEffect;
+
+                            return tileIcon.hoverDist === 2 ? 0.025 * Prefs.appsModuleHoverEffect : 0;
+                        }
+
                         app: tile.app
                         size: root.iconSize
+                        scale: faceArea.pressedIndex === tile.index ? 0.94 : (tile.hovered ? 1 + (tile.count > 0 ? 0.12 : 0.08) * Prefs.appsModuleHoverEffect : 1 + tileIcon.boost)
+
+                        Behavior on scale {
+                            NumberAnimation {
+                                duration: Theme.durShort
+                                easing.type: Easing.OutCubic
+                            }
+
+                        }
+
                         x: root.namesFace ? 9 : (parent.width - width) / 2
                         anchors.verticalCenter: parent.verticalCenter
                         opacity: tile.count > 0 || tile.hovered ? 1 : 0.72
@@ -635,7 +676,7 @@ BarPill {
                         anchors.horizontalCenter: tileIcon.horizontalCenter
                         y: root.atBottom ? parent.height - 5 : 2
                         spacing: 3
-                        visible: tile.count > 0
+                        visible: tile.count > 0 && Prefs.appsModuleIndicators
 
                         Repeater {
                             model: tile.focused ? 1 : marks.segments
