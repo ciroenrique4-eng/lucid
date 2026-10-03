@@ -321,7 +321,7 @@ Singleton {
         "when": "while an app is pinned or open",
         "more": "The pinned apps are the dock's: pin and unpin here or there, and both change.",
         "page": "dock",
-        "options": ["appsModulePinned", "appsModuleScope", "appsModuleClick", "appsModuleWheel", "appsModuleBadges", "appsModuleNameWidth"],
+        "options": ["appsModulePinned", "appsModuleScope", "appsModuleClick", "appsModuleWheel", "appsModuleBadges", "appsModuleNameWidth", "appsModuleShowRunning", "appsModuleIndicators", "appsModuleTooltips", "appsModuleIconSize", "appsModuleSpacing", "appsModuleHoverEffect", "appsModuleMagnify", "appsModuleIconTiles"],
         "style": "appsModuleStyle",
         "styles": [{
             "key": "icons",
@@ -724,6 +724,14 @@ Singleton {
     property alias showDesktop: s.showDesktop
     property alias desktopModuleStyle: s.desktopModuleStyle
     property alias appsModuleNameWidth: s.appsModuleNameWidth
+    property alias appsModuleIconSize: s.appsModuleIconSize
+    property alias appsModuleSpacing: s.appsModuleSpacing
+    property alias appsModuleHoverEffect: s.appsModuleHoverEffect
+    property alias appsModuleMagnify: s.appsModuleMagnify
+    property alias appsModuleShowRunning: s.appsModuleShowRunning
+    property alias appsModuleIconTiles: s.appsModuleIconTiles
+    property alias appsModuleIndicators: s.appsModuleIndicators
+    property alias appsModuleTooltips: s.appsModuleTooltips
     property alias clock24h: s.clock24h
     property alias clockShowDate: s.clockShowDate
     property alias clockStyle: s.clockStyle
@@ -1085,6 +1093,14 @@ Singleton {
         "showDesktop": false,
         "desktopModuleStyle": "sliver",
         "appsModuleNameWidth": 120,
+        "appsModuleIconSize": 24,
+        "appsModuleSpacing": 2,
+        "appsModuleHoverEffect": 1,
+        "appsModuleMagnify": false,
+        "appsModuleShowRunning": true,
+        "appsModuleIconTiles": false,
+        "appsModuleIndicators": true,
+        "appsModuleTooltips": true,
         "clock24h": false,
         "clockShowDate": true,
         "clockStyle": "inline",
@@ -1714,6 +1730,14 @@ Singleton {
             property bool showDesktop: false
             property string desktopModuleStyle: "sliver"
             property int appsModuleNameWidth: 120
+            property int appsModuleIconSize: 24
+            property int appsModuleSpacing: 2
+            property real appsModuleHoverEffect: 1
+            property bool appsModuleMagnify: false
+            property bool appsModuleShowRunning: true
+            property bool appsModuleIconTiles: false
+            property bool appsModuleIndicators: true
+            property bool appsModuleTooltips: true
             property bool clock24h: false
             property bool clockShowDate: true
             property string clockStyle: "inline"
