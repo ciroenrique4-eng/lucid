@@ -395,7 +395,7 @@ Item {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "No wallpapers in this folder"
+            text: I18n.tr("No wallpapers in this folder")
             color: Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody

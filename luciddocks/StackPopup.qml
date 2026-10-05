@@ -45,10 +45,10 @@ PopupWindow {
     function workspaceLabel(group) {
         var name = group.workspaceName || "";
         if (name.indexOf("special:") !== 0)
-            return "Workspace " + group.workspaceId;
+            return I18n.tr("Workspace %1", group.workspaceId);
 
         var s = name.slice(8);
-        return s === "" || s === "special" ? "Scratchpad" : "Scratchpad · " + s;
+        return s === "" || s === "special" ? I18n.tr("Scratchpad") : I18n.tr("Scratchpad · %1", s);
     }
 
     anchor.window: popup.hostWindow
@@ -330,7 +330,7 @@ PopupWindow {
                     anchors.top: openHereCard.bottom
                     anchors.topMargin: 7
                     anchors.horizontalCenter: openHereCard.horizontalCenter
-                    text: "Open here"
+                    text: I18n.tr("Open here")
                     color: openHereEntry.hovered ? Theme.text : Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontLabel

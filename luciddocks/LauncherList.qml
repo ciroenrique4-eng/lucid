@@ -11,7 +11,7 @@ Item {
     property int currentIndex: 0
     // what to embolden in each title
     property string query: ""
-    property string emptyLabel: "No results"
+    property string emptyLabel: I18n.tr("No results")
     // the settled view height; view.height is mid-animation while the panel resizes
     property real stableHeight: 0
     signal activated(int index)
@@ -109,16 +109,16 @@ Item {
     function hintFor(kind) {
         switch (kind) {
         case "window":
-            return "Switch";
+            return I18n.tr("Switch");
         case "app":
         case "action":
         case "url":
-            return "Open";
+            return I18n.tr("Open");
         case "command":
         case "power":
-            return "Run";
+            return I18n.tr("Run");
         case "web":
-            return "Search";
+            return I18n.tr("Search");
         }
         return "";
     }
@@ -634,7 +634,7 @@ Item {
                         elide: Text.ElideRight
                         textFormat: Text.StyledText
                         // an action found on its own names its app on the same line
-                        text: list.highlight(rowItem.title) + (rowItem.isAction && rowItem.subtitle !== "" ? "<font color=\"" + Theme.toHex(Theme.subtextDim) + "\">&nbsp;&nbsp;·&nbsp;&nbsp;" + list.escapeMarkup(rowItem.subtitle) + "</font>" : "")
+                        text: list.highlight(rowItem.title) + (rowItem.isAction && rowItem.subtitle !== "" ? "<font color=\"" + Theme.toHex(Theme.subtextDim) + "\">&nbsp;&nbsp;·&nbsp;&nbsp;" + list.escapeMarkup(rowItem.subtitle) + "</font>" : "") // i18n-skip
                         color: Theme.text
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBody
