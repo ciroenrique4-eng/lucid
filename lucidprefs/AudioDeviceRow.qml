@@ -15,11 +15,11 @@ Column {
     readonly property int volume: Audio.volumeOf(dev.modelData)
     readonly property bool muted: Audio.mutedOf(dev.modelData)
     readonly property string status: {
-        const what = dev.modelData.isSink ? "output" : "input";
+        const what = dev.modelData.isSink ? I18n.tr("Default output") : I18n.tr("Default input");
         if (dev.isDefault)
-            return dev.detail !== "" ? "Default " + what + " · " + dev.detail : "Default " + what;
+            return dev.detail !== "" ? what + " · " + dev.detail : what;
 
-        return dev.detail !== "" ? dev.detail : "Available";
+        return dev.detail !== "" ? dev.detail : I18n.tr("Available");
     }
 
     signal expandRequested()
@@ -129,7 +129,7 @@ Column {
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
-                text: dev.muted ? "Muted" : dev.volume + "%"
+                text: dev.muted ? I18n.tr("Muted") : dev.volume + "%"
                 color: dev.muted ? Theme.subtextDim : Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabel
@@ -230,7 +230,7 @@ Column {
                 spacing: 7
 
                 Text {
-                    text: dev.modelData.isSink ? "Socket" : "Connector"
+                    text: dev.modelData.isSink ? I18n.tr("Socket") : I18n.tr("Connector")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontLabelLg
@@ -243,7 +243,7 @@ Column {
                     options: (dev.ports ? dev.ports.list : []).map((p) => {
                         return {
                             "key": p.key,
-                            "label": p.available ? p.label : p.label + " — unplugged"
+                            "label": p.available ? p.label : I18n.tr("%1 — unplugged", p.label)
                         };
                     })
                     onChosen: (key) => {
@@ -260,7 +260,7 @@ Column {
                 spacing: 7
 
                 Text {
-                    text: "Mode"
+                    text: I18n.tr("Mode")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontLabelLg

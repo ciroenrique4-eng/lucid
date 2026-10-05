@@ -15,7 +15,7 @@ Column {
     readonly property bool sinkBalance: Audio.hasBalance(page.sink)
     readonly property var balanceLabels: {
         const out = [];
-        for (let v = -100; v <= 100; v += 5) out.push(v === 0 ? "Centre" : (v < 0 ? "Left " + (-v) + "%" : "Right " + v + "%"))
+        for (let v = -100; v <= 100; v += 5) out.push(v === 0 ? I18n.tr("Centre") : (v < 0 ? I18n.tr("Left %1%", -v) : I18n.tr("Right %1%", v)))
         return out;
     }
     // listening on a Bluetooth headset's microphone flips it into call mode,
@@ -25,20 +25,20 @@ Column {
     readonly property bool meterWouldSwitch: !!page.source && page.source.name.indexOf("bluez_input.") === 0 && Audio.wp["bluetooth.autoswitch-to-headset-profile"] !== false && !(page.sourceCard && page.sourceCard.active.indexOf("headset") === 0)
     readonly property string outputSummary: {
         if (Audio.outputs.length === 0)
-            return "This machine has nothing to play sound through.";
+            return I18n.tr("This machine has nothing to play sound through.");
 
         if (!page.sink)
-            return "Nothing is set as the output yet. Pick one below.";
+            return I18n.tr("Nothing is set as the output yet. Pick one below.");
 
         const detail = Audio.detailOf(page.sink);
         return Audio.label(page.sink) + (detail !== "" ? " · " + detail : "");
     }
     readonly property string inputSummary: {
         if (Audio.inputs.length === 0)
-            return "No microphone or other input is plugged into this machine.";
+            return I18n.tr("No microphone or other input is plugged into this machine.");
 
         if (!page.source)
-            return "Nothing is set as the input yet. Pick one below.";
+            return I18n.tr("Nothing is set as the input yet. Pick one below.");
 
         const detail = Audio.detailOf(page.source);
         return Audio.label(page.source) + (detail !== "" ? " · " + detail : "");
@@ -52,10 +52,10 @@ Column {
     }
 
     SettingCard {
-        title: "OUTPUT"
+        title: I18n.tr("OUTPUT")
 
         SettingRow {
-            title: "Volume"
+            title: I18n.tr("Volume")
             description: page.outputSummary
             enabled: !!page.sink
             disabledReason: page.outputSummary
@@ -109,10 +109,10 @@ Column {
         }
 
         SettingRow {
-            title: "Balance"
+            title: I18n.tr("Balance")
             enabled: page.sinkBalance
-            disabledReason: page.sink ? "This output has a single channel." : "There is no output."
-            description: "Lean the sound towards the left or the right side."
+            disabledReason: page.sink ? I18n.tr("This output has a single channel.") : I18n.tr("There is no output.")
+            description: I18n.tr("Lean the sound towards the left or the right side.")
             stacked: true
 
             Row {
@@ -150,10 +150,10 @@ Column {
         }
 
         SettingRow {
-            title: "Test"
+            title: I18n.tr("Test")
             enabled: !!page.sink
-            disabledReason: "There is no output to test."
-            description: page.sinkBalance ? "A voice names each side, so you can tell they are the right way round." : "Play a short voice clip on this output."
+            disabledReason: I18n.tr("There is no output to test.")
+            description: page.sinkBalance ? I18n.tr("A voice names each side, so you can tell they are the right way round.") : I18n.tr("Play a short voice clip on this output.")
 
             Row {
                 spacing: 8
@@ -161,14 +161,14 @@ Column {
                 M3Button {
                     variant: "tonal"
                     enabled: !!page.sink
-                    text: page.sinkBalance ? "Left" : "Play"
+                    text: page.sinkBalance ? I18n.tr("Left") : I18n.tr("Play")
                     onClicked: Audio.testSide(page.sink, page.sinkBalance ? "FL" : "")
                 }
 
                 M3Button {
                     variant: "tonal"
                     visible: page.sinkBalance
-                    text: "Right"
+                    text: I18n.tr("Right")
                     onClicked: Audio.testSide(page.sink, "FR")
                 }
 
@@ -177,9 +177,9 @@ Column {
         }
 
         SettingRow {
-            title: "Move playing apps with the output"
+            title: I18n.tr("Move playing apps with the output")
             resetKey: "audioMoveStreams"
-            description: "Picking a different output carries anything already playing across to it. With this off, only apps that have no device of their own follow the change."
+            description: I18n.tr("Picking a different output carries anything already playing across to it. With this off, only apps that have no device of their own follow the change.")
             showDivider: false
 
             M3Switch {
@@ -198,7 +198,7 @@ Column {
             spacing: 2
 
             GroupLabel {
-                text: "Play sound through"
+                text: I18n.tr("Play sound through")
                 visible: Audio.outputs.length > 0
             }
 
@@ -218,7 +218,7 @@ Column {
                 horizontalAlignment: Text.AlignHCenter
                 topPadding: 18
                 bottomPadding: 18
-                text: "No outputs. A card switched off in its mode below offers none, and a Bluetooth speaker has to be connected on the Bluetooth page first."
+                text: I18n.tr("No outputs. A card switched off in its mode below offers none, and a Bluetooth speaker has to be connected on the Bluetooth page first.")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBody
@@ -230,10 +230,10 @@ Column {
     }
 
     SettingCard {
-        title: "INPUT"
+        title: I18n.tr("INPUT")
 
         SettingRow {
-            title: "Microphone volume"
+            title: I18n.tr("Microphone volume")
             description: page.inputSummary
             enabled: !!page.source
             disabledReason: page.inputSummary
@@ -295,7 +295,7 @@ Column {
                         anchors.right: listenBtn.left
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
-                        text: page.btListen ? "Listening. The headset plays at call quality until you stop." : "The meter waits here: listening to a Bluetooth headset's microphone switches it to call-quality sound."
+                        text: page.btListen ? I18n.tr("Listening. The headset plays at call quality until you stop.") : I18n.tr("The meter waits here: listening to a Bluetooth headset's microphone switches it to call-quality sound.")
                         color: Theme.subtext
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBodyMd
@@ -308,7 +308,7 @@ Column {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         variant: page.btListen ? "filled" : "tonal"
-                        text: page.btListen ? "Stop" : "Listen"
+                        text: page.btListen ? I18n.tr("Stop") : I18n.tr("Listen")
                         onClicked: page.btListen = !page.btListen
                     }
 
@@ -324,7 +324,7 @@ Column {
             spacing: 2
 
             GroupLabel {
-                text: "Record from"
+                text: I18n.tr("Record from")
                 visible: Audio.inputs.length > 0
             }
 
@@ -344,7 +344,7 @@ Column {
                 horizontalAlignment: Text.AlignHCenter
                 topPadding: 18
                 bottomPadding: 18
-                text: "Nothing to record from. A headset has to be in a mode that includes its microphone before it shows up here."
+                text: I18n.tr("Nothing to record from. A headset has to be in a mode that includes its microphone before it shows up here.")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBody
@@ -357,13 +357,13 @@ Column {
     }
 
     SettingCard {
-        title: "FEEDBACK SOUNDS"
-        subtitle: "Short sounds for things you do. Pick one of the shell's own for each, or Custom to bring a file of yours: it is copied into ~/.config/lucid/sounds."
+        title: I18n.tr("FEEDBACK SOUNDS")
+        subtitle: I18n.tr("Short sounds for things you do. Pick one of the shell's own for each, or Custom to bring a file of yours: it is copied into ~/.config/lucid/sounds.")
 
         SettingRow {
-            title: "Volume changes"
+            title: I18n.tr("Volume changes")
             resetKey: "soundVolumeFeedback"
-            description: "A click on every step, like turning a dial, from the keys, the bar or anywhere else, so you can hear the new level."
+            description: I18n.tr("A click on every step, like turning a dial, from the keys, the bar or anywhere else, so you can hear the new level.")
             stacked: true
 
             FeedbackSound {
@@ -373,9 +373,9 @@ Column {
         }
 
         SettingRow {
-            title: "Brightness changes"
+            title: I18n.tr("Brightness changes")
             resetKey: "soundBrightness"
-            description: "A click on every step of the screen's brightness. The dimming before the screen goes idle stays quiet."
+            description: I18n.tr("A click on every step of the screen's brightness. The dimming before the screen goes idle stays quiet.")
             stacked: true
 
             FeedbackSound {
@@ -385,9 +385,9 @@ Column {
         }
 
         SettingRow {
-            title: "Plugging in and pulling out"
+            title: I18n.tr("Plugging in and pulling out")
             resetKey: "soundPlug"
-            description: "The charger, a USB device or a Bluetooth one connecting: a sound going up as it arrives, and down as it leaves."
+            description: I18n.tr("The charger, a USB device or a Bluetooth one connecting: a sound going up as it arrives, and down as it leaves.")
             stacked: true
 
             FeedbackSound {
@@ -397,9 +397,9 @@ Column {
         }
 
         SettingRow {
-            title: "Locking and unlocking"
+            title: I18n.tr("Locking and unlocking")
             resetKey: "soundLock"
-            description: "As the lock screen comes up, and again as it lets you in."
+            description: I18n.tr("As the lock screen comes up, and again as it lets you in.")
             stacked: true
 
             FeedbackSound {
@@ -409,9 +409,9 @@ Column {
         }
 
         SettingRow {
-            title: "Emptying the trash"
+            title: I18n.tr("Emptying the trash")
             resetKey: "soundTrash"
-            description: "When the trash goes from full to empty, from the desktop's menu, a file manager or anywhere else."
+            description: I18n.tr("When the trash goes from full to empty, from the desktop's menu, a file manager or anywhere else.")
             stacked: true
 
             FeedbackSound {
@@ -421,9 +421,9 @@ Column {
         }
 
         SettingRow {
-            title: "Screenshots"
+            title: I18n.tr("Screenshots")
             resetKey: "soundCapture"
-            description: "As a capture is taken, of the screen, a region or a window."
+            description: I18n.tr("As a capture is taken, of the screen, a region or a window.")
             stacked: true
 
             FeedbackSound {
@@ -433,9 +433,9 @@ Column {
         }
 
         SettingRow {
-            title: "Volume"
+            title: I18n.tr("Volume")
             resetKey: "soundFeedbackVolume"
-            description: "For all of the sounds above, on top of the output's own volume."
+            description: I18n.tr("For all of the sounds above, on top of the output's own volume.")
             stacked: true
             showDivider: false
 
@@ -465,8 +465,8 @@ Column {
     }
 
     SettingCard {
-        title: "APPLICATIONS"
-        subtitle: "Everything making or taking sound right now. Each one keeps its own volume and can be sent to a device of its own."
+        title: I18n.tr("APPLICATIONS")
+        subtitle: I18n.tr("Everything making or taking sound right now. Each one keeps its own volume and can be sent to a device of its own.")
 
         Column {
             width: parent.width
@@ -475,7 +475,7 @@ Column {
             spacing: 2
 
             GroupLabel {
-                text: "Playing"
+                text: I18n.tr("Playing")
                 visible: Audio.playbackStreams.length > 0
             }
 
@@ -490,7 +490,7 @@ Column {
             }
 
             GroupLabel {
-                text: "Recording"
+                text: I18n.tr("Recording")
                 visible: Audio.recordStreams.length > 0
             }
 
@@ -510,7 +510,7 @@ Column {
                 horizontalAlignment: Text.AlignHCenter
                 topPadding: 18
                 bottomPadding: 18
-                text: "Nothing is playing or recording."
+                text: I18n.tr("Nothing is playing or recording.")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBody
@@ -521,44 +521,44 @@ Column {
     }
 
     SettingCard {
-        title: "BEHAVIOUR"
-        subtitle: "Kept by WirePlumber, so they hold for every application and survive a restart."
+        title: I18n.tr("BEHAVIOUR")
+        subtitle: I18n.tr("Kept by WirePlumber, so they hold for every application and survive a restart.")
 
         WpSwitchRow {
             wpKey: "node.stream.restore-props"
-            title: "Remember each application's volume"
-            description: "An application starts at the volume and mute it had the last time."
+            title: I18n.tr("Remember each application's volume")
+            description: I18n.tr("An application starts at the volume and mute it had the last time.")
         }
 
         WpSwitchRow {
             wpKey: "node.stream.restore-target"
-            title: "Remember where each application plays"
-            description: "An application you sent to another device goes back there the next time it starts."
+            title: I18n.tr("Remember where each application plays")
+            description: I18n.tr("An application you sent to another device goes back there the next time it starts.")
         }
 
         WpSwitchRow {
             wpKey: "linking.follow-default-target"
-            title: "Move sound along with the default device"
-            description: "Applications playing on the default device follow it when you choose another one."
+            title: I18n.tr("Move sound along with the default device")
+            description: I18n.tr("Applications playing on the default device follow it when you choose another one.")
         }
 
         WpSwitchRow {
             wpKey: "linking.pause-playback"
-            title: "Pause media when its device goes away"
-            description: "Players pause when headphones are unplugged or a headset disconnects, instead of carrying on through the speakers."
+            title: I18n.tr("Pause media when its device goes away")
+            description: I18n.tr("Players pause when headphones are unplugged or a headset disconnects, instead of carrying on through the speakers.")
         }
 
         WpSwitchRow {
             wpKey: "bluetooth.autoswitch-to-headset-profile"
-            title: "Switch headsets to call mode for their microphone"
-            description: "When an application records from a Bluetooth headset, it changes to the headset profile: the microphone works, and playback drops to call quality until the recording stops."
+            title: I18n.tr("Switch headsets to call mode for their microphone")
+            description: I18n.tr("When an application records from a Bluetooth headset, it changes to the headset profile: the microphone works, and playback drops to call quality until the recording stops.")
         }
 
         SettingRow {
-            title: "Bluetooth headsets favour"
+            title: I18n.tr("Bluetooth headsets favour")
             enabled: Audio.wp["bluetooth.profile-preference"] !== undefined
-            disabledReason: Audio.wpRead ? "This version of WirePlumber does not have this setting." : "WirePlumber's settings could not be read. They need wpctl from WirePlumber 0.5 or newer."
-            description: "What WirePlumber leans towards when it picks a headset's mode by itself."
+            disabledReason: Audio.wpRead ? I18n.tr("This version of WirePlumber does not have this setting.") : I18n.tr("WirePlumber's settings could not be read. They need wpctl from WirePlumber 0.5 or newer.")
+            description: I18n.tr("What WirePlumber leans towards when it picks a headset's mode by itself.")
 
             M3Segmented {
                 width: 240
@@ -566,10 +566,10 @@ Column {
                 current: Audio.wp["bluetooth.profile-preference"] === "latency" ? "latency" : "quality"
                 options: [{
                     "key": "quality",
-                    "label": "Quality"
+                    "label": I18n.tr("Quality")
                 }, {
                     "key": "latency",
-                    "label": "Latency"
+                    "label": I18n.tr("Latency")
                 }]
                 onChosen: (key) => {
                     return Audio.setWp("bluetooth.profile-preference", key);
@@ -580,8 +580,8 @@ Column {
 
         WpSwitchRow {
             wpKey: "node.features.audio.mono"
-            title: "Mono audio"
-            description: "Play the left and right channels together on every speaker and headphone. Every output restarts for a moment when this changes."
+            title: I18n.tr("Mono audio")
+            description: I18n.tr("Play the left and right channels together on every speaker and headphone. Every output restarts for a moment when this changes.")
             showDivider: false
         }
 
@@ -594,7 +594,7 @@ Column {
         readonly property bool known: Audio.wp[wpRow.wpKey] !== undefined
 
         enabled: wpRow.known
-        disabledReason: Audio.wpRead ? "This version of WirePlumber does not have this setting." : "WirePlumber's settings could not be read. They need wpctl from WirePlumber 0.5 or newer."
+        disabledReason: Audio.wpRead ? I18n.tr("This version of WirePlumber does not have this setting.") : I18n.tr("WirePlumber's settings could not be read. They need wpctl from WirePlumber 0.5 or newer.")
 
         M3Switch {
             enabled: wpRow.known
