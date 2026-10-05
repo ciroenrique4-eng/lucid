@@ -14,7 +14,7 @@ WidgetBody {
         "signal": { "type": "5G", "strength": 4 },
         "locked": false,
         "mpris": {
-            "title": "Blinding Lights",
+            "title": "Blinding Lights", // i18n-skip
             "artist": "The Weeknd",
             "playing": true
         }
@@ -73,7 +73,7 @@ WidgetBody {
 
         const id = w.dev.id;
         if (key === "share") {
-            KdeConnect.pickFiles(id, "Send to " + w.dev.name);
+            KdeConnect.pickFiles(id, I18n.tr("Send to %1", w.dev.name));
         } else if (key === "ring") {
             KdeConnect.ring(id);
             w.say("Ringing " + w.dev.name);
@@ -84,7 +84,7 @@ WidgetBody {
             KdeConnect.browse(id);
             w.say("Opening its files");
         } else if (key === "ping") {
-            KdeConnect.ping(id, "Ping from Lucid");
+            KdeConnect.ping(id, I18n.tr("Ping from Lucid"));
             w.say("Pinged");
         }
     }
@@ -97,7 +97,7 @@ WidgetBody {
     }
 
     readonly property bool connected: w.dev ? (w.dev.reachable === true) : false
-    readonly property string phoneName: w.dev ? (w.dev.name || "Phone") : "No phone"
+    readonly property string phoneName: w.dev ? (w.dev.name || I18n.tr("Phone")) : I18n.tr("No phone")
     readonly property var batt: w.dev ? w.dev.battery : null
     readonly property int chargePct: w.batt ? (w.batt.charge !== undefined ? w.batt.charge : -1) : -1
     readonly property bool charging: w.batt ? !!w.batt.charging : false
@@ -121,12 +121,12 @@ WidgetBody {
     readonly property real battLevel: w.chargePct >= 0 ? w.chargePct / 100 : 0
     readonly property string stateText: {
         if (w.chargePct < 0)
-            return "Connected";
+            return I18n.tr("Connected");
 
         if (w.charging)
-            return w.chargePct >= 100 ? "Fully charged" : "Charging";
+            return w.chargePct >= 100 ? I18n.tr("Fully charged") : I18n.tr("Charging");
 
-        return w.low ? "Battery low" : "On battery";
+        return w.low ? I18n.tr("Battery low") : I18n.tr("On battery");
     }
 
     component SignalMark: Row {
@@ -219,7 +219,7 @@ WidgetBody {
             iconSize: parent.iconSize
             surface: true
             hoverGrow: true
-            tip: enabled ? "Send file" : "Sharing is off on the phone"
+            tip: enabled ? I18n.tr("Send file") : I18n.tr("Sharing is off on the phone")
             onClicked: w.act("share")
         }
 
@@ -231,7 +231,7 @@ WidgetBody {
             iconSize: parent.iconSize
             surface: true
             hoverGrow: true
-            tip: enabled ? "Ring phone" : "Find my phone is off on the phone"
+            tip: enabled ? I18n.tr("Ring phone") : I18n.tr("Find my phone is off on the phone")
             onClicked: w.act("ring")
         }
 
@@ -243,7 +243,7 @@ WidgetBody {
             iconSize: parent.iconSize
             surface: true
             hoverGrow: true
-            tip: enabled ? "Send clipboard" : "Clipboard sharing is off on the phone"
+            tip: enabled ? I18n.tr("Send clipboard") : I18n.tr("Clipboard sharing is off on the phone")
             onClicked: w.act("clipboard")
         }
 
@@ -255,7 +255,7 @@ WidgetBody {
             iconSize: parent.iconSize
             surface: true
             hoverGrow: true
-            tip: enabled ? "Browse its files" : "File browsing is off on the phone"
+            tip: enabled ? I18n.tr("Browse its files") : I18n.tr("File browsing is off on the phone")
             onClicked: w.act("browse")
         }
 
@@ -267,7 +267,7 @@ WidgetBody {
             iconSize: parent.iconSize
             surface: true
             hoverGrow: true
-            tip: "Ping phone"
+            tip: I18n.tr("Ping phone")
             onClicked: w.act("ping")
         }
 
@@ -279,7 +279,7 @@ WidgetBody {
             iconSize: parent.iconSize
             surface: true
             hoverGrow: true
-            tip: "Another phone"
+            tip: I18n.tr("Another phone")
             onClicked: w.nextDevice()
         }
 
@@ -329,7 +329,7 @@ WidgetBody {
                 iconSize: 15
                 surface: true
                 hoverGrow: true
-                tip: "Rescan devices"
+                tip: I18n.tr("Rescan devices")
                 onClicked: KdeConnect.rescan()
             }
 
@@ -343,7 +343,7 @@ WidgetBody {
 
                 Text {
                     width: parent.width
-                    text: KdeConnect.installed ? "No phone" : "Unavailable"
+                    text: KdeConnect.installed ? I18n.tr("No phone") : I18n.tr("Unavailable")
                     color: Theme.text
                     font.family: Theme.fontFamily
                     font.pixelSize: 13
@@ -353,7 +353,7 @@ WidgetBody {
 
                 Text {
                     width: parent.width
-                    text: KdeConnect.installed ? "Pair in Settings" : "Install kdeconnect"
+                    text: KdeConnect.installed ? I18n.tr("Pair in Settings") : I18n.tr("Install kdeconnect")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.pixelSize: 11
@@ -388,7 +388,7 @@ WidgetBody {
                 anchors.right: parent.right
                 anchors.top: roomyIcon.bottom
                 anchors.topMargin: 14
-                text: KdeConnect.installed ? "No phone connected" : "KDE Connect unavailable"
+                text: KdeConnect.installed ? I18n.tr("No phone connected") : I18n.tr("KDE Connect unavailable")
                 color: Theme.text
                 font.family: Theme.fontFamily
                 font.pixelSize: 14
@@ -401,7 +401,7 @@ WidgetBody {
                 anchors.right: parent.right
                 anchors.top: roomyTitle.bottom
                 anchors.topMargin: 3
-                text: KdeConnect.installed ? "Pair a phone in Settings" : "Install kdeconnect to pair a phone"
+                text: KdeConnect.installed ? I18n.tr("Pair a phone in Settings") : I18n.tr("Install kdeconnect to pair a phone")
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: 11
@@ -416,7 +416,7 @@ WidgetBody {
                 iconSize: 18
                 surface: true
                 hoverGrow: true
-                tip: "Rescan devices"
+                tip: I18n.tr("Rescan devices")
                 onClicked: KdeConnect.rescan()
             }
 
@@ -762,7 +762,7 @@ WidgetBody {
                     iconSize: 15
                     surface: true
                     hoverGrow: true
-                    tip: "Previous track"
+                    tip: I18n.tr("Previous track")
                     onClicked: if (w.dev) KdeConnect.mpris(w.dev.id, "Previous")
                 }
 
@@ -773,7 +773,7 @@ WidgetBody {
                     iconSize: 19
                     filled: true
                     hoverGrow: true
-                    tip: w.isPlaying ? "Pause" : "Play"
+                    tip: w.isPlaying ? I18n.tr("Pause") : I18n.tr("Play")
                     onClicked: if (w.dev) KdeConnect.mpris(w.dev.id, "PlayPause")
                 }
 
@@ -784,7 +784,7 @@ WidgetBody {
                     iconSize: 15
                     surface: true
                     hoverGrow: true
-                    tip: "Next track"
+                    tip: I18n.tr("Next track")
                     onClicked: if (w.dev) KdeConnect.mpris(w.dev.id, "Next")
                 }
 
@@ -804,7 +804,7 @@ WidgetBody {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Nothing playing"
+                    text: I18n.tr("Nothing playing")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.pixelSize: 11
