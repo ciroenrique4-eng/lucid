@@ -316,7 +316,7 @@ Column {
                     variant: "tonal"
                     text: I18n.tr("Start hotspot")
                     enabled: !Net.busy && page.hotspotSsid.trim() !== "" && page.hotspotPsk.length >= 8
-                    onClicked: Prefs.askConfirm(I18n.tr("Start a hotspot?"), I18n.tr("This drops the Wi-Fi network you are on and turns the radio into an access point named %1.", page.hotspotSsid.trim()), I18n.tr("Start"), "net-hotspot:" + page.hotspotSsid.trim() + "\n" + page.hotspotPsk)
+                    onClicked: Prefs.askConfirm(I18n.tr("Start a hotspot?"), I18n.tr("This drops the Wi-Fi network you are on and turns the radio into an access point named %1.", page.hotspotSsid.trim()), I18n.trc("verb", "Start"), "net-hotspot:" + page.hotspotSsid.trim() + "\n" + page.hotspotPsk)
                 }
 
             }

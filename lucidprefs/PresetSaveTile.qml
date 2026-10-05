@@ -16,7 +16,7 @@ Item {
     // the first free "Layout n", so enter alone is enough to save
     function suggestion() {
         for (var n = Widgets.userPresets.length + 1; n < 1000; n++) {
-            if (Widgets.userPresetNamed("Layout " + n) === null)
+            if (Widgets.userPresetNamed(I18n.tr("Layout %1", n)) === null)
                 return I18n.tr("Layout %1", n);
 
         }
