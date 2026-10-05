@@ -36,7 +36,7 @@ Singleton {
     property string vendor: ""
 
     readonly property bool prompting: root.flowRef !== null && root.flowRef.isResponseRequired
-    readonly property string prompt: root.flowRef ? root.flowRef.inputPrompt : "Password"
+    readonly property string prompt: root.flowRef ? root.flowRef.inputPrompt : I18n.tr("Password")
     readonly property bool secret: root.flowRef ? !root.flowRef.responseVisible : true
     readonly property bool multiUser: root.identities.length > 1
     readonly property string glyph: root.glyphFor(root.actionId, root.iconHint)
@@ -225,7 +225,7 @@ Singleton {
 
             root.submitted = false;
             if (root.errorText === "")
-                root.errorText = "That password was not accepted.";
+                root.errorText = I18n.tr("That password was not accepted.");
 
             root.failed();
         }
@@ -335,7 +335,7 @@ Singleton {
         }
 
         function fail(): string {
-            root.errorText = "That password was not accepted.";
+            root.errorText = I18n.tr("That password was not accepted.");
             root.checking = false;
             root.failed();
             return "failed";
