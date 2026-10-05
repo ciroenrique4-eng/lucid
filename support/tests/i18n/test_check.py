@@ -121,6 +121,10 @@ class CheckTest(unittest.TestCase):
         src = '{ "id": "spotify", "title": ["Spotify", "Spotify Free"] },\n'
         self.assertEqual(Tree({"a.qml": src}).run(), (0, ""))
 
+    def test_subscripts_ignored(self):
+        src = '"description": (c.properties || {})["device.description"] || c.name,\n'
+        self.assertEqual(Tree({"a.qml": src}).run(), (0, ""))
+
     def test_paths_scope(self):
         t = Tree({"a/x.qml": 'Text { text: I18n.tr("Battery") }\n', "b/x.qml": 'Text { text: "Loose" }\n'}, {"Battery": "Batería"})
         rc, out = t.run(os.path.join(t.dir, "a"))
