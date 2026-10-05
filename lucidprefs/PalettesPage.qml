@@ -257,7 +257,7 @@ Column {
                 } catch (e) {
                 }
                 page.exportState = r && r.ok ? "done" : "error";
-                page.exportMessage = r ? (r.ok ? "Written to " + r.file.replace(page.home, "~") + "." : r.error) : "The palette could not be written.";
+                page.exportMessage = r ? (r.ok ? I18n.tr("Written to %1.", r.file.replace(page.home, "~")) : r.error) : I18n.tr("The palette could not be written.");
             }
         }
 
@@ -517,7 +517,7 @@ Column {
                                         return I18n.tr("Importing...");
 
                                     if (page.addState === "error")
-                                        return "Could not import it";
+                                        return I18n.tr("Could not import it");
 
                                     return page.addResult ? page.addResult.name : "";
                                 }

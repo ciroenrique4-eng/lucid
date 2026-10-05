@@ -105,7 +105,7 @@ Column {
             }
 
             visible: undo !== null
-            title: undo ? I18n.tr("Applied %1", undo.name) : ""
+            title: undo ? I18n.tr("Applied %1", (undo.id && Prefs.barPresetById(undo.id)) ? Prefs.barPresetById(undo.id).name : undo.name) : ""
             description: I18n.tr("What it replaced is kept: undo puts the bar back as it was before.")
             showDivider: false
 
