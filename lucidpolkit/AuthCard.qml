@@ -10,7 +10,7 @@ Rectangle {
     property bool shown: false
 
     readonly property var identity: Polkit.identities[Polkit.identityIndex] !== undefined ? Polkit.identities[Polkit.identityIndex] : null
-    readonly property string headline: Polkit.title !== "" ? Polkit.title : "Authentication required"
+    readonly property string headline: Polkit.title !== "" ? Polkit.title : I18n.tr("Authentication required")
     readonly property bool busy: Polkit.checking || (!Polkit.prompting && !Polkit.preview && !Polkit.granted)
     readonly property bool canSubmit: !card.busy && pwInput.text !== ""
 
@@ -147,7 +147,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
 
                 Text {
-                    text: "Authentication required"
+                    text: I18n.tr("Authentication required")
                     color: Theme.accent
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontLabelMd
@@ -188,7 +188,7 @@ Rectangle {
             visible: card.identity !== null
 
             Text {
-                text: Polkit.multiUser ? "Continue as" : "Signing in as"
+                text: Polkit.multiUser ? I18n.tr("Continue as") : I18n.tr("Signing in as")
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabelSm
@@ -441,7 +441,7 @@ Rectangle {
         Item {
             id: status
 
-            readonly property string line: Polkit.errorText !== "" ? Polkit.errorText : (Polkit.infoText !== "" ? Polkit.infoText : (card.busy ? "Checking with the authentication service…" : ""))
+            readonly property string line: Polkit.errorText !== "" ? Polkit.errorText : (Polkit.infoText !== "" ? Polkit.infoText : (card.busy ? I18n.tr("Checking with the authentication service…") : ""))
 
             width: parent.width
             height: status.line !== "" ? 18 : 0
@@ -492,7 +492,7 @@ Rectangle {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Details"
+                        text: I18n.tr("Details")
                         color: Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBodySm
@@ -531,13 +531,13 @@ Rectangle {
                 spacing: 8
 
                 M3Button {
-                    text: "Cancel"
+                    text: I18n.tr("Cancel")
                     variant: "text"
                     onClicked: Polkit.cancel()
                 }
 
                 M3Button {
-                    text: "Authenticate"
+                    text: I18n.tr("Authenticate")
                     variant: "filled"
                     enabled: card.canSubmit
                     onClicked: card.submit()
@@ -572,7 +572,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "Action  " + Polkit.actionId
+                        text: I18n.tr("Action  %1", Polkit.actionId)
                         color: Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBodySm
@@ -581,7 +581,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "Vendor  " + Polkit.vendor
+                        text: I18n.tr("Vendor  %1", Polkit.vendor)
                         color: Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBodySm
@@ -637,7 +637,7 @@ Rectangle {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Authorised"
+            text: I18n.tr("Authorised")
             color: Theme.text
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontTitleMd
