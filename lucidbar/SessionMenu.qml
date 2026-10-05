@@ -21,32 +21,32 @@ BarPill {
     property bool canHibernate: false
     readonly property var catalogue: [{
         "id": "lock",
-        "label": "Lock",
+        "label": I18n.tr("Lock"),
         "icon": "lock",
         "confirm": false
     }, {
         "id": "suspend",
-        "label": "Suspend",
+        "label": I18n.tr("Suspend"),
         "icon": "suspend",
         "confirm": false
     }, {
         "id": "hibernate",
-        "label": "Hibernate",
+        "label": I18n.tr("Hibernate"),
         "icon": "hibernate",
         "confirm": false
     }, {
         "id": "logout",
-        "label": "Log out",
+        "label": I18n.tr("Log out"),
         "icon": "logout",
         "confirm": true
     }, {
         "id": "reboot",
-        "label": "Restart",
+        "label": I18n.tr("Restart"),
         "icon": "reboot",
         "confirm": true
     }, {
         "id": "shutdown",
-        "label": "Shut down",
+        "label": I18n.tr("Shut down"),
         "icon": "power",
         "confirm": true
     }]
@@ -132,7 +132,7 @@ BarPill {
                     const d = Math.floor(s / 86400);
                     const h = Math.floor(s % 86400 / 3600);
                     const m = Math.floor(s % 3600 / 60);
-                    root.uptime = "Up " + (d > 0 ? d + (d === 1 ? " day " : " days ") : "") + (d > 0 || h > 0 ? h + " h " : "") + m + " min";
+                    root.uptime = d > 0 ? I18n.trn("Up %1 day %2 h %3 min", "Up %1 days %2 h %3 min", d, d, h, m) : (h > 0 ? I18n.tr("Up %1 h %2 min", h, m) : I18n.tr("Up %1 min", m));
                 }
                 root.canHibernate = /"yes"/.test(lines[1] || "");
             }
@@ -174,7 +174,7 @@ BarPill {
                 Text {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "Power"
+                    text: I18n.tr("Power")
                     color: Theme.accent
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontTitleSm
@@ -249,7 +249,7 @@ BarPill {
                             y: root.gridPanel ? actionIcon.y + actionIcon.height + 8 : (parent.height - height) / 2
                             width: parent.width - x - (root.gridPanel ? 6 : 12)
                             horizontalAlignment: root.gridPanel ? Text.AlignHCenter : Text.AlignLeft
-                            text: actionRow.isArmed ? actionRow.modelData.label + (root.gridPanel ? "?" : "? Click again") : actionRow.modelData.label
+                            text: actionRow.isArmed ? actionRow.modelData.label + (root.gridPanel ? "?" : I18n.tr("? Click again")) : actionRow.modelData.label
                             color: actionRow.isArmed ? Theme.fgError : Theme.text
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontBodyLg
