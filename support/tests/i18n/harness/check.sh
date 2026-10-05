@@ -9,7 +9,12 @@ fail=0
 g(){ qs ipc --pid $PID call bench get; }
 want(){ local got; got=$(g); if [ "$got" = "$2" ]; then echo "ok   $1: $got"; else echo "FAIL $1: $got (want $2)"; fail=1; fi; }
 if [ "${1:-}" = "C.UTF-8" ]; then want 6 "Battery|en|en_US"; else
-want 1 "Batería|es|es_MX"; qs ipc --pid $PID call bench set en; sleep 0.5; want 2 "Battery|en|en_US"
+want 1 "Batería|es|es_MX"
+has(){ local got; got=$(qs ipc --pid $PID call bench search "$2"); case ";$got;" in *";$3;"*) echo "ok   $1: '$2' finds $3";; *) echo "FAIL $1: '$2' -> $got (want $3)"; fail=1;; esac; }
+has s1 idioma Idioma
+has s2 language Idioma
+has s3 diseno "Diseño de barra"
+has s4 "bar style" "Diseño de barra"; qs ipc --pid $PID call bench set en; sleep 0.5; want 2 "Battery|en|en_US"
 qs ipc --pid $PID call bench set es; sleep 0.5; want 3 "Batería|es|es_MX"
 sed -i 's/Batería/Pila/' $H/i18n/es.json; sleep 1; want 4 "Pila|es|es_MX"
 printf '{"Battery": ' > $H/i18n/es.json; sleep 1; want 5 "Pila|es|es_MX"
