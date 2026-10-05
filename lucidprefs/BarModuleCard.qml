@@ -72,7 +72,7 @@ SettingCard {
         id: showRow
 
         title: I18n.tr("Show in the bar")
-        description: I18n.tr("In the %1 group. Drag it in the arrangement above to move it.", card.groupName) + (card.away ? I18n.tr(" Not in the bar right now: it shows %1.", card.mod.when) : "")
+        description: (card.groupName === "left" ? I18n.tr("In the left group. Drag it in the arrangement above to move it.") : (card.groupName === "centre" ? I18n.tr("In the centre group. Drag it in the arrangement above to move it.") : I18n.tr("In the right group. Drag it in the arrangement above to move it."))) + (card.away ? I18n.tr(" Not in the bar right now: it shows %1.", card.mod.when) : "")
         enabled: card.barOn
         disabledReason: I18n.tr("The bar is switched off, so this module has nothing to appear in.")
         showDivider: false
