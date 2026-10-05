@@ -82,290 +82,290 @@ Singleton {
         "id": "workspaces",
         "key": "showWorkspaces",
         "home": "left",
-        "name": "Workspaces",
-        "desc": "Workspace pills and the expanded overview",
-        "more": "Special workspaces, which it shows as well, have a page of their own.",
+        "name": I18n.tr("Workspaces"),
+        "desc": I18n.tr("Workspace pills and the expanded overview"),
+        "more": I18n.tr("Special workspaces, which it shows as well, have a page of their own."),
         "page": "workspaces",
         "options": ["workspacesShown", "workspacesWheel"],
         "style": "workspacesStyle",
         "styles": [{
             "key": "dots",
-            "name": "Dots",
-            "blurb": "A dot for each, the numbers on hover"
+            "name": I18n.tr("Dots"),
+            "blurb": I18n.tr("A dot for each, the numbers on hover")
         }, {
             "key": "numbers",
-            "name": "Numbers",
-            "blurb": "Each one's number, the empty ones quieter"
+            "name": I18n.tr("Numbers"),
+            "blurb": I18n.tr("Each one's number, the empty ones quieter")
         }, {
             "key": "icons",
-            "name": "Icons",
-            "blurb": "A symbol for each window, side by side, dots for the empty ones"
+            "name": I18n.tr("Icons"),
+            "blurb": I18n.tr("A symbol for each window, side by side, dots for the empty ones")
         }, {
             "key": "track",
-            "name": "Track",
-            "blurb": "One segmented track, the accent sliding on it"
+            "name": I18n.tr("Track"),
+            "blurb": I18n.tr("One segmented track, the accent sliding on it")
         }]
     }, {
         "id": "media",
         "key": "showMedia",
         "home": "left",
-        "name": "Media",
-        "desc": "Now-playing pill and player controls",
-        "when": "while something plays",
+        "name": I18n.tr("Media"),
+        "desc": I18n.tr("Now-playing pill and player controls"),
+        "when": I18n.tr("while something plays"),
         "options": ["mediaHideIdle", "mediaArtist", "mediaTitleWidth", "mediaPlayButton", "mediaWheelVolume"],
         "style": "mediaStyle",
         "styles": [{
             "key": "playing",
-            "name": "Playing",
-            "blurb": "Bars that move with the music, then the track"
+            "name": I18n.tr("Playing"),
+            "blurb": I18n.tr("Bars that move with the music, then the track")
         }, {
             "key": "cover",
-            "name": "Cover",
-            "blurb": "The album's cover, then the track"
+            "name": I18n.tr("Cover"),
+            "blurb": I18n.tr("The album's cover, then the track")
         }, {
             "key": "compact",
-            "name": "Compact",
-            "blurb": "Only the bars and the play button"
+            "name": I18n.tr("Compact"),
+            "blurb": I18n.tr("Only the bars and the play button")
         }],
         "panelStyle": "mediaPanelStyle",
         "panelStyles": [{
             "key": "side",
-            "name": "Side by side",
-            "blurb": "The cover beside the track"
+            "name": I18n.tr("Side by side"),
+            "blurb": I18n.tr("The cover beside the track")
         }, {
             "key": "cover",
-            "name": "Large cover",
-            "blurb": "The cover across the panel, the track under it"
+            "name": I18n.tr("Large cover"),
+            "blurb": I18n.tr("The cover across the panel, the track under it")
         }]
     }, {
         "id": "tray",
         "key": "showTray",
         "home": "left",
-        "name": "Tray",
-        "desc": "Status icons from running applications",
-        "when": "while an app has an icon in the tray",
+        "name": I18n.tr("Tray"),
+        "desc": I18n.tr("Status icons from running applications"),
+        "when": I18n.tr("while an app has an icon in the tray"),
         "options": ["trayHidden", "trayIconColor"],
         "style": "trayStyle",
         "styles": [{
             "key": "collapsed",
-            "name": "Collapsed",
-            "blurb": "One icon and how many are running"
+            "name": I18n.tr("Collapsed"),
+            "blurb": I18n.tr("One icon and how many are running")
         }, {
             "key": "icons",
-            "name": "Icons",
-            "blurb": "Each app's icon in the bar"
+            "name": I18n.tr("Icons"),
+            "blurb": I18n.tr("Each app's icon in the bar")
         }]
     }, {
         "id": "clock",
         "key": "showClock",
         "home": "center",
-        "name": "Clock",
-        "desc": "Time, date and the calendar panel",
-        "more": "The time format, whether the date shows and the time zone are on the Date & Time page.",
+        "name": I18n.tr("Clock"),
+        "desc": I18n.tr("Time, date and the calendar panel"),
+        "more": I18n.tr("The time format, whether the date shows and the time zone are on the Date & Time page."),
         "page": "datetime",
         "options": ["clockSeconds", "clockBlink", "clockDateFormat", "clockWeather"],
         "style": "clockStyle",
         "styles": [{
             "key": "inline",
-            "name": "One line",
-            "blurb": "The time, then the date"
+            "name": I18n.tr("One line"),
+            "blurb": I18n.tr("The time, then the date")
         }, {
             "key": "stacked",
-            "name": "Two lines",
-            "blurb": "The date small under the time"
+            "name": I18n.tr("Two lines"),
+            "blurb": I18n.tr("The date small under the time")
         }, {
             "key": "accent",
-            "name": "Accent",
-            "blurb": "The time on a chip in the accent colour"
+            "name": I18n.tr("Accent"),
+            "blurb": I18n.tr("The time on a chip in the accent colour")
         }],
         "panelStyle": "clockPanelStyle",
         "panelStyles": [{
             "key": "full",
-            "name": "Full",
-            "blurb": "The time, the weather, what is next and the calendar"
+            "name": I18n.tr("Full"),
+            "blurb": I18n.tr("The time, the weather, what is next and the calendar")
         }, {
             "key": "calendar",
-            "name": "Calendar",
-            "blurb": "Only the calendar, in a narrow panel"
+            "name": I18n.tr("Calendar"),
+            "blurb": I18n.tr("Only the calendar, in a narrow panel")
         }]
     }, {
         "id": "notifications",
         "key": "showNotifications",
         "home": "right",
-        "name": "Notifications",
-        "desc": "Toasts and the notification list",
-        "when": "while a notification is waiting",
-        "more": "Do not disturb is just below; popups, sounds and quiet hours are on the Notifications page.",
+        "name": I18n.tr("Notifications"),
+        "desc": I18n.tr("Toasts and the notification list"),
+        "when": I18n.tr("while a notification is waiting"),
+        "more": I18n.tr("Do not disturb is just below; popups, sounds and quiet hours are on the Notifications page."),
         "page": "notifications",
         "options": ["notificationsHideEmpty"],
         "style": "notificationsStyle",
         "styles": [{
             "key": "badge",
-            "name": "Count",
-            "blurb": "The bell and how many are waiting"
+            "name": I18n.tr("Count"),
+            "blurb": I18n.tr("The bell and how many are waiting")
         }, {
             "key": "dot",
-            "name": "Dot",
-            "blurb": "The bell with a dot while any are waiting"
+            "name": I18n.tr("Dot"),
+            "blurb": I18n.tr("The bell with a dot while any are waiting")
         }, {
             "key": "chip",
-            "name": "Accent",
-            "blurb": "Bell and count on the accent while any wait"
+            "name": I18n.tr("Accent"),
+            "blurb": I18n.tr("Bell and count on the accent while any wait")
         }]
     }, {
         "id": "system",
         "key": "showSystem",
         "home": "right",
-        "name": "System",
-        "desc": "Battery, volume, brightness and quick settings",
-        "more": "Its tiles and the keyboard layout sign are in System module, further down this page.",
+        "name": I18n.tr("System"),
+        "desc": I18n.tr("Battery, volume, brightness and quick settings"),
+        "more": I18n.tr("Its tiles and the keyboard layout sign are in System module, further down this page."),
         "page": "",
         "options": ["systemIndicators", "systemPanelAvatar"],
         "style": "systemStyle",
         "styles": [{
             "key": "values",
-            "name": "Icons and values",
-            "blurb": "The volume, microphone and battery read out"
+            "name": I18n.tr("Icons and values"),
+            "blurb": I18n.tr("The volume, microphone and battery read out")
         }, {
             "key": "icons",
-            "name": "Icons",
-            "blurb": "Only the icons, narrower"
+            "name": I18n.tr("Icons"),
+            "blurb": I18n.tr("Only the icons, narrower")
         }],
         "panelStyle": "systemPanelStyle",
         "panelStyles": [{
             "key": "stacked",
-            "name": "Stacked",
-            "blurb": "One column: tiles, sliders, then the system figures"
+            "name": I18n.tr("Stacked"),
+            "blurb": I18n.tr("One column: tiles, sliders, then the system figures")
         }, {
             "key": "wide",
-            "name": "Wide",
-            "blurb": "The figures, the tiles and two tall sliders side by side (on screens 820 px or wider)"
+            "name": I18n.tr("Wide"),
+            "blurb": I18n.tr("The figures, the tiles and two tall sliders side by side (on screens 820 px or wider)")
         }, {
             "key": "compact",
-            "name": "Compact",
-            "blurb": "Square tiles, four to a row, and the figures as chips"
+            "name": I18n.tr("Compact"),
+            "blurb": I18n.tr("Square tiles, four to a row, and the figures as chips")
         }, {
             "key": "minimal",
-            "name": "Minimal",
-            "blurb": "Only the square tiles and the sliders"
+            "name": I18n.tr("Minimal"),
+            "blurb": I18n.tr("Only the square tiles and the sliders")
         }]
     }, {
         "id": "privacy",
         "key": "showPrivacy",
         "home": "right",
-        "name": "Privacy",
-        "desc": "Shows up only while an app uses the microphone, the camera or the screen, and says which",
-        "when": "while an app uses the microphone, the camera or the screen",
+        "name": I18n.tr("Privacy"),
+        "desc": I18n.tr("Shows up only while an app uses the microphone, the camera or the screen, and says which"),
+        "when": I18n.tr("while an app uses the microphone, the camera or the screen"),
         "options": ["privacyWatch", "privacyToast", "privacyAlwaysShown"],
         "style": "privacyStyle",
         "styles": [{
             "key": "marks",
-            "name": "Marks",
-            "blurb": "A tinted mark for each thing in use"
+            "name": I18n.tr("Marks"),
+            "blurb": I18n.tr("A tinted mark for each thing in use")
         }, {
             "key": "dot",
-            "name": "Dot",
-            "blurb": "One small dot, red while the screen is shared"
+            "name": I18n.tr("Dot"),
+            "blurb": I18n.tr("One small dot, red while the screen is shared")
         }]
     }, {
         "id": "power",
         "key": "showPower",
         "home": "right",
-        "name": "Power",
-        "desc": "Lock, suspend, log out, restart or shut down, the ones you pick in the order you pick",
+        "name": I18n.tr("Power"),
+        "desc": I18n.tr("Lock, suspend, log out, restart or shut down, the ones you pick in the order you pick"),
         "options": ["powerModuleActions", "powerModuleConfirm", "powerModuleUptime"],
         "style": "powerModuleStyle",
         "styles": [{
             "key": "icon",
-            "name": "Icon",
-            "blurb": "The power symbol"
+            "name": I18n.tr("Icon"),
+            "blurb": I18n.tr("The power symbol")
         }, {
             "key": "accent",
-            "name": "Accent",
-            "blurb": "The symbol on a circle in the accent"
+            "name": I18n.tr("Accent"),
+            "blurb": I18n.tr("The symbol on a circle in the accent")
         }],
         "panelStyle": "powerModulePanelStyle",
         "panelStyles": [{
             "key": "list",
-            "name": "List",
-            "blurb": "One action to a row"
+            "name": I18n.tr("List"),
+            "blurb": I18n.tr("One action to a row")
         }, {
             "key": "grid",
-            "name": "Grid",
-            "blurb": "Three to a row, the name under each"
+            "name": I18n.tr("Grid"),
+            "blurb": I18n.tr("Three to a row, the name under each")
         }]
     }, {
         "id": "window",
         "key": "showWindow",
         "home": "left",
-        "name": "Active window",
-        "desc": "The focused window's icon and title; open it to float, pin, fullscreen, move or close it, or switch to another window on the workspace",
-        "when": "while a window on this workspace has the focus",
+        "name": I18n.tr("Active window"),
+        "desc": I18n.tr("The focused window's icon and title; open it to float, pin, fullscreen, move or close it, or switch to another window on the workspace"),
+        "when": I18n.tr("while a window on this workspace has the focus"),
         "options": ["windowModuleText", "windowModuleWidth", "windowModuleScroll", "windowModuleMiddleClose"],
         "style": "windowModuleStyle",
         "styles": [{
             "key": "plain",
-            "name": "Plain",
-            "blurb": "The icon and the text on the bar"
+            "name": I18n.tr("Plain"),
+            "blurb": I18n.tr("The icon and the text on the bar")
         }, {
             "key": "chip",
-            "name": "Chip",
-            "blurb": "The same on a chip tinted with the accent"
+            "name": I18n.tr("Chip"),
+            "blurb": I18n.tr("The same on a chip tinted with the accent")
         }]
     }, {
         "id": "apps",
         "key": "showApps",
         "home": "left",
-        "name": "Apps",
-        "desc": "The dock's pinned apps and every open one, an icon each: click to switch to it, middle-click for a new window, right-click for its windows and what to do with them, drag to reorder (or, dropped among the pinned, to pin)",
-        "when": "while an app is pinned or open",
-        "more": "The pinned apps are the dock's: pin and unpin here or there, and both change.",
+        "name": I18n.tr("Apps"),
+        "desc": I18n.tr("The dock's pinned apps and every open one, an icon each: click to switch to it, middle-click for a new window, right-click for its windows and what to do with them, drag to reorder (or, dropped among the pinned, to pin)"),
+        "when": I18n.tr("while an app is pinned or open"),
+        "more": I18n.tr("The pinned apps are the dock's: pin and unpin here or there, and both change."),
         "page": "dock",
         "options": ["appsModulePinned", "appsModuleScope", "appsModuleClick", "appsModuleWheel", "appsModuleBadges", "appsModuleNameWidth", "appsModuleShowRunning", "appsModuleIndicators", "appsModuleTooltips", "appsModuleIconSize", "appsModuleSpacing", "appsModuleHoverEffect", "appsModuleMagnify", "appsModuleIconTiles"],
         "style": "appsModuleStyle",
         "styles": [{
             "key": "icons",
-            "name": "Icons",
-            "blurb": "Only each app's icon, marked when it has windows"
+            "name": I18n.tr("Icons"),
+            "blurb": I18n.tr("Only each app's icon, marked when it has windows")
         }, {
             "key": "names",
-            "name": "Names",
-            "blurb": "The icon and the app's name beside it"
+            "name": I18n.tr("Names"),
+            "blurb": I18n.tr("The icon and the app's name beside it")
         }]
     }, {
         "id": "start",
         "key": "showStart",
         "home": "left",
         "first": true,
-        "name": "Start",
-        "desc": "A button for the launcher, at the start of the bar: a click opens it or puts it away",
+        "name": I18n.tr("Start"),
+        "desc": I18n.tr("A button for the launcher, at the start of the bar: a click opens it or puts it away"),
         "options": [],
         "style": "startModuleStyle",
         "styles": [{
             "key": "logo",
-            "name": "Logo",
-            "blurb": "Lucid's mark, as on the dock"
+            "name": I18n.tr("Logo"),
+            "blurb": I18n.tr("Lucid's mark, as on the dock")
         }, {
             "key": "grid",
-            "name": "Grid",
-            "blurb": "Nine dots, the middle one in the accent"
+            "name": I18n.tr("Grid"),
+            "blurb": I18n.tr("Nine dots, the middle one in the accent")
         }]
     }, {
         "id": "desktop",
         "key": "showDesktop",
         "home": "right",
-        "name": "Show desktop",
-        "desc": "A click sends every window on the workspace in view out of sight, and the next brings them back where they were; an app's icon in the apps module brings back just that one",
+        "name": I18n.tr("Show desktop"),
+        "desc": I18n.tr("A click sends every window on the workspace in view out of sight, and the next brings them back where they were; an app's icon in the apps module brings back just that one"),
         "options": [],
         "style": "desktopModuleStyle",
         "styles": [{
             "key": "sliver",
-            "name": "Sliver",
-            "blurb": "A thin strip at the end of the bar"
+            "name": I18n.tr("Sliver"),
+            "blurb": I18n.tr("A thin strip at the end of the bar")
         }, {
             "key": "icon",
-            "name": "Icon",
-            "blurb": "A small empty screen"
+            "name": I18n.tr("Icon"),
+            "blurb": I18n.tr("A small empty screen")
         }]
     }]
     readonly property bool anyBarModuleEnabled: root.barModules.some((m) => {
@@ -380,13 +380,13 @@ Singleton {
         {
             "id": "lucid",
             "name": "Lucid",
-            "blurb": "How Lucid ships: islands along the top, the dock below",
+            "blurb": I18n.tr("How Lucid ships: islands along the top, the dock below"),
             "all": true
         },
         {
             "id": "centred",
-            "name": "Centred taskbar",
-            "blurb": "At the bottom: Start and your apps in the middle, the system on the right",
+            "name": I18n.tr("Centred taskbar"),
+            "blurb": I18n.tr("At the bottom: Start and your apps in the middle, the system on the right"),
             "values": {
                 "barPosition": "bottom",
                 "barStyle": "full",
@@ -412,8 +412,8 @@ Singleton {
         },
         {
             "id": "classic",
-            "name": "Classic taskbar",
-            "blurb": "At the bottom: Start on the left, apps with their names, the clock in the corner",
+            "name": I18n.tr("Classic taskbar"),
+            "blurb": I18n.tr("At the bottom: Start on the left, apps with their names, the clock in the corner"),
             "values": {
                 "barPosition": "bottom",
                 "barStyle": "full",
@@ -439,8 +439,8 @@ Singleton {
         },
         {
             "id": "topdock",
-            "name": "Top bar and dock",
-            "blurb": "A full bar along the top for the system and the window in focus; the dock for apps",
+            "name": I18n.tr("Top bar and dock"),
+            "blurb": I18n.tr("A full bar along the top for the system and the window in focus; the dock for apps"),
             "values": {
                 "barPosition": "top",
                 "barStyle": "full",
@@ -465,8 +465,8 @@ Singleton {
         },
         {
             "id": "minimal",
-            "name": "Minimal",
-            "blurb": "The workspaces, the time and the system, floating at the top",
+            "name": I18n.tr("Minimal"),
+            "blurb": I18n.tr("The workspaces, the time and the system, floating at the top"),
             "values": {
                 "barPosition": "top",
                 "barStyle": "island",
@@ -1434,7 +1434,7 @@ Singleton {
     }
 
     function askReset(title, body, action) {
-        root.resetConfirmRequested(title, body, "Reset", action);
+        root.resetConfirmRequested(title, body, I18n.tr("Reset"), action);
     }
 
     // same dialog, different verb
@@ -1500,11 +1500,11 @@ Singleton {
     // trim that lands its peak in roughly the same place. click is the volume
     // feedback's own, shipped with the shell rather than the sound theme
     readonly property var notifSounds: [
-        { "key": "message", "label": "Message", "gain": 1.24 },
-        { "key": "bell", "label": "Bell", "gain": 2.11 },
-        { "key": "complete", "label": "Chime", "gain": 0.9 },
-        { "key": "suspend-error", "label": "Alert", "gain": 0.71 },
-        { "key": "click", "label": "Click", "gain": 1.15, "file": Qt.resolvedUrl("assets/volume-click.wav").toString().replace("file://", "") }
+        { "key": "message", "label": I18n.tr("Message"), "gain": 1.24 },
+        { "key": "bell", "label": I18n.tr("Bell"), "gain": 2.11 },
+        { "key": "complete", "label": I18n.tr("Chime"), "gain": 0.9 },
+        { "key": "suspend-error", "label": I18n.tr("Alert"), "gain": 0.71 },
+        { "key": "click", "label": I18n.tr("Click"), "gain": 1.15, "file": Qt.resolvedUrl("assets/volume-click.wav").toString().replace("file://", "") }
     ]
 
     function notifSoundEntry(name) {

@@ -53,47 +53,47 @@ Singleton {
     // one entry per category; a variant is another face on the same data, not another widget
     readonly property var catalogue: [{
         "id": "clock",
-        "name": "Clock",
-        "blurb": "The time, in as much or as little detail as you want it.",
+        "name": I18n.tr("Clock"),
+        "blurb": I18n.tr("The time, in as much or as little detail as you want it."),
         "variants": [{
             "id": "digital",
-            "name": "Digital",
-            "blurb": "Time over the date, weighted like a headline.",
+            "name": I18n.tr("Digital"),
+            "blurb": I18n.tr("Time over the date, weighted like a headline."),
             "w": 280,
             "h": 148
         }, {
             "id": "stack",
-            "name": "Stacked",
-            "blurb": "Hour above minute, the way the bar draws it.",
+            "name": I18n.tr("Stacked"),
+            "blurb": I18n.tr("Hour above minute, the way the bar draws it."),
             "w": 220,
             "h": 236
         }, {
             "id": "analog",
-            "name": "Analog",
-            "blurb": "Hands and ticks. Turn on seconds for a sweep.",
+            "name": I18n.tr("Analog"),
+            "blurb": I18n.tr("Hands and ticks. Turn on seconds for a sweep."),
             "w": 212,
             "h": 212
         }, {
             "id": "minimal",
-            "name": "Minimal",
-            "blurb": "One line of time, no container behind it.",
+            "name": I18n.tr("Minimal"),
+            "blurb": I18n.tr("One line of time, no container behind it."),
             "w": 260,
             "h": 96
         }, {
             "id": "world",
-            "name": "World",
-            "blurb": "Three cities at once, with their offsets.",
+            "name": I18n.tr("World"),
+            "blurb": I18n.tr("Three cities at once, with their offsets."),
             "w": 264,
             "h": 200
         }],
         "options": [{
             "key": "hourMode",
-            "label": "Hours",
+            "label": I18n.tr("Hours"),
             "type": "choice",
             "def": "auto",
             "choices": [{
                 "key": "auto",
-                "label": "Shell"
+                "label": I18n.tr("Shell")
             }, {
                 "key": "12",
                 "label": "12"
@@ -103,318 +103,318 @@ Singleton {
             }]
         }, {
             "key": "seconds",
-            "label": "Show seconds",
+            "label": I18n.tr("Show seconds"),
             "type": "bool",
             "def": false
         }, {
             "key": "showDate",
-            "label": "Show the date",
+            "label": I18n.tr("Show the date"),
             "type": "bool",
             "def": true
         }, {
             "key": "accentTime",
-            "label": "Tint the time",
+            "label": I18n.tr("Tint the time"),
             "type": "bool",
             "def": false
         }, {
             "key": "zones",
-            "label": "Cities",
+            "label": I18n.tr("Cities"),
             "type": "choice",
             "def": "eu",
             "variants": ["world"],
             "choices": [{
                 "key": "eu",
-                "label": "Europe"
+                "label": I18n.tr("Europe")
             }, {
                 "key": "us",
-                "label": "Americas"
+                "label": I18n.tr("Americas")
             }, {
                 "key": "asia",
-                "label": "Asia"
+                "label": I18n.tr("Asia")
             }]
         }]
     }, {
         "id": "calendar",
-        "name": "Calendar",
-        "blurb": "Where you are in the month, at a glance.",
+        "name": I18n.tr("Calendar"),
+        "blurb": I18n.tr("Where you are in the month, at a glance."),
         "variants": [{
             "id": "month",
-            "name": "Month",
-            "blurb": "The full grid, today marked.",
+            "name": I18n.tr("Month"),
+            "blurb": I18n.tr("The full grid, today marked."),
             "w": 300,
             "h": 306
         }, {
             "id": "week",
-            "name": "Week",
-            "blurb": "Seven days on a strip.",
+            "name": I18n.tr("Week"),
+            "blurb": I18n.tr("Seven days on a strip."),
             "w": 300,
             "h": 132
         }, {
             "id": "today",
-            "name": "Today",
-            "blurb": "One enormous date and its weekday.",
+            "name": I18n.tr("Today"),
+            "blurb": I18n.tr("One enormous date and its weekday."),
             "w": 200,
             "h": 200
         }],
         "options": [{
             "key": "mondayFirst",
-            "label": "Week starts Monday",
+            "label": I18n.tr("Week starts Monday"),
             "type": "bool",
             "def": true
         }, {
             "key": "showMonthName",
-            "label": "Show the month",
+            "label": I18n.tr("Show the month"),
             "type": "bool",
             "def": true
         }]
     }, {
         "id": "system",
-        "name": "System",
-        "blurb": "Processor, memory and disk while you work.",
+        "name": I18n.tr("System"),
+        "blurb": I18n.tr("Processor, memory and disk while you work."),
         "variants": [{
             "id": "rings",
-            "name": "Rings",
-            "blurb": "One arc gauge per metric.",
+            "name": I18n.tr("Rings"),
+            "blurb": I18n.tr("One arc gauge per metric."),
             "w": 292,
             "h": 158
         }, {
             "id": "bars",
-            "name": "Meters",
-            "blurb": "Labelled bars stacked in a column.",
+            "name": I18n.tr("Meters"),
+            "blurb": I18n.tr("Labelled bars stacked in a column."),
             "w": 268,
             "h": 194
         }, {
             "id": "graph",
-            "name": "Graph",
-            "blurb": "Two minutes of history, drawn.",
+            "name": I18n.tr("Graph"),
+            "blurb": I18n.tr("Two minutes of history, drawn."),
             "w": 308,
             "h": 186
         }, {
             "id": "compact",
-            "name": "Compact",
-            "blurb": "Just the numbers, in a row.",
+            "name": I18n.tr("Compact"),
+            "blurb": I18n.tr("Just the numbers, in a row."),
             "w": 216,
             "h": 90
         }],
         "options": [{
             "key": "showCpu",
-            "label": "Processor",
+            "label": I18n.tr("Processor"),
             "type": "bool",
             "def": true
         }, {
             "key": "showRam",
-            "label": "Memory",
+            "label": I18n.tr("Memory"),
             "type": "bool",
             "def": true
         }, {
             "key": "showDisk",
-            "label": "Disk",
+            "label": I18n.tr("Disk"),
             "type": "bool",
             "def": true
         }, {
             "key": "showTemp",
-            "label": "Temperature",
+            "label": I18n.tr("Temperature"),
             "type": "bool",
             "def": false
         }, {
             "key": "interval",
-            "label": "Refresh",
+            "label": I18n.tr("Refresh"),
             "type": "choice",
             "def": "2",
             "choices": [{
                 "key": "1",
-                "label": "1s"
+                "label": I18n.tr("1s")
             }, {
                 "key": "2",
-                "label": "2s"
+                "label": I18n.tr("2s")
             }, {
                 "key": "5",
-                "label": "5s"
+                "label": I18n.tr("5s")
             }]
         }]
     }, {
         "id": "thermal",
-        "name": "Thermals",
-        "blurb": "The graphics card, the fans, and how hot it is all running.",
+        "name": I18n.tr("Thermals"),
+        "blurb": I18n.tr("The graphics card, the fans, and how hot it is all running."),
         "variants": [{
             "id": "detail",
-            "name": "Detail",
-            "blurb": "The graphics card in full, each fan, and the power profile.",
+            "name": I18n.tr("Detail"),
+            "blurb": I18n.tr("The graphics card in full, each fan, and the power profile."),
             "w": 308,
             "h": 236
         }, {
             "id": "rings",
-            "name": "Rings",
-            "blurb": "GPU heat and load, CPU heat and the fans as arc gauges.",
+            "name": I18n.tr("Rings"),
+            "blurb": I18n.tr("GPU heat and load, CPU heat and the fans as arc gauges."),
             "w": 316,
             "h": 158
         }, {
             "id": "compact",
-            "name": "Compact",
-            "blurb": "Two temperatures and a fan speed, in a row.",
+            "name": I18n.tr("Compact"),
+            "blurb": I18n.tr("Two temperatures and a fan speed, in a row."),
             "w": 236,
             "h": 90
         }],
         "options": [{
             "key": "showFans",
-            "label": "Fans",
+            "label": I18n.tr("Fans"),
             "type": "bool",
             "def": true
         }, {
             "key": "showControls",
-            "label": "Power profile and game mode",
+            "label": I18n.tr("Power profile and game mode"),
             "type": "bool",
             "def": true,
             "variants": ["detail"]
         }, {
             "key": "interval",
-            "label": "Refresh",
+            "label": I18n.tr("Refresh"),
             "type": "choice",
             "def": "2",
             "choices": [{
                 "key": "2",
-                "label": "2s"
+                "label": I18n.tr("2s")
             }, {
                 "key": "5",
-                "label": "5s"
+                "label": I18n.tr("5s")
             }, {
                 "key": "10",
-                "label": "10s"
+                "label": I18n.tr("10s")
             }]
         }]
     }, {
         "id": "network",
-        "name": "Network",
-        "blurb": "Which connection you are on, and what is moving over it.",
+        "name": I18n.tr("Network"),
+        "blurb": I18n.tr("Which connection you are on, and what is moving over it."),
         "variants": [{
             "id": "graph",
-            "name": "Graph",
-            "blurb": "A minute of download and upload, drawn.",
+            "name": I18n.tr("Graph"),
+            "blurb": I18n.tr("A minute of download and upload, drawn."),
             "w": 308,
             "h": 186
         }, {
             "id": "detail",
-            "name": "Detail",
-            "blurb": "Address, signal, VPN and whether the internet answers.",
+            "name": I18n.tr("Detail"),
+            "blurb": I18n.tr("Address, signal, VPN and whether the internet answers."),
             "w": 292,
             "h": 204
         }, {
             "id": "compact",
-            "name": "Compact",
-            "blurb": "Down and up, as two numbers.",
+            "name": I18n.tr("Compact"),
+            "blurb": I18n.tr("Down and up, as two numbers."),
             "w": 236,
             "h": 90
         }],
         "options": [{
             "key": "units",
-            "label": "Units",
+            "label": I18n.tr("Units"),
             "type": "choice",
             "def": "bytes",
             "choices": [{
                 "key": "bytes",
-                "label": "MB/s"
+                "label": I18n.tr("MB/s")
             }, {
                 "key": "bits",
-                "label": "Mbit/s"
+                "label": I18n.tr("Mbit/s")
             }]
         }, {
             "key": "showAddress",
-            "label": "Show addresses",
+            "label": I18n.tr("Show addresses"),
             "type": "bool",
             "def": true,
             "variants": ["detail"]
         }, {
             "key": "interval",
-            "label": "Refresh",
+            "label": I18n.tr("Refresh"),
             "type": "choice",
             "def": "1",
             "choices": [{
                 "key": "1",
-                "label": "1s"
+                "label": I18n.tr("1s")
             }, {
                 "key": "2",
-                "label": "2s"
+                "label": I18n.tr("2s")
             }, {
                 "key": "5",
-                "label": "5s"
+                "label": I18n.tr("5s")
             }]
         }]
     }, {
         "id": "battery",
-        "name": "Battery",
-        "blurb": "Charge, and how long it has left.",
+        "name": I18n.tr("Battery"),
+        "blurb": I18n.tr("Charge, and how long it has left."),
         "variants": [{
             "id": "ring",
-            "name": "Ring",
-            "blurb": "An arc that fills as it charges.",
+            "name": I18n.tr("Ring"),
+            "blurb": I18n.tr("An arc that fills as it charges."),
             "w": 176,
             "h": 176
         }, {
             "id": "bar",
-            "name": "Bar",
-            "blurb": "A cell drawn side on.",
+            "name": I18n.tr("Bar"),
+            "blurb": I18n.tr("A cell drawn side on."),
             "w": 248,
             "h": 118
         }, {
             "id": "detail",
-            "name": "Detail",
-            "blurb": "Charge, state, time left and draw.",
+            "name": I18n.tr("Detail"),
+            "blurb": I18n.tr("Charge, state, time left and draw."),
             "w": 268,
             "h": 164
         }],
         "options": [{
             "key": "showTime",
-            "label": "Time remaining",
+            "label": I18n.tr("Time remaining"),
             "type": "bool",
             "def": true
         }, {
             "key": "warnLow",
-            "label": "Turn red under 20%",
+            "label": I18n.tr("Turn red under 20%"),
             "type": "bool",
             "def": true
         }]
     }, {
         "id": "media",
-        "name": "Media",
-        "blurb": "Whatever is playing, with its artwork.",
+        "name": I18n.tr("Media"),
+        "blurb": I18n.tr("Whatever is playing, with its artwork."),
         "variants": [{
             "id": "card",
-            "name": "Card",
-            "blurb": "Artwork above the title and controls.",
+            "name": I18n.tr("Card"),
+            "blurb": I18n.tr("Artwork above the title and controls."),
             "w": 288,
             "h": 435
         }, {
             "id": "row",
-            "name": "Row",
-            "blurb": "Artwork beside the title and controls.",
+            "name": I18n.tr("Row"),
+            "blurb": I18n.tr("Artwork beside the title and controls."),
             "w": 330,
             "h": 118
         }, {
             "id": "art",
-            "name": "Artwork",
-            "blurb": "The cover, with controls over it on hover.",
+            "name": I18n.tr("Artwork"),
+            "blurb": I18n.tr("The cover, with controls over it on hover."),
             "w": 244,
             "h": 244
         }],
         "options": [{
             "key": "showProgress",
-            "label": "Progress bar",
+            "label": I18n.tr("Progress bar"),
             "type": "bool",
             "def": true
         }, {
             "key": "scroll",
-            "label": "Scroll long titles",
+            "label": I18n.tr("Scroll long titles"),
             "type": "bool",
             "def": true
         }]
     }, {
         "id": "visualiser",
-        "name": "Visualiser",
-        "blurb": "Whatever is coming out of your speakers, drawn.",
+        "name": I18n.tr("Visualiser"),
+        "blurb": I18n.tr("Whatever is coming out of your speakers, drawn."),
         "variants": [{
             "id": "bars",
-            "name": "Bars",
-            "blurb": "Columns off the baseline. Stretch it the width of the screen.",
+            "name": I18n.tr("Bars"),
+            "blurb": I18n.tr("Columns off the baseline. Stretch it the width of the screen."),
             "w": 720,
             "h": 140,
             "resizable": true,
@@ -424,8 +424,8 @@ Singleton {
             "maxH": 900
         }, {
             "id": "mirror",
-            "name": "Mirror",
-            "blurb": "The same bands, opened out from a centre line.",
+            "name": I18n.tr("Mirror"),
+            "blurb": I18n.tr("The same bands, opened out from a centre line."),
             "w": 640,
             "h": 160,
             "resizable": true,
@@ -435,8 +435,8 @@ Singleton {
             "maxH": 900
         }, {
             "id": "wave",
-            "name": "Wave",
-            "blurb": "One filled curve instead of separate bars.",
+            "name": I18n.tr("Wave"),
+            "blurb": I18n.tr("One filled curve instead of separate bars."),
             "w": 560,
             "h": 150,
             "resizable": true,
@@ -447,65 +447,65 @@ Singleton {
         }],
         "options": [{
             "key": "density",
-            "label": "Detail",
+            "label": I18n.tr("Detail"),
             "type": "choice",
             "def": "normal",
             "choices": [{
                 "key": "wide",
-                "label": "Coarse"
+                "label": I18n.tr("Coarse")
             }, {
                 "key": "normal",
-                "label": "Normal"
+                "label": I18n.tr("Normal")
             }, {
                 "key": "fine",
-                "label": "Fine"
+                "label": I18n.tr("Fine")
             }]
         }, {
             "key": "tint",
-            "label": "Colour",
+            "label": I18n.tr("Colour"),
             "type": "choice",
             "def": "accent",
             "choices": [{
                 "key": "accent",
-                "label": "Accent"
+                "label": I18n.tr("Accent")
             }, {
                 "key": "gradient",
-                "label": "Gradient"
+                "label": I18n.tr("Gradient")
             }, {
                 "key": "mono",
-                "label": "White"
+                "label": I18n.tr("White")
             }]
         }, {
             "key": "frost",
-            "label": "Frosted bars",
+            "label": I18n.tr("Frosted bars"),
             "type": "bool",
             "def": true
         }, {
             "key": "rounded",
-            "label": "Rounded tips",
+            "label": I18n.tr("Rounded tips"),
             "type": "bool",
             "def": true,
             "variants": ["bars", "mirror"]
         }, {
             "key": "flip",
-            "label": "Hang from the top",
+            "label": I18n.tr("Hang from the top"),
             "type": "bool",
             "def": false,
             "variants": ["bars", "wave"]
         }, {
             "key": "idleFade",
-            "label": "Hide when silent",
+            "label": I18n.tr("Hide when silent"),
             "type": "bool",
             "def": true
         }]
     }, {
         "id": "games",
-        "name": "Games",
-        "blurb": "Your installed Steam games, one click from playing.",
+        "name": I18n.tr("Games"),
+        "blurb": I18n.tr("Your installed Steam games, one click from playing."),
         "variants": [{
             "id": "shelf",
-            "name": "Shelf",
-            "blurb": "Covers in a row, last played first. Drag an edge to fit more.",
+            "name": I18n.tr("Shelf"),
+            "blurb": I18n.tr("Covers in a row, last played first. Drag an edge to fit more."),
             "w": 452,
             "h": 236,
             "resizable": true,
@@ -515,103 +515,103 @@ Singleton {
             "maxH": 560
         }, {
             "id": "hero",
-            "name": "Last played",
-            "blurb": "The game you played last, over its artwork.",
+            "name": I18n.tr("Last played"),
+            "blurb": I18n.tr("The game you played last, over its artwork."),
             "w": 364,
             "h": 172
         }, {
             "id": "list",
-            "name": "List",
-            "blurb": "One row per game.",
+            "name": I18n.tr("List"),
+            "blurb": I18n.tr("One row per game."),
             "w": 300,
             "h": 280
         }],
         "options": [{
             "key": "order",
-            "label": "Order",
+            "label": I18n.tr("Order"),
             "type": "choice",
             "def": "recent",
             "variants": ["shelf", "list"],
             "choices": [{
                 "key": "recent",
-                "label": "Last played"
+                "label": I18n.tr("Last played")
             }, {
                 "key": "name",
-                "label": "A–Z"
+                "label": I18n.tr("A–Z")
             }]
         }, {
             "key": "gameModeOnLaunch",
-            "label": "Game mode on launch",
+            "label": I18n.tr("Game mode on launch"),
             "type": "bool",
             "def": false
         }]
     }, {
         "id": "weather",
-        "name": "Weather",
-        "blurb": "Conditions now and over the next few days.",
+        "name": I18n.tr("Weather"),
+        "blurb": I18n.tr("Conditions now and over the next few days."),
         "variants": [{
             "id": "current",
-            "name": "Current",
-            "blurb": "Temperature, condition and the feel of it.",
+            "name": I18n.tr("Current"),
+            "blurb": I18n.tr("Temperature, condition and the feel of it."),
             "w": 264,
             "h": 168
         }, {
             "id": "forecast",
-            "name": "Forecast",
-            "blurb": "Today plus the next three days.",
+            "name": I18n.tr("Forecast"),
+            "blurb": I18n.tr("Today plus the next three days."),
             "w": 320,
             "h": 232
         }, {
             "id": "compact",
-            "name": "Compact",
-            "blurb": "An icon and a number.",
+            "name": I18n.tr("Compact"),
+            "blurb": I18n.tr("An icon and a number."),
             "w": 196,
             "h": 96
         }],
         "options": [{
             "key": "units",
-            "label": "Units",
+            "label": I18n.tr("Units"),
             "type": "choice",
             "def": "metric",
             "choices": [{
                 "key": "metric",
-                "label": "°C"
+                "label": I18n.tr("°C")
             }, {
                 "key": "imperial",
-                "label": "°F"
+                "label": I18n.tr("°F")
             }]
         }]
     }, {
         "id": "notes",
-        "name": "Notes",
-        "blurb": "A scrap of paper that survives a reboot.",
+        "name": I18n.tr("Notes"),
+        "blurb": I18n.tr("A scrap of paper that survives a reboot."),
         "variants": [{
             "id": "sticky",
-            "name": "Sticky",
-            "blurb": "A tinted square you can fill.",
+            "name": I18n.tr("Sticky"),
+            "blurb": I18n.tr("A tinted square you can fill."),
             "w": 244,
             "h": 244
         }, {
             "id": "lined",
-            "name": "Lined",
-            "blurb": "A wider sheet with a title.",
+            "name": I18n.tr("Lined"),
+            "blurb": I18n.tr("A wider sheet with a title."),
             "w": 308,
             "h": 228
         }],
         "options": [{
             "key": "tint",
-            "label": "Tint",
+            "label": I18n.tr("Tint"),
             "type": "choice",
             "def": "neutral",
             "choices": [{
                 "key": "neutral",
-                "label": "Plain"
+                "label": I18n.tr("Plain")
             }, {
                 "key": "accent",
-                "label": "Accent"
+                "label": I18n.tr("Accent")
             }, {
                 "key": "tertiary",
-                "label": "Warm"
+                "label": I18n.tr("Warm")
             }]
         }, {
             "key": "text",
@@ -621,24 +621,24 @@ Singleton {
         }]
     }, {
         "id": "todo",
-        "name": "To-do",
-        "blurb": "A short list you can tick off.",
+        "name": I18n.tr("To-do"),
+        "blurb": I18n.tr("A short list you can tick off."),
         "variants": [{
             "id": "list",
-            "name": "List",
-            "blurb": "Everything, done items struck through.",
+            "name": I18n.tr("List"),
+            "blurb": I18n.tr("Everything, done items struck through."),
             "w": 284,
             "h": 288
         }, {
             "id": "focus",
-            "name": "Focus",
-            "blurb": "Only what is still outstanding.",
+            "name": I18n.tr("Focus"),
+            "blurb": I18n.tr("Only what is still outstanding."),
             "w": 268,
             "h": 200
         }],
         "options": [{
             "key": "hideDone",
-            "label": "Hide finished items",
+            "label": I18n.tr("Hide finished items"),
             "type": "bool",
             "def": false
         }, {
@@ -649,83 +649,83 @@ Singleton {
         }]
     }, {
         "id": "timer",
-        "name": "Timer",
-        "blurb": "A countdown, a pomodoro or a stopwatch that survives a reboot.",
+        "name": I18n.tr("Timer"),
+        "blurb": I18n.tr("A countdown, a pomodoro or a stopwatch that survives a reboot."),
         "variants": [{
             "id": "countdown",
-            "name": "Timer",
-            "blurb": "Scroll the dial to set it, click it to start.",
+            "name": I18n.tr("Timer"),
+            "blurb": I18n.tr("Scroll the dial to set it, click it to start."),
             "w": 236,
             "h": 236
         }, {
             "id": "pomodoro",
-            "name": "Pomodoro",
-            "blurb": "Focus rounds and breaks, four to a set.",
+            "name": I18n.tr("Pomodoro"),
+            "blurb": I18n.tr("Focus rounds and breaks, four to a set."),
             "w": 256,
             "h": 256
         }, {
             "id": "stopwatch",
-            "name": "Stopwatch",
-            "blurb": "Counts up, with laps.",
+            "name": I18n.tr("Stopwatch"),
+            "blurb": I18n.tr("Counts up, with laps."),
             "w": 256,
             "h": 150
         }],
         "options": [{
             "key": "focusMinutes",
-            "label": "Focus",
+            "label": I18n.tr("Focus"),
             "type": "choice",
             "def": "25",
             "variants": ["pomodoro"],
             "choices": [{
                 "key": "15",
-                "label": "15m"
+                "label": I18n.tr("15m")
             }, {
                 "key": "25",
-                "label": "25m"
+                "label": I18n.tr("25m")
             }, {
                 "key": "45",
-                "label": "45m"
+                "label": I18n.tr("45m")
             }, {
                 "key": "50",
-                "label": "50m"
+                "label": I18n.tr("50m")
             }]
         }, {
             "key": "breakMinutes",
-            "label": "Break",
+            "label": I18n.tr("Break"),
             "type": "choice",
             "def": "5",
             "variants": ["pomodoro"],
             "choices": [{
                 "key": "5",
-                "label": "5m"
+                "label": I18n.tr("5m")
             }, {
                 "key": "10",
-                "label": "10m"
+                "label": I18n.tr("10m")
             }, {
                 "key": "15",
-                "label": "15m"
+                "label": I18n.tr("15m")
             }]
         }, {
             "key": "longBreak",
-            "label": "Longer break every fourth round",
+            "label": I18n.tr("Longer break every fourth round"),
             "type": "bool",
             "def": true,
             "variants": ["pomodoro"]
         }, {
             "key": "autoContinue",
-            "label": "Start the next round by itself",
+            "label": I18n.tr("Start the next round by itself"),
             "type": "bool",
             "def": false,
             "variants": ["pomodoro"]
         }, {
             "key": "notify",
-            "label": "Notify when time is up",
+            "label": I18n.tr("Notify when time is up"),
             "type": "bool",
             "def": true,
             "variants": ["countdown", "pomodoro"]
         }, {
             "key": "sound",
-            "label": "Play a sound",
+            "label": I18n.tr("Play a sound"),
             "type": "bool",
             "def": true,
             "variants": ["countdown", "pomodoro"]
@@ -782,68 +782,68 @@ Singleton {
         }]
     }, {
         "id": "palette",
-        "name": "Palette",
-        "blurb": "The colours the shell is currently built from.",
+        "name": I18n.tr("Palette"),
+        "blurb": I18n.tr("The colours the shell is currently built from."),
         "variants": [{
             "id": "swatches",
-            "name": "Roles",
-            "blurb": "The key Material roles, click one to copy it.",
+            "name": I18n.tr("Roles"),
+            "blurb": I18n.tr("The key Material roles, click one to copy it."),
             "w": 288,
             "h": 172
         }, {
             "id": "ramp",
-            "name": "Ramp",
-            "blurb": "The accent walked down its tonal scale.",
+            "name": I18n.tr("Ramp"),
+            "blurb": I18n.tr("The accent walked down its tonal scale."),
             "w": 276,
             "h": 128
         }],
         "options": [{
             "key": "showHex",
-            "label": "Show hex values",
+            "label": I18n.tr("Show hex values"),
             "type": "bool",
             "def": true
         }]
     }, {
         "id": "kdeconnect",
-        "name": "Phone",
-        "blurb": "Phone status, battery, signal and quick controls via KDE Connect.",
+        "name": I18n.tr("Phone"),
+        "blurb": I18n.tr("Phone status, battery, signal and quick controls via KDE Connect."),
         "variants": [{
             "id": "card",
-            "name": "Card",
-            "blurb": "Battery, signal, and quick control buttons.",
+            "name": I18n.tr("Card"),
+            "blurb": I18n.tr("Battery, signal, and quick control buttons."),
             "w": 268,
             "h": 180
         }, {
             "id": "compact",
-            "name": "Compact",
-            "blurb": "Minimal row with phone battery & ring button.",
+            "name": I18n.tr("Compact"),
+            "blurb": I18n.tr("Minimal row with phone battery & ring button."),
             "w": 216,
             "h": 96
         }, {
             "id": "remote",
-            "name": "Remote",
-            "blurb": "Battery, phone media controls, and quick actions.",
+            "name": I18n.tr("Remote"),
+            "blurb": I18n.tr("Battery, phone media controls, and quick actions."),
             "w": 284,
             "h": 220
         }],
         "options": [{
             "key": "showShare",
-            "label": "Send file button",
+            "label": I18n.tr("Send file button"),
             "type": "bool",
             "def": true
         }, {
             "key": "showRing",
-            "label": "Ring button",
+            "label": I18n.tr("Ring button"),
             "type": "bool",
             "def": true
         }, {
             "key": "showClipboard",
-            "label": "Clipboard button",
+            "label": I18n.tr("Clipboard button"),
             "type": "bool",
             "def": true
         }, {
             "key": "showBrowse",
-            "label": "Browse files button",
+            "label": I18n.tr("Browse files button"),
             "type": "bool",
             "def": true,
             "variants": ["card", "remote"]
@@ -864,8 +864,8 @@ Singleton {
     // cards stop at y 924, clear of the bars
     readonly property var presets: [{
         "id": "collage",
-        "name": "Collage",
-        "blurb": "Notes, cover art, the time and your charge, stacked on the right.",
+        "name": I18n.tr("Collage"),
+        "blurb": I18n.tr("Notes, cover art, the time and your charge, stacked on the right."),
         "cards": [
             root.footBars,
             { "type": "notes", "variant": "sticky", "at": "tr", "x": 1646, "y": 112 },
@@ -875,8 +875,8 @@ Singleton {
         ]
     }, {
         "id": "bookends",
-        "name": "Bookends",
-        "blurb": "Date and weather on the left, the time and your music on the right.",
+        "name": I18n.tr("Bookends"),
+        "blurb": I18n.tr("Date and weather on the left, the time and your music on the right."),
         "cards": [
             root.footBars,
             { "type": "calendar", "variant": "month", "at": "tl", "x": 20, "y": 110 },
@@ -886,8 +886,8 @@ Singleton {
         ]
     }, {
         "id": "dashboard",
-        "name": "Dashboard",
-        "blurb": "The day down the left, the machine and your list down the right.",
+        "name": I18n.tr("Dashboard"),
+        "blurb": I18n.tr("The day down the left, the machine and your list down the right."),
         "cards": [
             root.footBars,
             { "type": "clock", "variant": "stack", "at": "tl", "x": 46, "y": 287, "zoom": 1.25 },
@@ -901,16 +901,16 @@ Singleton {
         ]
     }, {
         "id": "minimal",
-        "name": "Minimal",
-        "blurb": "Just the time on the wallpaper, and the music along the bottom.",
+        "name": I18n.tr("Minimal"),
+        "blurb": I18n.tr("Just the time on the wallpaper, and the music along the bottom."),
         "cards": [
             root.footBars,
             { "type": "clock", "variant": "minimal", "at": "bl", "x": 56, "y": 756, "zoom": 1.75 }
         ]
     }, {
         "id": "focus",
-        "name": "Focus",
-        "blurb": "The time and what is left to do, front and centre.",
+        "name": I18n.tr("Focus"),
+        "blurb": I18n.tr("The time and what is left to do, front and centre."),
         "cards": [
             root.footBars,
             { "type": "clock", "variant": "analog", "at": "tc", "x": 652, "y": 120, "zoom": 1.25 },
@@ -918,8 +918,8 @@ Singleton {
         ]
     }, {
         "id": "planner",
-        "name": "Planner",
-        "blurb": "The hour, the month, a list and a notepad, in reading order.",
+        "name": I18n.tr("Planner"),
+        "blurb": I18n.tr("The hour, the month, a list and a notepad, in reading order."),
         "cards": [
             root.footBars,
             { "type": "clock", "variant": "digital", "at": "tl", "x": 40, "y": 100 },
@@ -929,16 +929,16 @@ Singleton {
         ]
     }, {
         "id": "studio",
-        "name": "Studio",
-        "blurb": "Big cover art, and the sound as one flowing wave beside it.",
+        "name": I18n.tr("Studio"),
+        "blurb": I18n.tr("Big cover art, and the sound as one flowing wave beside it."),
         "cards": [
             { "type": "visualiser", "variant": "wave", "at": "bl", "x": 422, "y": 930, "w": 1498, "h": 150, "stretch": true, "pinned": true, "opts": { "tint": "gradient" } },
             { "type": "media", "variant": "art", "at": "bl", "x": 40, "y": 674, "zoom": 1.5 }
         ]
     }, {
         "id": "moodboard",
-        "name": "Moodboard",
-        "blurb": "Your palette beside the cover art, and a note for ideas.",
+        "name": I18n.tr("Moodboard"),
+        "blurb": I18n.tr("Your palette beside the cover art, and a note for ideas."),
         "cards": [
             root.footBars,
             { "type": "media", "variant": "art", "at": "tl", "x": 40, "y": 100 },
@@ -948,8 +948,8 @@ Singleton {
         ]
     }, {
         "id": "traveller",
-        "name": "Traveller",
-        "blurb": "Three cities, the forecast and the week ahead.",
+        "name": I18n.tr("Traveller"),
+        "blurb": I18n.tr("Three cities, the forecast and the week ahead."),
         "cards": [
             root.footBars,
             { "type": "clock", "variant": "world", "at": "tr", "x": 964, "y": 100 },
@@ -958,8 +958,8 @@ Singleton {
         ]
     }, {
         "id": "monitor",
-        "name": "Monitor",
-        "blurb": "Load, memory, disk and charge, tucked into a corner.",
+        "name": I18n.tr("Monitor"),
+        "blurb": I18n.tr("Load, memory, disk and charge, tucked into a corner."),
         "cards": [
             root.footBars,
             { "type": "system", "variant": "rings", "at": "br", "x": 1284, "y": 556 },
@@ -969,8 +969,8 @@ Singleton {
         ]
     }, {
         "id": "corners",
-        "name": "Corners",
-        "blurb": "One card in each corner and nothing in the middle.",
+        "name": I18n.tr("Corners"),
+        "blurb": I18n.tr("One card in each corner and nothing in the middle."),
         "cards": [
             root.footBars,
             { "type": "clock", "variant": "digital", "at": "tl", "x": 40, "y": 100 },

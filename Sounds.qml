@@ -16,16 +16,16 @@ Singleton {
     // per-step clicks, shared by volume and brightness
     readonly property var clickOptions: [{
         "key": "snap",
-        "label": "Snap"
+        "label": I18n.tr("Snap")
     }, {
         "key": "high",
-        "label": "High"
+        "label": I18n.tr("High")
     }, {
         "key": "low",
-        "label": "Low"
+        "label": I18n.tr("Low")
     }, {
         "key": "glass",
-        "label": "Glass"
+        "label": I18n.tr("Glass")
     }]
     // event -> its switch, its choice, the sounds it offers, and its slots: one
     // file each, two for the events that come in pairs
@@ -49,13 +49,13 @@ Singleton {
             "style": "soundPlugStyle",
             "options": [{
                 "key": "pips",
-                "label": "Pips"
+                "label": I18n.tr("Pips")
             }, {
                 "key": "pop",
-                "label": "Pop"
+                "label": I18n.tr("Pop")
             }, {
                 "key": "bell",
-                "label": "Bell"
+                "label": I18n.tr("Bell")
             }],
             "slots": ["plugIn", "plugOut"]
         },
@@ -64,13 +64,13 @@ Singleton {
             "style": "soundLockStyle",
             "options": [{
                 "key": "latch",
-                "label": "Latch"
+                "label": I18n.tr("Latch")
             }, {
                 "key": "tone",
-                "label": "Tone"
+                "label": I18n.tr("Tone")
             }, {
                 "key": "glide",
-                "label": "Glide"
+                "label": I18n.tr("Glide")
             }],
             "slots": ["lock", "unlock"]
         },
@@ -79,13 +79,13 @@ Singleton {
             "style": "soundTrashStyle",
             "options": [{
                 "key": "crunch",
-                "label": "Crunch"
+                "label": I18n.tr("Crunch")
             }, {
                 "key": "swoosh",
-                "label": "Swoosh"
+                "label": I18n.tr("Swoosh")
             }, {
                 "key": "rattle",
-                "label": "Rattle"
+                "label": I18n.tr("Rattle")
             }],
             "slots": ["trash"]
         },
@@ -94,16 +94,16 @@ Singleton {
             "style": "soundCaptureStyle",
             "options": [{
                 "key": "pop",
-                "label": "Pop"
+                "label": I18n.tr("Pop")
             }, {
                 "key": "sparkle",
-                "label": "Sparkle"
+                "label": I18n.tr("Sparkle")
             }, {
                 "key": "glass",
-                "label": "Glass"
+                "label": I18n.tr("Glass")
             }, {
                 "key": "swish",
-                "label": "Swish"
+                "label": I18n.tr("Swish")
             }],
             "slots": ["capture"]
         }
@@ -120,10 +120,10 @@ Singleton {
     })
     // what each slot is called next to its file, for the pairs
     readonly property var slotLabel: ({
-        "plugIn": "Plugged in",
-        "plugOut": "Pulled out",
-        "lock": "Lock",
-        "unlock": "Unlock"
+        "plugIn": I18n.tr("Plugged in"),
+        "plugOut": I18n.tr("Pulled out"),
+        "lock": I18n.tr("Lock"),
+        "unlock": I18n.tr("Unlock")
     })
     // a sound brought for a click plays on every step, so it is cut short
     readonly property real stepLimit: 1.5
@@ -245,7 +245,7 @@ Singleton {
         root.choosing = slot;
         root.lastChosen = slot;
         root.failed = "";
-        const title = "Choose a sound" + (root.slotLabel[slot] ? " · " + root.slotLabel[slot] : "");
+        const title = I18n.tr("Choose a sound") + (root.slotLabel[slot] ? " · " + root.slotLabel[slot] : "");
         chooser.slot = slot;
         chooser.command = ["sh", "-c", root.chooseScript, "sh", title, root.customDir, slot, String(root.events[event].step ? root.stepLimit : root.eventLimit)];
         chooser.running = true;
