@@ -10,9 +10,9 @@ Item {
 
     readonly property var sides: ["left", "center", "right"]
     readonly property var sideNames: ({
-        "left": "Left",
-        "center": "Centre",
-        "right": "Right"
+        "left": I18n.tr("Left"),
+        "center": I18n.tr("Centre"),
+        "right": I18n.tr("Right")
     })
     readonly property var modules: Prefs.barModuleById
     // the module whose card the page shows; a tap on its chip picks it
@@ -326,7 +326,7 @@ Item {
                 Text {
                     anchors.centerIn: parent
                     visible: lane.empty
-                    text: "Drop a module here"
+                    text: I18n.tr("Drop a module here")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontLabelMd

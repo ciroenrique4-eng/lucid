@@ -522,7 +522,7 @@ BarPill {
 
         const rate = root.battery ? root.battery.changeRate : 0;
         if (!root.batteryCharging && rate > 0.05)
-            return rate.toFixed(1) + " W";
+            return rate.toFixed(1) + " W"; // i18n-skip
 
         if (root.tipBatteryTime !== "")
             return root.tipBatteryTime;
@@ -1852,7 +1852,7 @@ BarPill {
                                     width: (root.sysColWidth - root.sp2 * 2) / 3
                                     label: I18n.tr("CPU")
                                     valueText: root.cpuHistory.length > 0 ? Math.round(root.cpuPercent) + "%" : "—"
-                                    detailText: root.cpuTemp > 0 ? Math.round(root.cpuTemp) + " °C" : ""
+                                    detailText: root.cpuTemp > 0 ? Math.round(root.cpuTemp) + " °C" : "" // i18n-skip
                                     showChart: true
                                     chartHistory: root.cpuHistory
                                 }
@@ -1861,7 +1861,7 @@ BarPill {
                                     width: (root.sysColWidth - root.sp2 * 2) / 3
                                     label: I18n.tr("RAM")
                                     valueText: root.ramHistory.length > 0 ? Math.round(root.ramPercent) + "%" : "—"
-                                    detailText: root.ramTotalGB > 0 ? root.ramUsedGB.toFixed(1) + " / " + Math.round(root.ramTotalGB) + " GB" : ""
+                                    detailText: root.ramTotalGB > 0 ? root.ramUsedGB.toFixed(1) + " / " + Math.round(root.ramTotalGB) + " GB" : "" // i18n-skip
                                     showChart: true
                                     chartHistory: root.ramHistory
                                 }
@@ -2014,7 +2014,7 @@ BarPill {
                                             if (diskCard.unmounted)
                                                 return I18n.tr("Not mounted");
 
-                                            return Math.round(diskCard.usedGB) + " / " + Math.round(diskCard.totalGB) + " GB";
+                                            return Math.round(diskCard.usedGB) + " / " + Math.round(diskCard.totalGB) + " GB"; // i18n-skip
                                         }
                                         color: diskCard.unmounted ? Theme.subtext : Theme.text
                                         font.family: Theme.fontFamily

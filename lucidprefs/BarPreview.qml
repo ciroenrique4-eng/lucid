@@ -291,7 +291,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: 22
         y: Prefs.barBottom ? 20 : parent.height - height - 20
-        text: (Prefs.barFull ? "Full bar" : Prefs.barNotch ? "Notches" : "Islands") + "  ·  " + (Prefs.barBottom ? "bottom" : "top") + "  ·  " + (Prefs.barPopupMode ? "pop-up" : "morph") + (Prefs.barAutoHide ? "  ·  auto-hide" : "")
+        text: (Prefs.barFull ? I18n.tr("Full bar") : Prefs.barNotch ? I18n.tr("Notches") : I18n.tr("Islands")) + "  ·  " + (Prefs.barBottom ? I18n.tr("bottom") : I18n.tr("top")) + "  ·  " + (Prefs.barPopupMode ? I18n.tr("pop-up") : I18n.tr("morph")) + (Prefs.barAutoHide ? I18n.tr("  ·  auto-hide") : "")
         color: Theme.subtext
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontLabel

@@ -14,7 +14,7 @@ Column {
     readonly property bool custom: fb.current === "custom"
     readonly property var options: fb.ev.options.concat([{
         "key": "custom",
-        "label": "Custom"
+        "label": I18n.tr("Custom")
     }])
 
     function pick(key) {
@@ -101,7 +101,7 @@ Column {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 160
                 elide: Text.ElideMiddle
-                text: slotRow.busy ? "Choosing…" : (slotRow.name !== "" ? slotRow.name : (slotRow.other !== "" ? "Same as " + (Sounds.slotLabel[slotRow.other] || "").toLowerCase() : "Nothing chosen"))
+                text: slotRow.busy ? I18n.tr("Choosing…") : (slotRow.name !== "" ? slotRow.name : (slotRow.other !== "" ? I18n.tr("Same as %1", (Sounds.slotLabel[slotRow.other] || "").toLowerCase()) : I18n.tr("Nothing chosen")))
                 color: slotRow.name !== "" ? Theme.text : Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBody
@@ -112,7 +112,7 @@ Column {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 112
                 variant: "tonal"
-                text: slotRow.name !== "" ? "Change…" : "Choose…"
+                text: slotRow.name !== "" ? I18n.tr("Change…") : I18n.tr("Choose…")
                 enabled: Sounds.choosing === ""
                 onClicked: Sounds.choose(slotRow.modelData)
             }
@@ -145,7 +145,7 @@ Column {
         leftPadding: 64
         width: fb.width
         wrapMode: Text.WordWrap
-        text: "\"" + Sounds.failed + "\" could not be read as a sound."
+        text: I18n.tr("\"%1\" could not be read as a sound.", Sounds.failed)
         color: Theme.error
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontBody
