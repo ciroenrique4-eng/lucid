@@ -224,7 +224,7 @@ Singleton {
     }
 
     function modeLabel(m) {
-        return m.w + " × " + m.h + " at " + Math.round(m.hz) + " Hz";
+        return I18n.tr("%1 × %2 at %3 Hz", m.w, m.h, Math.round(m.hz));
     }
 
     function resLabel(res) {
@@ -422,17 +422,17 @@ Singleton {
     }
 
     readonly property var transforms: [
-        { "key": 0, "label": "Landscape", "short": "0°" },
-        { "key": 1, "label": "Portrait", "short": "90°" },
-        { "key": 2, "label": "Landscape flipped", "short": "180°" },
-        { "key": 3, "label": "Portrait flipped", "short": "270°" }
+        { "key": 0, "label": I18n.tr("Landscape"), "short": "0°" },
+        { "key": 1, "label": I18n.tr("Portrait"), "short": "90°" },
+        { "key": 2, "label": I18n.tr("Landscape flipped"), "short": "180°" },
+        { "key": 3, "label": I18n.tr("Portrait flipped"), "short": "270°" }
     ]
 
     function transformLabel(t) {
         const hit = root.transforms.find((x) => {
             return x.key === t;
         });
-        return hit ? hit.label : "Flipped " + t;
+        return hit ? hit.label : I18n.tr("Flipped %1", t);
     }
 
     // a rotated output swaps the side its size is measured on
@@ -782,12 +782,12 @@ Singleton {
             return "no display called \"" + spec + "\", see: qs ipc call displays list";
 
         if (key === "*")
-            return "every display";
+            return I18n.tr("every display");
 
         if (key !== "")
             return root.nameOf(key);
 
-        return which === "shell" ? "automatic" : "follows the shell";
+        return which === "shell" ? "automatic" : I18n.tr("follows the shell");
     }
 
     // one word for a display: an output name, its desc: key, where it sits in

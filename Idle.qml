@@ -30,26 +30,26 @@ Singleton {
 
     readonly property string summary: {
         if (!root.probed)
-            return "Looking for hypridle…";
+            return I18n.tr("Looking for hypridle…");
 
         if (!root.installed)
-            return "Not installed";
+            return I18n.tr("Not installed");
 
         if (!Prefs.idleEnabled)
-            return "Turned off — this machine never goes idle on its own";
+            return I18n.tr("Turned off — this machine never goes idle on its own");
 
         if (root.paused)
-            return "Paused — keep awake is on";
+            return I18n.tr("Paused — keep awake is on");
 
         if (!root.running)
-            return "Turned on, but hypridle is not answering";
+            return I18n.tr("Turned on, but hypridle is not answering");
 
-        return root.stages.length > 0 ? "Watching — " + root.stages.length + (root.stages.length === 1 ? " step" : " steps") : "Watching, but nothing is set to happen";
+        return root.stages.length > 0 ? I18n.trn("Watching — %1 step", "Watching — %1 steps", root.stages.length) : I18n.tr("Watching, but nothing is set to happen");
     }
 
     // 30 s to 2 h, coarse enough that the slider lands on round numbers
     readonly property var steps: [30, 60, 120, 180, 300, 600, 900, 1200, 1800, 2700, 3600, 5400, 7200]
-    readonly property var stepLabels: ["30 sec", "1 min", "2 min", "3 min", "5 min", "10 min", "15 min", "20 min", "30 min", "45 min", "1 hour", "90 min", "2 hours"]
+    readonly property var stepLabels: [I18n.tr("30 sec"), I18n.tr("1 min"), I18n.tr("2 min"), I18n.tr("3 min"), I18n.tr("5 min"), I18n.tr("10 min"), I18n.tr("15 min"), I18n.tr("20 min"), I18n.tr("30 min"), I18n.tr("45 min"), I18n.tr("1 hour"), I18n.tr("90 min"), I18n.tr("2 hours")]
 
     function stepIndex(sec) {
         var best = 0;
@@ -70,14 +70,14 @@ Singleton {
 
     function durationText(sec) {
         if (sec < 60)
-            return sec + " sec";
+            return I18n.tr("%1 sec", sec);
 
         var m = Math.round(sec / 60);
         if (m < 60)
-            return m + (m === 1 ? " min" : " min");
+            return m + (m === 1 ? I18n.tr(" min") : I18n.tr(" min"));
 
         var h = m / 60;
-        return (h === Math.round(h) ? String(h) : h.toFixed(1)) + (h === 1 ? " hour" : " hours");
+        return (h === Math.round(h) ? String(h) : h.toFixed(1)) + (h === 1 ? I18n.tr(" hour") : I18n.tr(" hours"));
     }
 
     // the ladder, in the order it actually fires
@@ -86,28 +86,28 @@ Singleton {
         if (Prefs.idleDim && root.hasBacklight)
             out.push({
                 "key": "dim",
-                "name": "Dim",
+                "name": I18n.tr("Dim"),
                 "after": Prefs.idleDimAfter
             });
 
         if (Prefs.idleLock)
             out.push({
                 "key": "lock",
-                "name": "Lock",
+                "name": I18n.tr("Lock"),
                 "after": Prefs.idleLockAfter
             });
 
         if (Prefs.idleScreenOff)
             out.push({
                 "key": "screen",
-                "name": "Screen off",
+                "name": I18n.tr("Screen off"),
                 "after": Prefs.idleScreenOffAfter
             });
 
         if (Prefs.idleSuspend)
             out.push({
                 "key": "suspend",
-                "name": "Suspend",
+                "name": I18n.tr("Suspend"),
                 "after": Prefs.idleSuspendAfter
             });
 
@@ -496,7 +496,7 @@ Singleton {
             confFile.ready = true;
             root.maybeAdopt();
         }
-        onSaveFailed: root.lastError = "Could not write " + root.confPath
+        onSaveFailed: root.lastError = I18n.tr("Could not write %1", root.confPath)
     }
 
     // one copy of whatever was there before Lucid ever wrote the file
