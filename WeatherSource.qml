@@ -54,7 +54,7 @@ Singleton {
     function descFor(code) {
         const c = parseInt(code);
         if (c === 0)
-            return I18n.tr("Clear");
+            return I18n.trc("weather", "Clear");
 
         if (c === 1)
             return I18n.tr("Mostly Clear");

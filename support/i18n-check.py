@@ -9,6 +9,7 @@
 #   plural        an I18n.trn text without a {one, other} entry, or the reverse
 #   nonliteral    I18n.tr*(x) with no literal to extract (allow: // i18n-dynamic)
 #   unwrapped     a bare literal on a label-like property (allow: // i18n-skip)
+#   compared      a text the file translates, then compares or passes on in English
 # PATHS narrows only the unwrapped scan; the rest always looks at everything.
 # --write adds what is missing as "", drops what is unused and sorts the file.
 import argparse
@@ -180,6 +181,34 @@ def unwrapped(root, paths):
     return out
 
 
+def compared_labels(root):
+    """a text the file translates, then compares or hands on in English: once the
+    shell speaks another language the two never match"""
+    out = []
+    for path in files_under(root):
+        rel = os.path.relpath(path, root)
+        raw = open(path, encoding="utf-8").readlines()
+        lines = [code_part(l) for l in raw]
+        mine = set()
+        for line in lines:
+            for _s, _e, kind, lits in call_spans(line):
+                if kind == "tr" and lits:
+                    mine.add(lits[0])
+        if not mine:
+            continue
+        for no, line in enumerate(lines, 1):
+            if "i18n-skip" in raw[no - 1]:
+                continue
+            spans = call_spans(line)
+            for m in STR.finditer(line):
+                text = decode(m.group())
+                if text not in mine or any(s <= m.start() < e for s, e, _k, _l in spans):
+                    continue
+                if CMP.search(line[: m.start()]) or re.match(r"\s*[!=]==?", line[m.end():]) or re.search(r"[\w$]\($", line[: m.start()]):
+                    out.append(f"{rel}:{no}: compared: {json.dumps(text, ensure_ascii=False)}")
+    return out
+
+
 def dump(cat):
     meta = {"_meta": cat["_meta"]} if "_meta" in cat else {}
     body = {k: cat[k] for k in sorted(k for k in cat if k != "_meta")}
@@ -222,6 +251,7 @@ def main(argv):
 
     keys, problems = scan(root)
     problems += unwrapped(root, [os.path.abspath(p) for p in a.paths] or None)
+    problems += compared_labels(root)
     for p in problems:
         print(p)
     bad = bool(problems)
