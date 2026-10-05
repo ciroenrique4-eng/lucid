@@ -236,13 +236,13 @@ SettingCard {
             current: Prefs.clockDateFormat
             options: [{
                 "key": "short",
-                "label": Loc.now().toLocaleDateString(Qt.locale(), I18n.tr("ddd d"))
+                "label": Loc.now().toLocaleDateString(I18n.locale, I18n.tr("ddd d"))
             }, {
                 "key": "long",
-                "label": Loc.now().toLocaleDateString(Qt.locale(), I18n.tr("ddd d MMM"))
+                "label": Loc.now().toLocaleDateString(I18n.locale, I18n.tr("ddd d MMM"))
             }, {
                 "key": "numeric",
-                "label": Loc.now().toLocaleDateString(Qt.locale(), Qt.locale().dateFormat(Locale.ShortFormat))
+                "label": Loc.now().toLocaleDateString(I18n.locale, I18n.locale.dateFormat(Locale.ShortFormat))
             }]
             onChosen: (key) => {
                 return Prefs.clockDateFormat = key;
