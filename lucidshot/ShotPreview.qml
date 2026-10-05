@@ -416,7 +416,7 @@ PanelWindow {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onEntered: preview.hint = I18n.tr("Dismiss")
-                        onExited: preview.leave("Dismiss")
+                        onExited: preview.leave(I18n.tr("Dismiss"))
                         onClicked: preview.dismiss()
                     }
 

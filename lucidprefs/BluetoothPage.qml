@@ -73,7 +73,7 @@ Column {
         if (s < 3600)
             return I18n.tr("%1 min ago", Math.round(s / 60));
 
-        return new Date(ms).toLocaleTimeString(Qt.locale(), Locale.ShortFormat);
+        return new Date(ms).toLocaleTimeString(I18n.locale, Locale.ShortFormat);
     }
 
     Component.onCompleted: {
