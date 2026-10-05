@@ -294,88 +294,88 @@ PanelWindow {
 
     readonly property var allCommands: [{
         "id": "wallpaper",
-        "name": "Choose Wallpaper",
-        "desc": "Browse and set a new desktop wallpaper",
+        "name": I18n.tr("Choose Wallpaper"),
+        "desc": I18n.tr("Browse and set a new desktop wallpaper"),
         "glyph": DockIcons.wallpaper
     }, {
         "id": "shuffle",
-        "name": "Shuffle Wallpaper",
-        "desc": "Pick a random wallpaper from this theme's folder",
+        "name": I18n.tr("Shuffle Wallpaper"),
+        "desc": I18n.tr("Pick a random wallpaper from this theme's folder"),
         "glyph": DockIcons.shuffle
     }, {
         "id": "theme",
-        "name": "Switch Theme",
-        "desc": "Change the colour scheme",
+        "name": I18n.tr("Switch Theme"),
+        "desc": I18n.tr("Change the colour scheme"),
         "glyph": DockIcons.palette
     }, {
         "id": "clipboard",
-        "name": "Clipboard History",
-        "desc": "Copy something you copied earlier",
+        "name": I18n.tr("Clipboard History"),
+        "desc": I18n.tr("Copy something you copied earlier"),
         "glyph": DockIcons.clipboard
     }, {
         "id": "power",
-        "name": "Power",
-        "desc": "Lock, suspend, restart or shut down",
+        "name": I18n.tr("Power"),
+        "desc": I18n.tr("Lock, suspend, restart or shut down"),
         "glyph": DockIcons.power
     }, {
         "id": "widgets",
-        "name": "Desktop Widgets",
-        "desc": "Place clocks, meters and notes on the desktop",
+        "name": I18n.tr("Desktop Widgets"),
+        "desc": I18n.tr("Place clocks, meters and notes on the desktop"),
         "glyph": DockIcons.widgets
     }, {
         "id": "keyboard",
-        "name": "On-Screen Keyboard",
-        "desc": "Type with the pointer when there is no keyboard",
+        "name": I18n.tr("On-Screen Keyboard"),
+        "desc": I18n.tr("Type with the pointer when there is no keyboard"),
         "glyph": DockIcons.keyboard
     }, {
         "id": "settings",
-        "name": "Settings",
-        "desc": "Open Lucid's settings",
+        "name": I18n.tr("Settings"),
+        "desc": I18n.tr("Open Lucid's settings"),
         "glyph": DockIcons.settings
     }]
     // found by plain search, not listed under > (the power screen covers that).
     // runPowerAction ids; restart, shut down and log out want a second Return
     readonly property var powerCommands: [{
         "id": "lock",
-        "name": "Lock Screen",
-        "desc": "Lock the session",
+        "name": I18n.tr("Lock Screen"),
+        "desc": I18n.tr("Lock the session"),
         "keywords": "",
-        "confirm": "",
+        "confirm": I18n.tr(""),
         "glyph": DockIcons.lock
     }, {
         "id": "suspend",
-        "name": "Suspend",
-        "desc": "Sleep, keeping the session in memory",
+        "name": I18n.tr("Suspend"),
+        "desc": I18n.tr("Sleep, keeping the session in memory"),
         "keywords": "sleep",
-        "confirm": "",
+        "confirm": I18n.tr(""),
         "glyph": DockIcons.suspend
     }, {
         "id": "hibernate",
-        "name": "Hibernate",
-        "desc": "Save the session to disk and power off",
+        "name": I18n.tr("Hibernate"),
+        "desc": I18n.tr("Save the session to disk and power off"),
         "keywords": "sleep",
-        "confirm": "",
+        "confirm": I18n.tr(""),
         "glyph": DockIcons.hibernate
     }, {
         "id": "logout",
-        "name": "Log Out",
-        "desc": "End the session",
+        "name": I18n.tr("Log Out"),
+        "desc": I18n.tr("End the session"),
         "keywords": "logout sign out exit",
-        "confirm": "log out",
+        "confirm": I18n.tr("log out"),
         "glyph": DockIcons.logout
     }, {
         "id": "reboot",
-        "name": "Restart",
-        "desc": "Reboot the computer",
+        "name": I18n.tr("Restart"),
+        "desc": I18n.tr("Reboot the computer"),
         "keywords": "reboot",
-        "confirm": "restart",
+        "confirm": I18n.tr("restart"),
         "glyph": DockIcons.reboot
     }, {
         "id": "shutdown",
-        "name": "Shut Down",
-        "desc": "Power the computer off",
+        "name": I18n.tr("Shut Down"),
+        "desc": I18n.tr("Power the computer off"),
         "keywords": "shutdown poweroff power off",
-        "confirm": "shut down",
+        "confirm": I18n.tr("shut down"),
         "glyph": DockIcons.power
     }]
 
@@ -896,7 +896,7 @@ PanelWindow {
                 }));
             } else if (it.kind === "power") {
                 var armed = dockWindow.armedPower === it.cmd.id;
-                rows.push(dockWindow.makeRow("power", "pow-" + it.cmd.id, it.cmd.name, armed ? "Press Return again to " + it.cmd.confirm : it.cmd.desc, {
+                rows.push(dockWindow.makeRow("power", "pow-" + it.cmd.id, it.cmd.name, armed ? I18n.tr("Press Return again to %1", it.cmd.confirm) : it.cmd.desc, {
                     "glyph": it.cmd.glyph,
                     "payload": it.cmd.id
                 }));
@@ -906,7 +906,7 @@ PanelWindow {
             rows.push(urlRow);
 
         if (Prefs.launcherWebSearch)
-            rows.push(dockWindow.makeRow("web", "web", "Search the web for “" + text + "”", dockWindow.webSearchHost(), {
+            rows.push(dockWindow.makeRow("web", "web", I18n.tr("Search the web for “%1”", text), dockWindow.webSearchHost(), {
                 "glyph": DockIcons.globe,
                 "payload": dockWindow.webSearchUrl(text)
             }));
@@ -918,7 +918,7 @@ PanelWindow {
         var ws = client.workspace ? client.workspace.name : "";
         // special workspaces keep their "special:" name, numbered ones read as words
         if (ws !== "" && client.workspace.id > 0)
-            ws = "Workspace " + ws;
+            ws = I18n.tr("Workspace %1", ws);
 
         return dockWindow.makeRow("window", "win-" + client.address, client.title && client.title !== "" ? client.title : name, ws !== "" ? name + " · " + ws : name, {
             "iconName": app ? app.iconName : client.class,
@@ -947,7 +947,7 @@ PanelWindow {
         if (mode === "apps") {
             var calc = DockCalc.evaluate(dockWindow.queryFor(raw));
             if (calc !== "")
-                rows.push(dockWindow.makeRow("calc", "calc", "= " + calc, "Press Return to copy", {
+                rows.push(dockWindow.makeRow("calc", "calc", "= " + calc, I18n.tr("Press Return to copy"), {
                     "glyph": DockIcons.equals,
                     "payload": calc
                 }));
@@ -956,7 +956,7 @@ PanelWindow {
             if (q === "") {
                 var favs = Apps.favApps;
                 if (favs.length > 0) {
-                    rows.push(dockWindow.headerRow("Favourites"));
+                    rows.push(dockWindow.headerRow(I18n.tr("Favourites")));
                     for (var v = 0; v < favs.length; v++) rows.push(dockWindow.rowForApp(favs[v]));
                 }
                 // the favourites are already on show above
@@ -964,11 +964,11 @@ PanelWindow {
                     return s.uses > 0 && !Apps.isFav(s.app);
                 }).slice(0, 5);
                 if (frequent.length > 0) {
-                    rows.push(dockWindow.headerRow("Frequent"));
+                    rows.push(dockWindow.headerRow(I18n.tr("Frequent")));
                     for (var f = 0; f < frequent.length; f++) rows.push(dockWindow.rowForApp(frequent[f].app));
                 }
                 if (favs.length > 0 || frequent.length > 0)
-                    rows.push(dockWindow.headerRow("All applications"));
+                    rows.push(dockWindow.headerRow(I18n.tr("All applications")));
 
                 var rest = scored.slice().sort(function(a, b) {
                     return a.app.name.toLowerCase() < b.app.name.toLowerCase() ? -1 : 1;
@@ -2247,7 +2247,7 @@ PanelWindow {
                 DockItem {
                     id: launcherItem
 
-                    displayName: "Launcher"
+                    displayName: I18n.tr("Launcher")
                     isToggle: true
                     pointerInside: dockWindow.pointerOnDock
                     toggleActive: dockWindow.menuOpen
@@ -2473,7 +2473,7 @@ PanelWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 8
-            text: "dock surface headroom - " + Math.round(parent.width) + " x " + Math.round(parent.height) + " transparent" + (dockWindow.dragging ? " (INPUT LIVE: dragging)" : ", input masked out")
+            text: "dock surface headroom - " + Math.round(parent.width) + " x " + Math.round(parent.height) + " transparent" + (dockWindow.dragging ? " (INPUT LIVE: dragging)" : ", input masked out") // i18n-skip
             color: "#cc80d8ff"
             font.pixelSize: 12
             font.family: Theme.fontFamily
