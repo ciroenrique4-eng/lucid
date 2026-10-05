@@ -296,7 +296,7 @@ Column {
         width: editor.width
         text: editor.keys.some((k) => {
             return k.role === editor.selected;
-        }) ? "Editing " + editor.selected.replace(/_/g, " ") + ". Changing a key colour builds the rest of the palette again from all six." : "Editing " + editor.selected.replace(/_/g, " ") + " by itself."
+        }) ? I18n.tr("Editing %1. Changing a key colour builds the rest of the palette again from all six.", editor.selected.replace(/_/g, " ")) : I18n.tr("Editing %1 by itself.", editor.selected.replace(/_/g, " "))
         color: Theme.subtext
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontBody
