@@ -37,12 +37,12 @@ Column {
     spacing: 26
 
     SettingCard {
-        title: "LAYOUT"
+        title: I18n.tr("LAYOUT")
 
         SettingRow {
-            title: "Launcher width"
+            title: I18n.tr("Launcher width")
             resetKey: "launcherWidth"
-            description: "How wide the application launcher opens - also the command, theme and clipboard lists. The wallpaper strip and power menu keep their own size."
+            description: I18n.tr("How wide the application launcher opens - also the command, theme and clipboard lists. The wallpaper strip and power menu keep their own size.")
             stacked: true
 
             M3Slider {
@@ -60,9 +60,9 @@ Column {
         }
 
         SettingRow {
-            title: "Visible results"
+            title: I18n.tr("Visible results")
             resetKey: "launcherMaxRows"
-            description: "How many results the launcher shows before the list scrolls. It grows up to that many rows and shrinks when there are fewer."
+            description: I18n.tr("How many results the launcher shows before the list scrolls. It grows up to that many rows and shrinks when there are fewer.")
             stacked: true
 
             M3Slider {
@@ -70,7 +70,7 @@ Column {
                 from: 3
                 to: 12
                 stepSize: 1
-                suffix: " rows"
+                suffix: I18n.tr(" rows")
                 value: Prefs.launcherMaxRows
                 onMoved: (v) => {
                     return Prefs.launcherMaxRows = v;
@@ -80,9 +80,9 @@ Column {
         }
 
         SettingRow {
-            title: "App descriptions"
+            title: I18n.tr("App descriptions")
             resetKey: "launcherAppDescriptions"
-            description: "A line under each application saying what it is, taken from its desktop entry."
+            description: I18n.tr("A line under each application saying what it is, taken from its desktop entry.")
             showDivider: false
 
             M3Switch {
@@ -97,12 +97,12 @@ Column {
     }
 
     SettingCard {
-        title: "SEARCH"
+        title: I18n.tr("SEARCH")
 
         SettingRow {
-            title: "Open windows in results"
+            title: I18n.tr("Open windows in results")
             resetKey: "launcherWindows"
-            description: "Searching also finds windows that are already open, by title or application. Return switches to the window instead of starting the app again."
+            description: I18n.tr("Searching also finds windows that are already open, by title or application. Return switches to the window instead of starting the app again.")
 
             M3Switch {
                 checked: Prefs.launcherWindows
@@ -114,9 +114,9 @@ Column {
         }
 
         SettingRow {
-            title: "Web search"
+            title: I18n.tr("Web search")
             resetKey: "launcherWebSearch"
-            description: "The last result offers to search the web for what you typed, and an address like example.org opens straight away."
+            description: I18n.tr("The last result offers to search the web for what you typed, and an address like example.org opens straight away.")
 
             M3Switch {
                 checked: Prefs.launcherWebSearch
@@ -128,16 +128,16 @@ Column {
         }
 
         SettingRow {
-            title: "Search address"
+            title: I18n.tr("Search address")
             resetKey: "launcherSearchUrl"
-            description: "Opened in the default browser, with %s replaced by the search. DuckDuckGo also understands bangs like !yt or !gh."
+            description: I18n.tr("Opened in the default browser, with %s replaced by the search. DuckDuckGo also understands bangs like !yt or !gh.")
             showDivider: false
             stacked: true
             opacity: Prefs.launcherWebSearch ? 1 : 0.5
 
             M3TextField {
                 width: parent.width
-                placeholder: "https://duckduckgo.com/?q=%s"
+                placeholder: I18n.tr("https://duckduckgo.com/?q=%s")
                 text: Prefs.launcherSearchUrl
                 onAccepted: (v) => {
                     return Prefs.launcherSearchUrl = v;
@@ -149,12 +149,12 @@ Column {
     }
 
     SettingCard {
-        title: "POWER"
+        title: I18n.tr("POWER")
 
         SettingRow {
-            title: "Power buttons"
+            title: I18n.tr("Power buttons")
             resetKey: "launcherPowerChips"
-            description: "Buttons next to the search field to lock, suspend, restart or shut down. The ones that end the session ask for a second click."
+            description: I18n.tr("Buttons next to the search field to lock, suspend, restart or shut down. The ones that end the session ask for a second click.")
 
             M3Switch {
                 checked: Prefs.launcherPowerChips
@@ -166,12 +166,12 @@ Column {
         }
 
         SettingRow {
-            title: "Buttons to show"
+            title: I18n.tr("Buttons to show")
             resetKey: "launcherPowerButtons"
-            description: "Each one you pick takes a little room from the search field."
+            description: I18n.tr("Each one you pick takes a little room from the search field.")
             stacked: true
             enabled: Prefs.launcherPowerChips
-            disabledReason: "Turn on power buttons to choose which ones appear."
+            disabledReason: I18n.tr("Turn on power buttons to choose which ones appear.")
 
             M3Chips {
                 width: parent.width
@@ -180,22 +180,22 @@ Column {
                 selectedKeys: Prefs.powerButtonList
                 options: [{
                     "key": "lock",
-                    "label": "Lock"
+                    "label": I18n.tr("Lock")
                 }, {
                     "key": "logout",
-                    "label": "Log out"
+                    "label": I18n.tr("Log out")
                 }, {
                     "key": "suspend",
-                    "label": "Suspend"
+                    "label": I18n.tr("Suspend")
                 }, {
                     "key": "hibernate",
-                    "label": "Hibernate"
+                    "label": I18n.tr("Hibernate")
                 }, {
                     "key": "reboot",
-                    "label": "Restart"
+                    "label": I18n.tr("Restart")
                 }, {
                     "key": "shutdown",
-                    "label": "Shut down"
+                    "label": I18n.tr("Shut down")
                 }]
                 onChosen: (k) => {
                     return Prefs.setPowerButton(k, Prefs.powerButtonList.indexOf(k) === -1);
@@ -205,9 +205,9 @@ Column {
         }
 
         SettingRow {
-            title: "Power actions in search"
+            title: I18n.tr("Power actions in search")
             resetKey: "launcherPowerSearch"
-            description: "Typing at least three letters of lock, suspend, restart, shut down and the like offers them as results. Restart, shut down and log out still want a second Return."
+            description: I18n.tr("Typing at least three letters of lock, suspend, restart, shut down and the like offers them as results. Restart, shut down and log out still want a second Return.")
             showDivider: false
 
             M3Switch {
@@ -222,13 +222,13 @@ Column {
     }
 
     SettingCard {
-        title: "CLIPBOARD"
+        title: I18n.tr("CLIPBOARD")
 
         SettingRow {
-            title: "Clipboard history"
-            description: "Keeps what you copy so the launcher can hand it back. Type > clip in the launcher, or pick Clipboard History from the command list. Needs cliphist installed."
+            title: I18n.tr("Clipboard history")
+            description: I18n.tr("Keeps what you copy so the launcher can hand it back. Type > clip in the launcher, or pick Clipboard History from the command list. Needs cliphist installed.")
             enabled: Clip.available
-            disabledReason: "cliphist is not installed. Install it and the history starts recording straight away."
+            disabledReason: I18n.tr("cliphist is not installed. Install it and the history starts recording straight away.")
 
             M3Switch {
                 checked: Prefs.clipboardEnabled && Clip.available
@@ -241,17 +241,17 @@ Column {
         }
 
         SettingRow {
-            title: "Clear clipboard history"
-            description: "Discards every entry cliphist has stored, including images."
+            title: I18n.tr("Clear clipboard history")
+            description: I18n.tr("Discards every entry cliphist has stored, including images.")
             enabled: Clip.available
             showDivider: false
 
             M3Button {
-                text: "Clear history"
+                text: I18n.tr("Clear history")
                 variant: "text"
                 destructive: true
                 enabled: Clip.available
-                onClicked: Prefs.askConfirm("Clear clipboard history?", "Every entry cliphist has stored is discarded, images included. This cannot be undone.", "Clear", Prefs.clearClipboardToken)
+                onClicked: Prefs.askConfirm(I18n.tr("Clear clipboard history?"), I18n.tr("Every entry cliphist has stored is discarded, images included. This cannot be undone."), I18n.tr("Clear"), Prefs.clearClipboardToken)
             }
 
         }
@@ -259,12 +259,12 @@ Column {
     }
 
     SettingCard {
-        title: "APPLICATIONS"
-        subtitle: "Everything the launcher can open. A starred app is listed first, under Favourites, and wins a search against an equally good match. A hidden one never shows up, not even when you search for it. You can also right-click an app in the launcher to star it."
+        title: I18n.tr("APPLICATIONS")
+        subtitle: I18n.tr("Everything the launcher can open. A starred app is listed first, under Favourites, and wins a search against an equally good match. A hidden one never shows up, not even when you search for it. You can also right-click an app in the launcher to star it.")
 
         SettingRow {
-            title: "Find an application"
-            description: page.sorted.length + " applications  ·  " + page.favCount + " starred  ·  " + page.hiddenCount + " hidden"
+            title: I18n.tr("Find an application")
+            description: I18n.tr("%1 applications  ·  %2 starred  ·  %3 hidden", page.sorted.length, page.favCount, page.hiddenCount)
             stacked: true
 
             Column {
@@ -273,7 +273,7 @@ Column {
 
                 M3TextField {
                     width: parent.width
-                    placeholder: "Name or desktop entry"
+                    placeholder: I18n.tr("Name or desktop entry")
                     commitOnBlur: false
                     onEdited: (v) => {
                         return page.query = v;
@@ -285,13 +285,13 @@ Column {
                     current: page.view
                     options: [{
                         "key": "all",
-                        "label": "All"
+                        "label": I18n.tr("All")
                     }, {
                         "key": "fav",
-                        "label": "Favourites"
+                        "label": I18n.tr("Favourites")
                     }, {
                         "key": "hidden",
-                        "label": "Hidden"
+                        "label": I18n.tr("Hidden")
                     }]
                     onChosen: (k) => {
                         return page.view = k;
@@ -321,16 +321,16 @@ Column {
             visible: page.shown.length === 0
             text: {
                 if (Apps.list.length === 0)
-                    return "Looking for applications…";
+                    return I18n.tr("Looking for applications…");
 
                 if (page.query.trim() !== "")
-                    return "Nothing here matches “" + page.query.trim() + "”.";
+                    return I18n.tr("Nothing here matches “%1”.", page.query.trim());
 
                 if (page.view === "fav")
-                    return "No favourites yet. Star an application to list it first in the launcher.";
+                    return I18n.tr("No favourites yet. Star an application to list it first in the launcher.");
 
                 if (page.view === "hidden")
-                    return "Nothing is hidden. Every application shows up in the launcher.";
+                    return I18n.tr("Nothing is hidden. Every application shows up in the launcher.");
 
                 return "";
             }
@@ -401,7 +401,7 @@ Column {
 
             Text {
                 width: parent.width
-                text: row.hidden ? "Hidden from the launcher" : (row.modelData.desc !== "" ? row.modelData.desc : row.modelData.base)
+                text: row.hidden ? I18n.tr("Hidden from the launcher") : (row.modelData.desc !== "" ? row.modelData.desc : row.modelData.base)
                 color: row.hidden ? Theme.accentMuted : Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabelSm

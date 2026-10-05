@@ -60,13 +60,13 @@ Item {
     readonly property string timeText: {
         const now = Loc.now();
         if (Prefs.clock24h)
-            return now.toLocaleTimeString(Qt.locale(), Prefs.clockSeconds ? "HH:mm:ss" : "HH:mm");
+            return now.toLocaleTimeString(I18n.locale, Prefs.clockSeconds ? "HH:mm:ss" : "HH:mm");
 
         // h only counts to 12 next to AP; the bar leaves the AM/PM out
-        const t = now.toLocaleTimeString(Qt.locale(), Prefs.clockSeconds ? "hh:mm:ss AP" : "hh:mm AP");
-        return t.replace(now.toLocaleTimeString(Qt.locale(), "AP"), "").trim();
+        const t = now.toLocaleTimeString(I18n.locale, Prefs.clockSeconds ? "hh:mm:ss AP" : "hh:mm AP");
+        return t.replace(now.toLocaleTimeString(I18n.locale, "AP"), "").trim();
     }
-    readonly property string dateText: Loc.now().toLocaleDateString(Qt.locale(), Prefs.clockDateFormat === "long" ? "ddd d MMM" : (Prefs.clockDateFormat === "numeric" ? Qt.locale().dateFormat(Locale.ShortFormat) : "ddd d"))
+    readonly property string dateText: Loc.now().toLocaleDateString(I18n.locale, Prefs.clockDateFormat === "long" ? I18n.tr("ddd d MMM") : (Prefs.clockDateFormat === "numeric" ? I18n.locale.dateFormat(Locale.ShortFormat) : I18n.tr("ddd d")))
 
     implicitWidth: loader.item ? loader.item.implicitWidth : 0
     implicitHeight: loader.item ? loader.item.implicitHeight : 0
@@ -237,7 +237,7 @@ Item {
             }
 
             BarText {
-                text: Prefs.mediaArtist ? "Artist  -  Song" : "Song"
+                text: Prefs.mediaArtist ? I18n.tr("Artist  -  Song") : I18n.tr("Song")
             }
 
             MiniPlay {
@@ -264,7 +264,7 @@ Item {
             }
 
             BarText {
-                text: Prefs.mediaArtist ? "Artist  -  Song" : "Song"
+                text: Prefs.mediaArtist ? I18n.tr("Artist  -  Song") : I18n.tr("Song")
             }
 
             MiniPlay {
@@ -717,7 +717,7 @@ Item {
 
             BarText {
                 visible: values
-                text: "On"
+                text: I18n.tr("On")
                 font.pixelSize: Theme.fontLabelLg
             }
 
@@ -1421,14 +1421,14 @@ Item {
 
             MiniApp {
                 named: true
-                label: "Files"
+                label: I18n.tr("Files")
                 windows: 2
                 tint: Theme.tertiaryContainer
             }
 
             MiniApp {
                 named: true
-                label: "Browser"
+                label: I18n.tr("Browser")
                 windows: 1
                 focused: true
                 tint: Theme.accent
@@ -1453,7 +1453,7 @@ Item {
             }
 
             BarText {
-                text: Prefs.windowModuleText === "icon" ? "" : "Window title"
+                text: Prefs.windowModuleText === "icon" ? "" : I18n.tr("Window title")
                 visible: text !== ""
                 font.pixelSize: Theme.fontLabelLg
                 font.weight: Font.Medium
@@ -1488,7 +1488,7 @@ Item {
                 }
 
                 BarText {
-                    text: Prefs.windowModuleText === "icon" ? "" : "Window title"
+                    text: Prefs.windowModuleText === "icon" ? "" : I18n.tr("Window title")
                     visible: text !== ""
                     color: Theme.fgAccentContainer
                     font.pixelSize: Theme.fontLabelLg
