@@ -50,8 +50,8 @@ BarPill {
     property var cameraHolders: []
     readonly property var cameraApps: root.names(root.consumersOf(root.cameraNodes).concat(root.cameraHolders.filter((c) => {
         return c !== "pipewire" && c !== "wireplumber";
-    })).concat(root.cameraHolders.indexOf("pipewire") !== -1 && root.consumersOf(root.cameraNodes).length === 0 ? ["An app through PipeWire"] : []))
-    readonly property var screenApps: root.names(root.screenNodes.length > 0 ? root.consumersOf(root.screenNodes).concat(root.consumersOf(root.screenNodes).length === 0 ? ["An app"] : []) : [])
+    })).concat(root.cameraHolders.indexOf("pipewire") !== -1 && root.consumersOf(root.cameraNodes).length === 0 ? [I18n.tr("An app through PipeWire")] : []))
+    readonly property var screenApps: root.names(root.screenNodes.length > 0 ? root.consumersOf(root.screenNodes).concat(root.consumersOf(root.screenNodes).length === 0 ? [I18n.tr("An app")] : []) : [])
     readonly property var rows: {
         const out = [];
         if (root.watched.indexOf("mic") !== -1 && root.micApps.length > 0)
@@ -72,7 +72,7 @@ BarPill {
             out.push({
             "kind": "screen",
             "title": I18n.tr("Screen"),
-            "apps": root.recording ? ["Lucid is recording"].concat(root.screenApps) : root.screenApps
+            "apps": root.recording ? [I18n.tr("Lucid is recording")].concat(root.screenApps) : root.screenApps
         });
 
         return out;
@@ -157,7 +157,7 @@ BarPill {
             for (const kind in now) {
                 const before = root.seen[kind] || [];
                 for (const app of now[kind]) {
-                    if (before.indexOf(app) !== -1 || app === "Lucid is recording" || app === "Lucid's recording")
+                    if (before.indexOf(app) !== -1 || app === I18n.tr("Lucid is recording") || app === I18n.tr("Lucid's recording"))
                         continue;
 
                     root.toast.enqueue({
