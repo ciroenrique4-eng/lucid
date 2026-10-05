@@ -7,27 +7,27 @@ WidgetBody {
 
     readonly property bool showHex: w.opt("showHex") !== false
     readonly property var roles: [{
-        "name": "Primary",
+        "name": I18n.tr("Primary"),
         "color": Theme.accent,
         "on": Theme.fgAccent
     }, {
-        "name": "Container",
+        "name": I18n.tr("Container"),
         "color": Theme.accentContainer,
         "on": Theme.fgAccentContainer
     }, {
-        "name": "Secondary",
+        "name": I18n.tr("Secondary"),
         "color": Theme.secondaryContainer,
         "on": Theme.fgSecondaryContainer
     }, {
-        "name": "Tertiary",
+        "name": I18n.tr("Tertiary"),
         "color": Theme.tertiaryContainer,
         "on": Theme.fgTertiaryContainer
     }, {
-        "name": "Surface",
+        "name": I18n.tr("Surface"),
         "color": Theme.bgTile,
         "on": Theme.text
     }, {
-        "name": "Error",
+        "name": I18n.tr("Error"),
         "color": Theme.errorContainer,
         "on": Theme.fgErrorContainer
     }]
@@ -55,7 +55,7 @@ WidgetBody {
         anchors.top: parent.top
         anchors.leftMargin: 18
         anchors.topMargin: 15
-        text: w.copied !== "" ? "COPIED " + w.copied.toUpperCase() : Prefs.currentTheme.toUpperCase().replace("-", " ")
+        text: w.copied !== "" ? I18n.tr("COPIED %1", w.copied.toUpperCase()) : Prefs.currentTheme.toUpperCase().replace("-", " ")
         color: Theme.accent
         font.family: Theme.fontFamily
         font.pixelSize: 10
