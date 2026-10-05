@@ -19,12 +19,12 @@ Item {
         if (!row.on || ids.length === 0)
             return "";
 
-        return "Same keys as " + ids.map((id) => {
+        return I18n.tr("Same keys as %1 — both fire", ids.map((id) => {
             var b = Keybinds.find(id);
             return b ? "“" + Keybinds.displayDesc(b) + "”" : id;
-        }).join(", ") + " — both fire";
+        }).join(", "));
     }
-    readonly property string problem: row.failure !== "" ? "Did not bind: " + row.failure : row.clashText
+    readonly property string problem: row.failure !== "" ? I18n.tr("Did not bind: %1", row.failure) : row.clashText
     readonly property int outerRadius: Theme.rad(26)
     readonly property int innerRadius: Theme.rad(6)
     readonly property int keysWidth: Math.min(280, Math.round(row.width * 0.32))
@@ -170,7 +170,7 @@ Item {
             destructive: true
             enabled: Keybinds.parseError === ""
             iconPath: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12ZM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4Z"
-            onClicked: Prefs.askConfirm("Delete this keybind?", "“" + Keybinds.displayDesc(row.bind) + "” (" + Keybinds.tokens(row.bind.keys).join(" + ") + ") is removed from keybinds.json and Hyprland reloads without it.", "Delete", "keybind-delete:" + row.bindId)
+            onClicked: Prefs.askConfirm(I18n.tr("Delete this keybind?"), I18n.tr("“%1” (%2) is removed from keybinds.json and Hyprland reloads without it.", Keybinds.displayDesc(row.bind), Keybinds.tokens(row.bind.keys).join(" + ")), I18n.tr("Delete"), "keybind-delete:" + row.bindId)
         }
 
     }

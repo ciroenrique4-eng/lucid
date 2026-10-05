@@ -50,13 +50,13 @@ PanelWindow {
     }
     readonly property string problem: {
         if (Keybinds.parseError !== "")
-            return "keybinds.json does not parse: " + Keybinds.parseError;
+            return I18n.tr("keybinds.json does not parse: %1", Keybinds.parseError);
 
         if (Keybinds.emergency)
-            return "Emergency binds active — " + (Keybinds.status.error || "keybinds.json could not be used");
+            return I18n.tr("Emergency binds active — %1", Keybinds.status.error || I18n.tr("keybinds.json could not be used"));
 
         var n = Object.keys(Keybinds.failed).length;
-        return n > 0 ? n + (n === 1 ? " keybind" : " keybinds") + " did not apply — shown in red" : "";
+        return n > 0 ? I18n.trn("%1 keybind did not apply — shown in red", "%1 keybinds did not apply — shown in red", n) : "";
     }
 
     function show() {
@@ -195,7 +195,7 @@ PanelWindow {
                 spacing: 3
 
                 Text {
-                    text: "Keybinds"
+                    text: I18n.tr("Keybinds")
                     color: Theme.text
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontHeadlineSm
@@ -204,7 +204,7 @@ PanelWindow {
 
                 Text {
                     width: parent.width
-                    text: sheet.problem !== "" ? sheet.problem : sheet.shownBinds.length + (sheet.shownBinds.length === 1 ? " keybind" : " keybinds") + " · click one to change it · " + (Keybinds.sheetKeys !== "" ? Keybinds.sheetKeys + " or " : "") + "Esc to close"
+                    text: sheet.problem !== "" ? sheet.problem : I18n.trn("%1 keybind · click one to change it · %2", "%1 keybinds · click one to change it · %2", sheet.shownBinds.length, sheet.shownBinds.length, Keybinds.sheetKeys !== "" ? I18n.tr("%1 or Esc to close", Keybinds.sheetKeys) : I18n.tr("Esc to close"))
                     color: sheet.problem !== "" ? Theme.error : Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBodyMd
@@ -283,7 +283,7 @@ PanelWindow {
                         anchors.left: searchInput.left
                         anchors.verticalCenter: parent.verticalCenter
                         visible: searchInput.text === ""
-                        text: "Type to search"
+                        text: I18n.tr("Type to search")
                         color: Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBodyLg
@@ -293,7 +293,7 @@ PanelWindow {
 
                 M3Button {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "Edit keybinds"
+                    text: I18n.tr("Edit keybinds")
                     variant: "filled"
                     iconPath: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25ZM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"
                     onClicked: sheet.edit()
@@ -449,7 +449,7 @@ PanelWindow {
         Text {
             anchors.centerIn: body
             visible: sheet.shownBinds.length === 0
-            text: Keybinds.binds.length === 0 ? "No keybinds yet — add some in Settings" : "Nothing matches “" + sheet.query.trim() + "”"
+            text: Keybinds.binds.length === 0 ? I18n.tr("No keybinds yet — add some in Settings") : I18n.tr("Nothing matches “%1”", sheet.query.trim())
             color: Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBodyLg

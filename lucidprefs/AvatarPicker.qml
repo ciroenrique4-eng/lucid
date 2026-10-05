@@ -119,7 +119,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: "Account picture"
+                text: I18n.tr("Account picture")
                 color: Theme.text
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontHeadlineSm
@@ -128,7 +128,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: "It is squared off and shrunk to 256 pixels before it is saved, so any picture will do."
+                text: I18n.tr("It is squared off and shrunk to 256 pixels before it is saved, so any picture will do.")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBodyMd
@@ -166,7 +166,7 @@ Item {
                     Text {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Previously used"
+                        text: I18n.tr("Previously used")
                         color: Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontLabelSm
@@ -177,7 +177,7 @@ Item {
 
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Clear"
+                        text: I18n.tr("Clear")
                         color: clearArea.containsMouse ? Theme.error : Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontLabelSm
@@ -231,7 +231,7 @@ Item {
                 spacing: 8
 
                 M3Button {
-                    text: "Choose a picture…"
+                    text: I18n.tr("Choose a picture…")
                     variant: "filled"
                     iconPath: "M9 2 7.17 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3.17L15 2H9Zm3 5a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
                     onClicked: {
@@ -241,7 +241,7 @@ Item {
                 }
 
                 M3Button {
-                    text: "Remove"
+                    text: I18n.tr("Remove")
                     variant: "text"
                     destructive: true
                     enabled: picker.user !== null && picker.user.avatar !== ""
@@ -259,7 +259,7 @@ Item {
                 anchors.right: parent.right
 
                 M3Button {
-                    text: "Cancel"
+                    text: I18n.tr("Cancel")
                     variant: "text"
                     onClicked: picker.dismiss()
                 }
