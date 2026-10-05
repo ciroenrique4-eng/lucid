@@ -869,7 +869,7 @@ PanelWindow {
             ranked = dockWindow.byRank(ranked.concat(dockWindow.byRank(acts).slice(0, 5)));
         }
         var url = dockWindow.urlFor(text);
-        var urlRow = url === "" ? null : dockWindow.makeRow("url", "url", "Open " + url.replace(/^https?:\/\//i, ""), url, {
+        var urlRow = url === "" ? null : dockWindow.makeRow("url", "url", I18n.tr("Open %1", url.replace(/^https?:\/\//i, "")), url, {
             "glyph": DockIcons.link,
             "payload": url
         });

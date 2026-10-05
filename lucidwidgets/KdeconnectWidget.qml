@@ -76,16 +76,16 @@ WidgetBody {
             KdeConnect.pickFiles(id, I18n.tr("Send to %1", w.dev.name));
         } else if (key === "ring") {
             KdeConnect.ring(id);
-            w.say("Ringing " + w.dev.name);
+            w.say(I18n.tr("Ringing %1", w.dev.name));
         } else if (key === "clipboard") {
             KdeConnect.sendClipboard(id);
-            w.say("Clipboard sent");
+            w.say(I18n.tr("Clipboard sent"));
         } else if (key === "browse") {
             KdeConnect.browse(id);
-            w.say("Opening its files");
+            w.say(I18n.tr("Opening its files"));
         } else if (key === "ping") {
             KdeConnect.ping(id, I18n.tr("Ping from Lucid"));
-            w.say("Pinged");
+            w.say(I18n.tr("Pinged"));
         }
     }
 

@@ -146,6 +146,20 @@ class CheckTest(unittest.TestCase):
         src = 'warning: page.orderWarning("lock")\ndescription: HyprConfig.kbOption("grp") === "x" ? I18n.tr("A") : I18n.tr("B")\n'
         self.assertEqual(Tree({"a.qml": src}, {"A": "a", "B": "b"}).run(), (0, ""))
 
+    def test_translated_label_compared_to_english(self):
+        src = "\n".join([
+            "function label() { return I18n.tr(\"Lucid's recording\"); }",
+            "if (app === \"Lucid's recording\") return;",
+        ]) + "\n"
+        rc, out = Tree({"a.qml": src}, {"Lucid's recording": "La grabación de Lucid"}).run()
+        self.assertEqual(rc, 1)
+        self.assertIn("compared: \"Lucid's recording\"", out)
+
+    def test_translated_label_passed_back_as_english(self):
+        src = 'onEntered: p.hint = I18n.tr("Dismiss")\nonExited: p.leave("Dismiss")\n'
+        rc, out = Tree({"a.qml": src}, {"Dismiss": "Descartar"}).run()
+        self.assertIn("compared: \"Dismiss\"", out)
+
     def test_paths_scope(self):
         t = Tree({"a/x.qml": 'Text { text: I18n.tr("Battery") }\n', "b/x.qml": 'Text { text: "Loose" }\n'}, {"Battery": "Batería"})
         rc, out = t.run(os.path.join(t.dir, "a"))

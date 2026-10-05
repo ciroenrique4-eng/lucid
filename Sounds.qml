@@ -122,7 +122,7 @@ Singleton {
     readonly property var slotLabel: ({
         "plugIn": I18n.tr("Plugged in"),
         "plugOut": I18n.tr("Pulled out"),
-        "lock": I18n.tr("Lock"),
+        "lock": I18n.trc("sound event", "Lock"),
         "unlock": I18n.tr("Unlock")
     })
     // a sound brought for a click plays on every step, so it is cut short
