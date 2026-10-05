@@ -9,7 +9,9 @@ WidgetBody {
 
     readonly property bool mondayFirst: w.opt("mondayFirst") !== false
     readonly property bool showMonthName: w.opt("showMonthName") !== false
-    readonly property var dayLetters: w.mondayFirst ? ["M", "T", "W", "T", "F", "S", "S"] : ["S", "M", "T", "W", "T", "F", "S"]
+    readonly property var dayLetters: (w.mondayFirst ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6]).map((d) => {
+        return I18n.locale.dayName(d, Locale.NarrowFormat);
+    })
 
     property var today: Loc.now()
     property int viewYear: Loc.now().getFullYear()
@@ -159,7 +161,7 @@ WidgetBody {
 
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: new Date(w.viewYear, w.viewMonth, 1).toLocaleDateString(Qt.locale(), "MMMM")
+                text: new Date(w.viewYear, w.viewMonth, 1).toLocaleDateString(I18n.locale, I18n.tr("MMMM"))
                 color: Theme.accent
                 font.family: Theme.fontFamily
                 font.pixelSize: 17
@@ -377,7 +379,7 @@ WidgetBody {
 
             anchors.left: parent.left
             anchors.top: parent.top
-            text: w.today.toLocaleDateString(Qt.locale(), "MMMM yyyy")
+            text: w.today.toLocaleDateString(I18n.locale, I18n.tr("MMMM yyyy"))
             color: Theme.accent
             font.family: Theme.fontFamily
             font.pixelSize: 12
@@ -493,7 +495,7 @@ WidgetBody {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: w.today.toLocaleDateString(Qt.locale(), "dddd").toUpperCase()
+            text: w.today.toLocaleDateString(I18n.locale, "dddd").toUpperCase() // i18n-skip
             color: Theme.accent
             font.family: Theme.fontFamily
             font.pixelSize: 13
@@ -514,7 +516,7 @@ WidgetBody {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: w.today.toLocaleDateString(Qt.locale(), w.showMonthName ? "MMMM yyyy" : "yyyy")
+            text: w.today.toLocaleDateString(I18n.locale, w.showMonthName ? I18n.tr("MMMM yyyy") : "yyyy") // i18n-skip
             color: Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: 14

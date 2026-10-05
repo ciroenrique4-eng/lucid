@@ -45,7 +45,7 @@ WidgetBody {
     })
     readonly property var current: w.report
     readonly property var days: w.report ? w.report.days.slice(0, 4) : []
-    readonly property string place: WeatherSource.place !== "" ? WeatherSource.place : "Here"
+    readonly property string place: WeatherSource.place !== "" ? WeatherSource.place : I18n.tr("Here")
     readonly property bool ready: w.current !== null && w.current !== undefined
     readonly property string trouble: WeatherSource.lastError
 
@@ -78,22 +78,22 @@ WidgetBody {
         if (!d || !d.date) {
             var fake = Loc.now();
             fake.setDate(fake.getDate() + i);
-            return i === 0 ? "Today" : fake.toLocaleDateString(Qt.locale(), "ddd");
+            return i === 0 ? I18n.tr("Today") : fake.toLocaleDateString(I18n.locale, "ddd");
         }
         var parts = d.date.split("-");
         var dt = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
         var today = Loc.now();
         if (dt.getDate() === today.getDate() && dt.getMonth() === today.getMonth())
-            return "Today";
+            return I18n.tr("Today");
 
-        return dt.toLocaleDateString(Qt.locale(), "ddd");
+        return dt.toLocaleDateString(I18n.locale, "ddd");
     }
 
     function windText() {
         if (!w.current)
             return "";
 
-        return w.metric ? w.current.windKmph + " km/h" : w.current.windMph + " mph";
+        return w.metric ? w.current.windKmph + " km/h" : w.current.windMph + " mph"; // i18n-skip
     }
 
     Component.onCompleted: {
@@ -111,7 +111,7 @@ WidgetBody {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: w.trouble !== "" ? "Weather unavailable" : "Fetching weather…"
+            text: w.trouble !== "" ? I18n.tr("Weather unavailable") : I18n.tr("Fetching weather…")
             color: Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: 13
@@ -205,7 +205,7 @@ WidgetBody {
             anchors.right: parent.right
             anchors.top: desc.bottom
             anchors.topMargin: 2
-            text: w.place + " · feels like " + w.feels() + w.unitMark
+            text: I18n.tr("%1 · feels like %2", w.place, w.feels() + w.unitMark)
             color: Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: 12

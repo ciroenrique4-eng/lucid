@@ -47,7 +47,7 @@ Item {
         if (!secs)
             return "";
 
-        return Qt.formatDateTime(new Date(secs * 1000), "d MMM yyyy, hh:mm");
+        return new Date(secs * 1000).toLocaleString(I18n.locale, I18n.tr("d MMM yyyy, hh:mm"));
     }
 
     anchors.fill: parent
@@ -241,7 +241,7 @@ Item {
 
                 Text {
                     width: parent.width
-                    text: ql.shown ? [ql.shown.kind === "dir" ? "Folder" : ql.human(ql.shown.size), ql.shown.mime, ql.when(ql.shown.mtime)].filter((x) => {
+                    text: ql.shown ? [ql.shown.kind === "dir" ? I18n.tr("Folder") : ql.human(ql.shown.size), ql.shown.mime, ql.when(ql.shown.mtime)].filter((x) => {
                         return x;
                     }).join("  ·  ") : ""
                     color: Theme.subtext
@@ -258,7 +258,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: 20
                 anchors.verticalCenter: parent.verticalCenter
-                text: "←  →   ·   Enter opens   ·   Space closes"
+                text: I18n.tr("←  →   ·   Enter opens   ·   Space closes")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabelSm
