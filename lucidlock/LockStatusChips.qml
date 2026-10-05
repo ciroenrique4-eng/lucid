@@ -134,7 +134,7 @@ Row {
 
     Chip {
         glyph: "bellOff"
-        label: "Do not disturb"
+        label: I18n.tr("Do not disturb")
         tone: Theme.warning
         visible: Notifs.dnd
     }
