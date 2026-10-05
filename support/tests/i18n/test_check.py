@@ -111,6 +111,16 @@ class CheckTest(unittest.TestCase):
         t = Tree({"a.qml": src}, {"Drawn": "Dibujado", "Glass": "Vidrio", "None": "Nada"})
         self.assertEqual(t.run(), (0, ""))
 
+    def test_only_the_label_value(self):
+        src = '{ "key": "music", "label": "Music", "pref": "specialMusic", "keys": ["Super", "M"] },\n'
+        rc, out = Tree({"a.qml": src}).run()
+        self.assertEqual(out.count("unwrapped"), 1, out)
+        self.assertIn('"Music"', out)
+
+    def test_array_values_are_data(self):
+        src = '{ "id": "spotify", "title": ["Spotify", "Spotify Free"] },\n'
+        self.assertEqual(Tree({"a.qml": src}).run(), (0, ""))
+
     def test_paths_scope(self):
         t = Tree({"a/x.qml": 'Text { text: I18n.tr("Battery") }\n', "b/x.qml": 'Text { text: "Loose" }\n'}, {"Battery": "Batería"})
         rc, out = t.run(os.path.join(t.dir, "a"))
