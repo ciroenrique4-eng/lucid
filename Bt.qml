@@ -24,6 +24,10 @@ Singleton {
     // bluez_card.* entries from pipewire, one per connected audio device
     property var audioCards: []
 
+    // devices that announce OBEX object push (phones, computers): the ones files can go to
+    property var pushTargets: []
+    readonly property int deviceCount: (root.adapter && root.adapter.devices) ? root.adapter.devices.values.length : 0
+
     // pairings started while pairable was off, see pair()
     property var pairQueue: []
     property bool pairableHeld: false
@@ -207,12 +211,52 @@ Singleton {
         aliasProc.running = true;
     }
 
+    // lucidprefs/bt-send.py does the sending and its notifications; with no files it asks
+    // for them first. It runs detached so a shell restart does not cut a transfer short.
+    function sendFiles(address, name, files) {
+        const strings = {
+            "Send to %1": I18n.tr("Send to %1"),
+            "Connecting to %1…": I18n.tr("Connecting to %1…"),
+            "%1 files": I18n.tr("%1 files"),
+            "Waiting for %1 to accept": I18n.tr("Waiting for %1 to accept"),
+            "Sending to %1": I18n.tr("Sending to %1"),
+            "File %1 of %2": I18n.tr("File %1 of %2"),
+            "%1 of %2": I18n.tr("%1 of %2"),
+            "Cancel": I18n.tr("Cancel"),
+            "Sent %1": I18n.tr("Sent %1"),
+            "Sent %1 files": I18n.tr("Sent %1 files"),
+            "To %1": I18n.tr("To %1"),
+            "Sent %1 of %2 files": I18n.tr("Sent %1 of %2 files"),
+            "%1 declined the rest or stopped answering.": I18n.tr("%1 declined the rest or stopped answering."),
+            "Couldn't send %1": I18n.tr("Couldn't send %1"),
+            "%1 declined it or stopped answering.": I18n.tr("%1 declined it or stopped answering."),
+            "Couldn't reach %1": I18n.tr("Couldn't reach %1"),
+            "Check that its Bluetooth is on and that it is close by.": I18n.tr("Check that its Bluetooth is on and that it is close by."),
+            "Can't send over Bluetooth": I18n.tr("Can't send over Bluetooth"),
+            "Sending files needs bluez-obex.": I18n.tr("Sending files needs bluez-obex.")
+        };
+        const helper = Qt.resolvedUrl("lucidprefs/bt-send.py").toString().replace("file://", "");
+        Quickshell.execDetached(["python3", helper, "--address", address, "--name", name || "", "--strings", JSON.stringify(strings), "--"].concat(files || []));
+    }
+
+    function canReceiveFiles(address) {
+        return root.pushTargets.indexOf(address) >= 0;
+    }
+
+    function probePush() {
+        pushProc.running = false;
+        pushProc.running = true;
+    }
+
     function refresh() {
         infoProc.running = false;
         infoProc.running = true;
         cardProc.running = false;
         cardProc.running = true;
+        root.probePush();
     }
+
+    onDeviceCountChanged: root.probePush()
 
     // adapter address, alias and the rfkill state, in one shot
     Process {
@@ -248,6 +292,23 @@ Singleton {
                     });
                 } catch (e) {
                 }
+            }
+        }
+
+    }
+
+    Process {
+        id: pushProc
+
+        command: ["sh", "-c", "for d in $(bluetoothctl devices 2>/dev/null | cut -d' ' -f2); do bluetoothctl info \"$d\" 2>/dev/null | grep -qi 00001105-0000-1000-8000-00805f9b34fb && echo \"$d\"; done"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.pushTargets = this.text.split("\n").map((l) => {
+                    return l.trim().toUpperCase();
+                }).filter((l) => {
+                    return l !== "";
+                });
             }
         }
 
@@ -384,6 +445,16 @@ Singleton {
             root.pairableHeld = false;
             pairableOff.running = true;
         }
+    }
+
+    IpcHandler {
+        // qs ipc call bluetooth send <address> <file>: an empty file ("") opens the chooser
+        function send(address: string, file: string): void {
+            const d = root.deviceAt(address.toUpperCase());
+            root.sendFiles(address.toUpperCase(), d ? d.name : "", file !== "" ? [file] : []);
+        }
+
+        target: "bluetooth"
     }
 
 }
