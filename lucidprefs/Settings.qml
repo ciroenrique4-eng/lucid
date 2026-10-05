@@ -55,7 +55,7 @@ FloatingWindow {
         { "key": "idle", "group": I18n.tr("System"), "label": I18n.tr("Idle"), "title": I18n.tr("Idle and Sleep"), "blurb": I18n.tr("What happens when you walk away: dimming, locking, screen off and suspend"), "toggle": "idleEnabled" },
         { "key": "datetime", "group": I18n.tr("System"), "label": I18n.tr("Date & Time"), "title": I18n.tr("Date and Time"), "blurb": I18n.tr("Where you are, which zone the clock keeps and how it reads") },
         { "key": "about", "group": I18n.tr("System"), "label": I18n.tr("About"), "title": I18n.tr("About"), "blurb": I18n.tr("CirOShell") },
-        { "key": "search", "group": I18n.tr(""), "label": I18n.tr("Search"), "title": I18n.tr("Search"), "blurb": "", "hidden": true }
+        { "key": "search", "group": "", "label": I18n.tr("Search"), "title": I18n.tr("Search"), "blurb": "", "hidden": true }
     ]
 
     // what the rail actually lists
