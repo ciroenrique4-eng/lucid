@@ -66,7 +66,7 @@ Item {
                         if (!wx.report || !wx.report.days || wx.report.days.length === 0)
                             return Loc.place;
 
-                        return "H " + wx.report.days[0].maxC + "°  L " + wx.report.days[0].minC + "°  ·  feels " + wx.report.feelsC + "°";
+                        return I18n.tr("H %1°  L %2°  ·  feels %3°", wx.report.days[0].maxC, wx.report.days[0].minC, wx.report.feelsC);
                     }
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
