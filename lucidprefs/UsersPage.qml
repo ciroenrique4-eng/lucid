@@ -757,7 +757,7 @@ Column {
 
         SettingRow {
             title: I18n.tr("Sign-ins recorded")
-            description: page.sel ? page.sel.logins + (page.sel.logins === 1 ? I18n.tr(" time") : I18n.tr(" times")) : ""
+            description: page.sel ? I18n.trn("%1 time", "%1 times", page.sel.logins) : ""
             showDivider: false
         }
 
