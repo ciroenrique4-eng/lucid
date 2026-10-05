@@ -142,6 +142,10 @@ class CheckTest(unittest.TestCase):
         rc, out = Tree({"a.qml": src}).run()
         self.assertEqual(out.count("unwrapped"), 11, out)
 
+    def test_call_arguments_are_data(self):
+        src = 'warning: page.orderWarning("lock")\ndescription: HyprConfig.kbOption("grp") === "x" ? I18n.tr("A") : I18n.tr("B")\n'
+        self.assertEqual(Tree({"a.qml": src}, {"A": "a", "B": "b"}).run(), (0, ""))
+
     def test_paths_scope(self):
         t = Tree({"a/x.qml": 'Text { text: I18n.tr("Battery") }\n', "b/x.qml": 'Text { text: "Loose" }\n'}, {"Battery": "Batería"})
         rc, out = t.run(os.path.join(t.dir, "a"))
