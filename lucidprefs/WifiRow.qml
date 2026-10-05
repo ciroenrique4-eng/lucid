@@ -25,10 +25,10 @@ Column {
 
     readonly property string status: {
         if (net.working)
-            return "Connecting…";
+            return I18n.tr("Connecting…");
 
         if (net.isConnected)
-            return "Connected  ·  " + Net.strengthLabel(net.strength) + " signal";
+            return I18n.tr("Connected  ·  %1 signal", Net.strengthLabel(net.strength));
 
         const bits = [];
         if (net.known)
@@ -250,7 +250,7 @@ Column {
                     id: pskField
 
                     width: parent.width - joinBtn.implicitWidth - 10
-                    placeholder: "Network password"
+                    placeholder: I18n.tr("Network password")
                     onEdited: (v) => {
                         return net.psk = v;
                     }
@@ -264,7 +264,7 @@ Column {
 
                     anchors.verticalCenter: parent.verticalCenter
                     variant: "filled"
-                    text: net.working ? "Joining…" : "Join"
+                    text: net.working ? I18n.tr("Joining…") : I18n.tr("Join")
                     enabled: !net.working && net.psk.length >= 8
                     onClicked: {
                         net.failed = false;
@@ -283,9 +283,9 @@ Column {
                     enabled: !net.working
                     text: {
                         if (net.working)
-                            return "Connecting…";
+                            return I18n.tr("Connecting…");
 
-                        return net.isConnected ? "Disconnect" : "Connect";
+                        return net.isConnected ? I18n.tr("Disconnect") : I18n.tr("Connect");
                     }
                     onClicked: {
                         net.failed = false;
@@ -299,7 +299,7 @@ Column {
                 M3Button {
                     variant: net.sharing ? "tonal" : "text"
                     visible: net.known
-                    text: "Share"
+                    text: I18n.tr("Share")
                     iconPath: "M3,11H5V13H3V11M11,5H13V9H11V5M9,11H13V15H11V13H9V11M15,11H17V13H19V11H21V13H19V15H21V19H19V21H17V19H13V21H11V17H15V15H17V13H15V11M19,19V15H17V19H19M15,3H21V9H15V3M17,5V7H19V5H17M3,3H9V9H3V3M5,5V7H7V5H5M3,15H9V21H3V15M5,17V19H7V17H5Z"
                     onClicked: net.sharing = !net.sharing
                 }
@@ -308,8 +308,8 @@ Column {
                     variant: "text"
                     destructive: true
                     visible: net.known
-                    text: "Forget"
-                    onClicked: Prefs.askConfirm("Forget " + net.modelData.name + "?", "The saved password goes with it, so joining again means typing it in.", "Forget", "wifi-forget:" + net.modelData.name)
+                    text: I18n.tr("Forget")
+                    onClicked: Prefs.askConfirm(I18n.tr("Forget %1?", net.modelData.name), I18n.tr("The saved password goes with it, so joining again means typing it in."), I18n.tr("Forget"), "wifi-forget:" + net.modelData.name)
                 }
 
             }
@@ -328,7 +328,7 @@ Column {
             Text {
                 width: parent.width - 76
                 visible: net.failed
-                text: net.secured ? "Could not join. The password may be wrong, or the network out of range." : "Could not join. The network may be out of range."
+                text: net.secured ? I18n.tr("Could not join. The password may be wrong, or the network out of range.") : I18n.tr("Could not join. The network may be out of range.")
                 color: Theme.error
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabel
@@ -341,7 +341,7 @@ Column {
                 spacing: 18
 
                 CheckLine {
-                    label: "Join automatically"
+                    label: I18n.tr("Join automatically")
                     checked: !!(net.profile && net.profile.autoconnect)
                     onToggled: Net.setAutoconnect(net.profile.uuid, !net.profile.autoconnect)
                 }
@@ -349,7 +349,7 @@ Column {
             }
 
             Text {
-                text: Math.round(net.strength) + "% signal" + (Net.securityLabel(net.modelData.security) !== "" ? "   ·   " + Net.securityLabel(net.modelData.security) : "")
+                text: I18n.tr("%1% signal", Math.round(net.strength)) + (Net.securityLabel(net.modelData.security) !== "" ? "   ·   " + Net.securityLabel(net.modelData.security) : "")
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabel
