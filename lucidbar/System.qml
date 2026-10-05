@@ -258,9 +258,9 @@ BarPill {
         const h = Math.floor((root.uptimeSecs % 86400) / 3600);
         const m = Math.floor((root.uptimeSecs % 3600) / 60);
         if (d > 0)
-            return "up " + d + "d " + h + "h";
+            return I18n.tr("up %1d %2h", d, h);
 
-        return h > 0 ? "up " + h + "h " + m + "m" : "up " + m + "m";
+        return h > 0 ? I18n.tr("up %1h %2m", h, m) : I18n.tr("up %1m", m);
     }
 
     function pushSample(historyArr, v, max) {
@@ -397,15 +397,15 @@ BarPill {
     readonly property string tipOverline: {
         switch (root.tipViewKind) {
         case "wifi":
-            return wifiPanel.primaryIsEthernet ? "ETHERNET" : "WI-FI";
+            return wifiPanel.primaryIsEthernet ? I18n.tr("ETHERNET") : I18n.tr("WI-FI");
         case "bluetooth":
-            return "BLUETOOTH";
+            return I18n.tr("BLUETOOTH");
         case "volume":
-            return "VOLUME";
+            return I18n.tr("VOLUME");
         case "mic":
-            return "MICROPHONE";
+            return I18n.tr("MICROPHONE");
         case "battery":
-            return "BATTERY";
+            return I18n.tr("BATTERY");
         }
         return "";
     }
@@ -413,38 +413,38 @@ BarPill {
         switch (root.tipViewKind) {
         case "wifi":
             if (wifiPanel.primaryIsEthernet)
-                return "Wired connection";
+                return I18n.tr("Wired connection");
 
             if (!Networking.wifiEnabled)
-                return "Wi-Fi off";
+                return I18n.tr("Wi-Fi off");
 
             if (wifiPanel.connecting)
-                return "Connecting…";
+                return I18n.tr("Connecting…");
 
             if (wifiPanel.wifiConnected && wifiPanel.activeNetwork)
                 return wifiPanel.activeNetwork.name;
 
-            return "Not connected";
+            return I18n.tr("Not connected");
         case "bluetooth":
             if (!root.btEnabled)
-                return "Bluetooth off";
+                return I18n.tr("Bluetooth off");
 
             if (btPanel.connectedDevices.length === 1)
                 return btPanel.connectedDevices[0].name;
 
             if (btPanel.connectedDevices.length > 1)
-                return btPanel.connectedDevices.length + " devices";
+                return I18n.trn("%1 device", "%1 devices", btPanel.connectedDevices.length);
 
             if (btPanel.anyConnecting)
-                return "Connecting…";
+                return I18n.tr("Connecting…");
 
-            return "Not connected";
+            return I18n.tr("Not connected");
         case "volume":
-            return root.volMuted ? "Muted" : root.volumePercent + "%";
+            return root.volMuted ? I18n.tr("Muted") : root.volumePercent + "%";
         case "mic":
-            return root.micMuted ? "Muted" : "Active";
+            return root.micMuted ? I18n.tr("Muted") : I18n.tr("Active");
         case "battery":
-            return root.batteryPresent ? root.batteryPercent + "%" : "No battery";
+            return root.batteryPresent ? root.batteryPercent + "%" : I18n.tr("No battery");
         }
         return "";
     }
@@ -452,13 +452,13 @@ BarPill {
         switch (root.tipViewKind) {
         case "wifi":
             if (wifiPanel.primaryIsEthernet)
-                return wifiPanel.wiredDevice ? wifiPanel.wiredDevice.name : "Wired";
+                return wifiPanel.wiredDevice ? wifiPanel.wiredDevice.name : I18n.tr("Wired");
 
             if (!Networking.wifiEnabled)
-                return "Radio disabled";
+                return I18n.tr("Radio disabled");
 
             if (!wifiPanel.wifiConnected)
-                return wifiPanel.nearbyNetworks.length + " networks nearby";
+                return I18n.trn("%1 network nearby", "%1 networks nearby", wifiPanel.nearbyNetworks.length);
 
             const warn = wifiPanel.connectivityLabel();
             const sig = wifiPanel.strengthLabel(wifiPanel.signalStrength) + " · " + Math.round(wifiPanel.signalStrength) + "%";
@@ -469,7 +469,7 @@ BarPill {
 
             if (btPanel.connectedDevices.length === 1) {
                 const b = btPanel.getBatteryText(btPanel.connectedDevices[0]);
-                return b !== "" ? "Connected · " + b + " battery" : "Connected";
+                return b !== "" ? I18n.tr("Connected · %1 battery", b) : I18n.tr("Connected");
             }
             if (btPanel.connectedDevices.length > 1)
                 return btPanel.connectedDevices.map((d) => {
@@ -477,9 +477,9 @@ BarPill {
                 }).join(", ");
 
             if (btPanel.discovering)
-                return "Scanning…";
+                return I18n.tr("Scanning…");
 
-            return btPanel.pairedDevices.length + " paired";
+            return I18n.tr("%1 paired", btPanel.pairedDevices.length);
         case "volume":
             return root.deviceLabel(root.sink);
         case "mic":
@@ -497,9 +497,9 @@ BarPill {
             return "";
 
         if (root.battery.state === UPowerDeviceState.FullyCharged)
-            return "Fully charged";
+            return I18n.tr("Fully charged");
 
-        return root.batteryCharging ? "Charging" : "On battery";
+        return root.batteryCharging ? I18n.tr("Charging") : I18n.tr("On battery");
     }
     readonly property string tipBatteryTime: {
         if (!root.battery)
@@ -512,13 +512,13 @@ BarPill {
         const h = Math.floor(secs / 3600);
         const m = Math.round((secs % 3600) / 60);
         const body = h > 0 ? h + "h " + m + "m" : m + "m";
-        return root.batteryCharging ? body + " to full" : body + " left";
+        return root.batteryCharging ? I18n.tr("%1 to full", body) : I18n.tr("%1 left", body);
     }
 
     // the stat card's second line: draw while discharging, else time
     readonly property string batteryDetail: {
         if (!root.batteryPresent)
-            return "no battery";
+            return I18n.tr("no battery");
 
         const rate = root.battery ? root.battery.changeRate : 0;
         if (!root.batteryCharging && rate > 0.05)
@@ -527,7 +527,7 @@ BarPill {
         if (root.tipBatteryTime !== "")
             return root.tipBatteryTime;
 
-        return root.batteryCharging ? "charging" : "on battery";
+        return root.batteryCharging ? I18n.tr("charging") : I18n.tr("on battery");
     }
 
     onTipWantedChanged: {
@@ -1119,7 +1119,7 @@ BarPill {
                 visible: root.indicatorOn("volume")
                 showLabel: root.showValues
                 svgPath: root.volumeIconFor(root.volumePercent)
-                labelText: root.volMuted ? "Muted" : root.volumePercent
+                labelText: root.volMuted ? I18n.tr("Muted") : root.volumePercent
                 isMuted: root.volMuted
             }
 
@@ -1129,7 +1129,7 @@ BarPill {
                 visible: root.indicatorOn("mic")
                 showLabel: root.showValues
                 svgPath: root.micIconPath
-                labelText: root.micMuted ? "Off" : "On"
+                labelText: root.micMuted ? I18n.tr("Off") : I18n.tr("On")
                 isMuted: root.micMuted
             }
 
@@ -1313,7 +1313,7 @@ BarPill {
                         visible: !meChip.visible
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Control Centre"
+                        text: I18n.tr("Control Centre")
                         color: Theme.text
                         font.family: Theme.fontFamily
                         font.bold: true
@@ -1360,7 +1360,7 @@ BarPill {
                                 }
 
                                 Text {
-                                    text: "Control Centre"
+                                    text: I18n.tr("Control Centre")
                                     color: Theme.subtextDim
                                     font.family: Theme.fontFamily
                                     font.pixelSize: Theme.fontLabelSm
@@ -1463,7 +1463,7 @@ BarPill {
 
                             ToggleTile {
                                 iconGlyph: "󰤯"
-                                name: "Wi-Fi"
+                                name: I18n.tr("Wi-Fi")
                                 sub: wifiPanel.statusText
                                 checked: Networking.wifiEnabled
                                 showArrow: true
@@ -1473,7 +1473,7 @@ BarPill {
 
                             ToggleTile {
                                 iconPath: root.btIconPath
-                                name: "Bluetooth"
+                                name: I18n.tr("Bluetooth")
                                 sub: btPanel.label
                                 checked: root.btEnabled
                                 showArrow: true
@@ -1483,39 +1483,39 @@ BarPill {
 
                             ToggleTile {
                                 iconPath: "M22,16v-2l-8.5-5V3.5C13.5,2.67,12.83,2,12,2s-1.5,0.67-1.5,1.5V9L2,14v2l8.5-2.5V19L8,20.5L8,22l4-1l4,1l0-1.5L13.5,19 v-5.5L22,16z"
-                                name: "Airplane"
-                                sub: root.airplaneMode ? "Radios off" : "Off"
+                                name: I18n.tr("Airplane")
+                                sub: root.airplaneMode ? I18n.tr("Radios off") : I18n.tr("Off")
                                 checked: root.airplaneMode
                                 onToggled: root.toggleAirplane()
                             }
 
                             ToggleTile {
                                 iconPath: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"
-                                name: "Do Not Disturb"
-                                sub: root.dndOn ? "Silenced" : "Off"
+                                name: I18n.tr("Do Not Disturb")
+                                sub: root.dndOn ? I18n.tr("Silenced") : I18n.tr("Off")
                                 checked: root.dndOn
                                 onToggled: Notifs.toggleDnd()
                             }
 
                             ToggleTile {
                                 iconPath: "M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.9 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"
-                                name: "Caffeine"
-                                sub: Prefs.idleKeepAwake ? "Staying awake" : "Idle allowed"
+                                name: I18n.tr("Caffeine")
+                                sub: Prefs.idleKeepAwake ? I18n.tr("Staying awake") : I18n.tr("Idle allowed")
                                 checked: Prefs.idleKeepAwake
                                 onToggled: Prefs.idleKeepAwake = !Prefs.idleKeepAwake
                             }
 
                             ToggleTile {
                                 iconPath: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-                                name: "Location"
+                                name: I18n.tr("Location")
                                 sub: {
                                     if (!Prefs.gpsEnabled)
-                                        return "Off";
+                                        return I18n.tr("Off");
 
                                     if (Loc.busy)
-                                        return "Locating…";
+                                        return I18n.tr("Locating…");
 
-                                    return Loc.place !== "" ? Loc.place : "No fix yet";
+                                    return Loc.place !== "" ? Loc.place : I18n.tr("No fix yet");
                                 }
                                 checked: Prefs.gpsEnabled
                                 onToggled: {
@@ -1528,18 +1528,18 @@ BarPill {
 
                             ToggleTile {
                                 iconPath: "M21.58 16.09l-1.09-7.66A3.996 3.996 0 0 0 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66A2.545 2.545 0 0 0 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.37 2.53-2.91ZM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1Zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1Zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1Z"
-                                name: "Game Mode"
+                                name: I18n.tr("Game Mode")
                                 sub: {
                                     if (!root.gameModeConfigured)
-                                        return "Set up in Settings";
+                                        return I18n.tr("Set up in Settings");
 
                                     if (root.gameModeBusy)
-                                        return root.gameModeOn ? "Turning on…" : "Turning off…";
+                                        return root.gameModeOn ? I18n.tr("Turning on…") : I18n.tr("Turning off…");
 
                                     if (root.gameModeFailed)
-                                        return "Command failed";
+                                        return I18n.tr("Command failed");
 
-                                    return root.gameModeOn ? "On" : "Off";
+                                    return root.gameModeOn ? I18n.tr("On") : I18n.tr("Off");
                                 }
                                 checked: root.gameModeOn
                                 onToggled: {
@@ -1555,8 +1555,8 @@ BarPill {
                             // a click steps to the next profile, the arrow lists them all
                             ToggleTile {
                                 iconPath: Power.icon(Power.profile)
-                                name: "Power"
-                                sub: Power.name(Power.profile) + ((Power.degradation !== "" && Power.profile === PowerProfile.Performance) ? " · held back" : "")
+                                name: I18n.tr("Power")
+                                sub: Power.name(Power.profile) + ((Power.degradation !== "" && Power.profile === PowerProfile.Performance) ? I18n.tr(" · held back") : "")
                                 checked: Power.profile !== PowerProfile.Balanced
                                 showArrow: true
                                 onToggled: Power.cycle()
@@ -1575,7 +1575,7 @@ BarPill {
                             spacing: root.sp2
 
                             Overline {
-                                text: "SOUND & DISPLAY"
+                                text: I18n.tr("SOUND & DISPLAY")
                             }
 
                             GroupCard {
@@ -1624,7 +1624,7 @@ BarPill {
                             visible: !!(root.mprisMod && root.mprisMod.player)
 
                             Overline {
-                                text: "NOW PLAYING"
+                                text: I18n.tr("NOW PLAYING")
                             }
 
                             Rectangle {
@@ -1816,7 +1816,7 @@ BarPill {
                             Overline {
                                 id: sysOverline
 
-                                text: "SYSTEM"
+                                text: I18n.tr("SYSTEM")
                             }
 
                             // compact: the three figures as one row of chips
@@ -1826,17 +1826,17 @@ BarPill {
                                 spacing: root.sp2
 
                                 FigureChip {
-                                    label: "CPU"
+                                    label: I18n.tr("CPU")
                                     value: root.cpuHistory.length > 0 ? Math.round(root.cpuPercent) + "%" : "—"
                                 }
 
                                 FigureChip {
-                                    label: "RAM"
+                                    label: I18n.tr("RAM")
                                     value: root.ramHistory.length > 0 ? Math.round(root.ramPercent) + "%" : "—"
                                 }
 
                                 FigureChip {
-                                    label: root.batteryCharging ? "CHARGING" : "BATTERY"
+                                    label: root.batteryCharging ? I18n.tr("CHARGING") : I18n.tr("BATTERY")
                                     value: root.batteryPresent ? root.batteryPercent + "%" : "N/A"
                                     warn: root.batteryPresent && !root.batteryCharging && root.batteryPercent <= 20
                                 }
@@ -1850,7 +1850,7 @@ BarPill {
 
                                 StatCard {
                                     width: (root.sysColWidth - root.sp2 * 2) / 3
-                                    label: "CPU"
+                                    label: I18n.tr("CPU")
                                     valueText: root.cpuHistory.length > 0 ? Math.round(root.cpuPercent) + "%" : "—"
                                     detailText: root.cpuTemp > 0 ? Math.round(root.cpuTemp) + " °C" : ""
                                     showChart: true
@@ -1859,7 +1859,7 @@ BarPill {
 
                                 StatCard {
                                     width: (root.sysColWidth - root.sp2 * 2) / 3
-                                    label: "RAM"
+                                    label: I18n.tr("RAM")
                                     valueText: root.ramHistory.length > 0 ? Math.round(root.ramPercent) + "%" : "—"
                                     detailText: root.ramTotalGB > 0 ? root.ramUsedGB.toFixed(1) + " / " + Math.round(root.ramTotalGB) + " GB" : ""
                                     showChart: true
@@ -1868,7 +1868,7 @@ BarPill {
 
                                 StatCard {
                                     width: (root.sysColWidth - root.sp2 * 2) / 3
-                                    label: "BATTERY"
+                                    label: I18n.tr("BATTERY")
                                     valueText: root.batteryPresent ? root.batteryPercent + "%" : "N/A"
                                     detailText: root.batteryDetail
                                     showBar: root.batteryPresent
@@ -1917,7 +1917,7 @@ BarPill {
                                         Overline {
                                             anchors.left: parent.left
                                             anchors.verticalCenter: parent.verticalCenter
-                                            text: "DISK"
+                                            text: I18n.tr("DISK")
                                         }
 
                                         Rectangle {
@@ -2009,10 +2009,10 @@ BarPill {
                                         width: parent.width
                                         text: {
                                             if (!diskCard.selectedDiskInfo)
-                                                return "No disks found";
+                                                return I18n.tr("No disks found");
 
                                             if (diskCard.unmounted)
-                                                return "Not mounted";
+                                                return I18n.tr("Not mounted");
 
                                             return Math.round(diskCard.usedGB) + " / " + Math.round(diskCard.totalGB) + " GB";
                                         }
@@ -2046,7 +2046,7 @@ BarPill {
                             spacing: root.sp2
 
                             QuickAction {
-                                label: "Lock"
+                                label: I18n.tr("Lock")
                                 path: root.lockPath
                                 onActivated: {
                                     root.expanded = false;
@@ -2055,7 +2055,7 @@ BarPill {
                             }
 
                             QuickAction {
-                                label: "Screenshot"
+                                label: I18n.tr("Screenshot")
                                 path: root.cameraPath
                                 onActivated: {
                                     root.expanded = false;
@@ -2064,7 +2064,7 @@ BarPill {
                             }
 
                             QuickAction {
-                                label: "Clipboard"
+                                label: I18n.tr("Clipboard")
                                 path: root.clipboardPath
                                 onActivated: {
                                     root.expanded = false;
@@ -2073,7 +2073,7 @@ BarPill {
                             }
 
                             QuickAction {
-                                label: "Power"
+                                label: I18n.tr("Power")
                                 path: root.powerOffPath
                                 onActivated: {
                                     root.expanded = false;
@@ -2298,15 +2298,15 @@ BarPill {
                         text: {
                             switch (root.view) {
                             case "wifi":
-                                return "Network";
+                                return I18n.tr("Network");
                             case "bluetooth":
-                                return "Bluetooth";
+                                return I18n.tr("Bluetooth");
                             case "output":
-                                return "Output device";
+                                return I18n.tr("Output device");
                             case "power":
-                                return "Power profile";
+                                return I18n.tr("Power profile");
                             case "nightlight":
-                                return "Night light";
+                                return I18n.tr("Night light");
                             }
                             return "";
                         }
@@ -2403,7 +2403,7 @@ BarPill {
                         visible: root.view === "output"
                         nodes: root.outputNodes
                         current: root.sink
-                        emptyText: "No output devices"
+                        emptyText: I18n.tr("No output devices")
                         iconPath: root.speakerPath
                         availability: root.sinkAvailable
                         onPicked: (node) => {
@@ -3292,7 +3292,7 @@ BarPill {
                     Text {
                         width: parent.width
                         visible: text !== ""
-                        text: devOpt.isCurrent ? "Default device" : (devOpt.usable ? "" : "Not connected")
+                        text: devOpt.isCurrent ? I18n.tr("Default device") : (devOpt.usable ? "" : I18n.tr("Not connected"))
                         color: devOpt.isCurrent ? Theme.alpha(Theme.fgAccent, 0.75) : Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontLabelSm
