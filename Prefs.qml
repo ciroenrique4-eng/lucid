@@ -534,6 +534,7 @@ Singleton {
         for (const k in v)
             before[k] = root[k];
         root.barPresetUndo = JSON.stringify({
+            "id": p.id,
             "name": p.name,
             "values": before
         });
