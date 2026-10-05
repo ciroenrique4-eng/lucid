@@ -216,7 +216,7 @@ WidgetBody {
         Text {
             anchors.right: parent.right
             anchors.baseline: shelfHead.baseline
-            text: w.library.length === 0 ? "" : w.library.length + (w.library.length === 1 ? I18n.tr(" game") : I18n.tr(" games"))
+            text: w.library.length === 0 ? "" : I18n.trn("%1 game", "%1 games", w.library.length)
             color: Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: 10
