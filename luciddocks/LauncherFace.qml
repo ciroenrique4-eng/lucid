@@ -18,7 +18,7 @@ Item {
     property int wallCardGap: 10
     property alias searchText: searchInput.text
     property string highlightQuery: ""
-    readonly property string placeholder: face.displayMode === "clipboard" ? "Search clipboard history" : "Search apps, windows and commands, or type >"
+    readonly property string placeholder: face.displayMode === "clipboard" ? I18n.tr("Search clipboard history") : I18n.tr("Search apps, windows and commands, or type >")
     // power buttons beside the search field
     property bool showPowerChips: false
     // which of them, by id; they keep the order below whatever order these come in
@@ -27,38 +27,38 @@ Item {
     property string armedPower: ""
     readonly property var allPowerChips: [{
         "id": "lock",
-        "label": "Lock",
+        "label": I18n.tr("Lock"),
         "confirm": "",
         "glyph": DockIcons.lock,
         "danger": false
     }, {
         "id": "logout",
-        "label": "Log out",
-        "confirm": "Log out?",
+        "label": I18n.tr("Log out"),
+        "confirm": I18n.tr("Log out?"),
         "glyph": DockIcons.logout,
         "danger": true
     }, {
         "id": "suspend",
-        "label": "Suspend",
+        "label": I18n.tr("Suspend"),
         "confirm": "",
         "glyph": DockIcons.suspend,
         "danger": false
     }, {
         "id": "hibernate",
-        "label": "Hibernate",
+        "label": I18n.tr("Hibernate"),
         "confirm": "",
         "glyph": DockIcons.hibernate,
         "danger": false
     }, {
         "id": "reboot",
-        "label": "Restart",
-        "confirm": "Restart?",
+        "label": I18n.tr("Restart"),
+        "confirm": I18n.tr("Restart?"),
         "glyph": DockIcons.reboot,
         "danger": true
     }, {
         "id": "shutdown",
-        "label": "Shut down",
-        "confirm": "Shut down?",
+        "label": I18n.tr("Shut down"),
+        "confirm": I18n.tr("Shut down?"),
         "glyph": DockIcons.power,
         "danger": true,
         // the one to find at a glance: filled with the palette's primary
@@ -217,15 +217,15 @@ Item {
             stableHeight: face.stableContentHeight
             emptyLabel: {
                 if (face.displayMode === "commands")
-                    return "No commands found";
+                    return I18n.tr("No commands found");
 
                 if (face.displayMode === "theme")
-                    return "No themes found";
+                    return I18n.tr("No themes found");
 
                 if (face.displayMode === "clipboard")
-                    return Clip.available ? "Clipboard history is empty" : "Install cliphist to keep clipboard history";
+                    return Clip.available ? I18n.tr("Clipboard history is empty") : I18n.tr("Install cliphist to keep clipboard history");
 
-                return "No apps found";
+                return I18n.tr("No apps found");
             }
             onActivated: (index) => face.activated(index)
             onDeleteRequested: (index) => face.deleteRequested(index)

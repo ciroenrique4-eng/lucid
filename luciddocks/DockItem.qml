@@ -287,7 +287,7 @@ Item {
         id: tooltip
 
         label: dockItem.displayName
-        detail: dockItem.windowCount > 1 ? dockItem.windowCount + " windows" : (dockItem.windowCount === 1 ? "1 window" : "")
+        detail: dockItem.windowCount > 0 ? I18n.trn("%1 window", "%1 windows", dockItem.windowCount) : ""
         open: Prefs.dockShowTooltips && dockItem.tooltipReady && dockItem.displayName !== ""
         lift: dockItem.hovered ? 4 : 0
     }
