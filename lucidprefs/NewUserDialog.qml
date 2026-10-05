@@ -28,10 +28,10 @@ Item {
             return "";
 
         if (dialog.nameTaken)
-            return "There is already an account with that username.";
+            return I18n.tr("There is already an account with that username.");
 
         if (!dialog.nameOk)
-            return "Start with a letter, then lowercase letters, digits, - and _ only.";
+            return I18n.tr("Start with a letter, then lowercase letters, digits, - and _ only.");
 
         return "";
     }
@@ -125,7 +125,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: "Add an account"
+                text: I18n.tr("Add an account")
                 color: Theme.text
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontHeadlineSm
@@ -134,7 +134,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: "A home folder is created the first time they sign in."
+                text: I18n.tr("A home folder is created the first time they sign in.")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBodyMd
@@ -151,7 +151,7 @@ Item {
 
                 width: parent.width
                 commitOnBlur: false
-                placeholder: "Full name"
+                placeholder: I18n.tr("Full name")
                 onEdited: (v) => {
                     dialog.realName = v;
                     if (dialog.nameLinked) {
@@ -167,7 +167,7 @@ Item {
 
                 width: parent.width
                 commitOnBlur: false
-                placeholder: "Username"
+                placeholder: I18n.tr("Username")
                 error: dialog.nameProblem !== ""
                 onEdited: (v) => {
                     // typing here by hand cuts the tie to the full name
@@ -178,7 +178,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: dialog.nameProblem !== "" ? dialog.nameProblem : (dialog.userName !== "" ? "Their home folder will be /home/" + dialog.userName : "")
+                text: dialog.nameProblem !== "" ? dialog.nameProblem : (dialog.userName !== "" ? I18n.tr("Their home folder will be %1", "/home/" + dialog.userName) : "")
                 color: dialog.nameProblem !== "" ? Theme.error : Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBodySm
@@ -188,7 +188,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: "Account type"
+                text: I18n.tr("Account type")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabelLg
@@ -200,10 +200,10 @@ Item {
                 current: dialog.accountType
                 options: [{
                     "key": Users.standard,
-                    "label": "Standard"
+                    "label": I18n.tr("Standard")
                 }, {
                     "key": Users.admin,
-                    "label": "Administrator"
+                    "label": I18n.tr("Administrator")
                 }]
                 onChosen: (key) => {
                     return dialog.accountType = key;
@@ -212,7 +212,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: dialog.accountType === Users.admin ? "Administrators can install software and change settings for everyone on this machine." : "Standard accounts can change only their own settings and files."
+                text: dialog.accountType === Users.admin ? I18n.tr("Administrators can install software and change settings for everyone on this machine.") : I18n.tr("Standard accounts can change only their own settings and files.")
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBodySm
@@ -222,7 +222,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: "Password"
+                text: I18n.tr("Password")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabelLg
@@ -234,10 +234,10 @@ Item {
                 current: dialog.mode
                 options: [{
                     "key": "later",
-                    "label": "Set at first sign-in"
+                    "label": I18n.tr("Set at first sign-in")
                 }, {
                     "key": "now",
-                    "label": "Set it now"
+                    "label": I18n.tr("Set it now")
                 }]
                 onChosen: (key) => {
                     return dialog.mode = key;
@@ -250,7 +250,7 @@ Item {
                 width: parent.width
                 password: true
                 commitOnBlur: false
-                placeholder: "Password"
+                placeholder: I18n.tr("Password")
                 visible: dialog.mode === "now"
                 onEdited: (v) => {
                     return dialog.pw = v;
@@ -264,7 +264,7 @@ Item {
                 width: parent.width
                 password: true
                 commitOnBlur: false
-                placeholder: "Confirm password"
+                placeholder: I18n.tr("Confirm password")
                 error: dialog.confirm.length > 0 && dialog.confirm !== dialog.pw
                 visible: dialog.mode === "now"
                 onEdited: (v) => {
@@ -283,13 +283,13 @@ Item {
                 spacing: 8
 
                 M3Button {
-                    text: "Cancel"
+                    text: I18n.tr("Cancel")
                     variant: "text"
                     onClicked: dialog.dismiss()
                 }
 
                 M3Button {
-                    text: "Add account"
+                    text: I18n.tr("Add account")
                     variant: "filled"
                     enabled: dialog.valid
                     onClicked: dialog.submit()

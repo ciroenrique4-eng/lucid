@@ -50,11 +50,11 @@ Column {
     }
 
     SettingCard {
-        title: "PRESETS"
+        title: I18n.tr("PRESETS")
 
         SettingRow {
-            title: "Start from a layout"
-            description: "Each one places a set of widgets and spaces them out for you. Cards you already have slide over to their new spot and keep whatever you wrote in them."
+            title: I18n.tr("Start from a layout")
+            description: I18n.tr("Each one places a set of widgets and spaces them out for you. Cards you already have slide over to their new spot and keep whatever you wrote in them.")
             showDivider: false
             stacked: true
 
@@ -88,8 +88,8 @@ Column {
         }
 
         SettingRow {
-            title: "Your presets"
-            description: Widgets.userPresets.length === 0 ? "Arrange the desktop the way you like it, then save it here and switch back to it whenever you want." : "Saving again under a name you already used updates that preset."
+            title: I18n.tr("Your presets")
+            description: Widgets.userPresets.length === 0 ? I18n.tr("Arrange the desktop the way you like it, then save it here and switch back to it whenever you want.") : I18n.tr("Saving again under a name you already used updates that preset.")
             showDivider: false
             stacked: true
 
@@ -110,8 +110,8 @@ Column {
                 PresetTile {
                     width: page.tileWidth(saved)
                     visible: Widgets.canRestore
-                    title: "Last layout"
-                    blurb: "Not saved. What was on your desktop before this preset."
+                    title: I18n.tr("Last layout")
+                    blurb: I18n.tr("Not saved. What was on your desktop before this preset.")
                     cards: Widgets.lastLayout
                     wallpaper: page.wallpaper
                     mark: "refresh"
@@ -126,13 +126,13 @@ Column {
 
                         width: page.tileWidth(saved)
                         title: modelData.name
-                        blurb: "Saved " + Qt.formatDate(new Date(modelData.saved || 0), "d MMMM yyyy")
+                        blurb: I18n.tr("Saved %1", new Date(modelData.saved || 0).toLocaleDateString(I18n.locale, I18n.tr("d MMMM yyyy")))
                         cards: Widgets.presetLayout(modelData.id)
                         wallpaper: page.wallpaper
                         selected: Widgets.presetId === modelData.id
                         removable: true
                         onChosen: Widgets.applyPreset(modelData.id)
-                        onRemoveRequested: Prefs.askConfirm("Delete “" + modelData.name + "”?", "The preset goes. The widgets on your desktop stay exactly where they are.", "Delete", "widget-preset:" + modelData.id)
+                        onRemoveRequested: Prefs.askConfirm(I18n.tr("Delete “%1”?", modelData.name), I18n.tr("The preset goes. The widgets on your desktop stay exactly where they are."), I18n.tr("Delete"), "widget-preset:" + modelData.id)
                     }
 
                 }
@@ -144,11 +144,11 @@ Column {
     }
 
     SettingCard {
-        title: "ADD A WIDGET"
+        title: I18n.tr("ADD A WIDGET")
 
         SettingRow {
-            title: "Pick a look"
-            description: Widgets.full ? "The desktop holds " + Widgets.capacity + " widgets, and it is full. Take one off below to make room." : "Every tile below is the real widget, drawn live. Click one and it lands on the desktop, where you can drag it anywhere and pin it in place."
+            title: I18n.tr("Pick a look")
+            description: Widgets.full ? I18n.tr("The desktop holds %1 widgets, and it is full. Take one off below to make room.", Widgets.capacity) : I18n.tr("Every tile below is the real widget, drawn live. Click one and it lands on the desktop, where you can drag it anywhere and pin it in place.")
             showDivider: false
             stacked: true
 
@@ -159,7 +159,7 @@ Column {
                 Repeater {
                     model: [{
                         "id": "all",
-                        "name": "All"
+                        "name": I18n.tr("All")
                     }].concat(Widgets.catalogue.map((t) => {
                         return ({
                             "id": t.id,
@@ -228,7 +228,7 @@ Column {
 
             SettingRow {
                 title: group.modelData.blurb
-                description: group.modelData.variants.length + (group.modelData.variants.length === 1 ? " style" : " styles") + (Widgets.countOfType(group.modelData.id) > 0 ? " · " + Widgets.countOfType(group.modelData.id) + " on the desktop" : "")
+                description: I18n.trn("%1 style", "%1 styles", group.modelData.variants.length) + (Widgets.countOfType(group.modelData.id) > 0 ? I18n.tr(" · %1 on the desktop", Widgets.countOfType(group.modelData.id)) : "")
                 showDivider: false
                 stacked: true
 
@@ -257,12 +257,12 @@ Column {
     }
 
     SettingCard {
-        title: "BEHAVIOUR"
+        title: I18n.tr("BEHAVIOUR")
 
         SettingRow {
-            title: "Snap while dragging"
+            title: I18n.tr("Snap while dragging")
             resetKey: "widgetSnap"
-            description: "Widgets catch on the screen's edges and centre lines, and line up with each other, so a hand-placed arrangement still looks deliberate."
+            description: I18n.tr("Widgets catch on the screen's edges and centre lines, and line up with each other, so a hand-placed arrangement still looks deliberate.")
 
             M3Switch {
                 checked: Prefs.widgetSnap
@@ -274,9 +274,9 @@ Column {
         }
 
         SettingRow {
-            title: "Pin everything"
+            title: I18n.tr("Pin everything")
             resetKey: "widgetLockAll"
-            description: "Locks every widget where it stands, including the ones that are not individually pinned. Useful once the layout is settled."
+            description: I18n.tr("Locks every widget where it stands, including the ones that are not individually pinned. Useful once the layout is settled.")
 
             M3Switch {
                 checked: Prefs.widgetLockAll
@@ -288,9 +288,9 @@ Column {
         }
 
         SettingRow {
-            title: "Keep above windows"
+            title: I18n.tr("Keep above windows")
             resetKey: "widgetOnTop"
-            description: "Off, widgets live on the desktop and windows cover them. On, they float over everything - handy for a clock or a timer you always want in sight."
+            description: I18n.tr("Off, widgets live on the desktop and windows cover them. On, they float over everything - handy for a clock or a timer you always want in sight.")
 
             M3Switch {
                 checked: Prefs.widgetOnTop
@@ -302,9 +302,9 @@ Column {
         }
 
         SettingRow {
-            title: "Hide for fullscreen windows"
+            title: I18n.tr("Hide for fullscreen windows")
             resetKey: "widgetHideFullscreen"
-            description: "Widgets step out of the way while something is running fullscreen, and come back when it is not."
+            description: I18n.tr("Widgets step out of the way while something is running fullscreen, and come back when it is not.")
             showDivider: false
 
             M3Switch {
