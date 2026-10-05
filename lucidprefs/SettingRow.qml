@@ -22,7 +22,7 @@ Item {
     property string resetAction: row.resetKey
     property bool resetVisible: row.resetKey !== "" && Prefs.isModified(row.resetKey)
     property string resetTitle: row.title
-    property string resetBody: "This puts \"" + row.resetTitle + "\" back to the value it ships with."
+    property string resetBody: I18n.tr("This puts \"%1\" back to the value it ships with.", row.resetTitle)
     property string warning: ""
     default property alias control: holder.data
     readonly property string activeDescription: (!row.enabled && row.disabledReason !== "") ? row.disabledReason : row.description
@@ -207,7 +207,7 @@ Item {
                 opacity: row.resetVisible ? 1 : 0
                 visible: opacity > 0.01
                 iconPath: "M17.65 6.35A7.958 7.958 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35Z"
-                onClicked: Prefs.askReset("Reset " + row.resetTitle.toLowerCase() + "?", row.resetBody, row.resetAction)
+                onClicked: Prefs.askReset(I18n.tr("Reset %1?", row.resetTitle.toLowerCase()), row.resetBody, row.resetAction)
 
                 Behavior on width {
                     NumberAnimation {
