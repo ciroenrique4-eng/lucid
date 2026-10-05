@@ -31,31 +31,31 @@ FloatingWindow {
     // a hidden page still gets a pane and a header; it just has no rail entry,
     // because something else on screen already leads to it
     readonly property var pages: [
-        { "key": "users", "group": "Account", "label": "Account", "title": "Users and Accounts", "blurb": "Who may sign in to this machine, what they are called and what they are allowed to do", "hidden": true },
-        { "key": "general", "group": "Appearance", "label": "General", "title": "General", "blurb": "Shape, colour and motion across the whole shell" },
-        { "key": "glass", "group": "Appearance", "label": "Glass", "title": "Glass", "blurb": "How far the desktop shows through the shell, the terminal and your windows" },
-        { "key": "theme", "group": "Appearance", "label": "Theme", "title": "Theme and Appearance", "blurb": "Colour schemes, wallpapers and themes you import" },
-        { "key": "colours", "group": "Appearance", "label": "Colours", "title": "Colours", "blurb": "How Matugen and Your colour build a palette, the applications that follow it, and templates of your own" },
-        { "key": "palettes", "group": "Appearance", "label": "Palettes", "title": "Palettes", "blurb": "A gallery of colour schemes, and themes from a repo or a file" },
-        { "key": "environment", "group": "Appearance", "label": "Environment", "title": "Environment", "blurb": "Cursors, icons, fonts and application themes, across GTK, Qt and Hyprland alike" },
-        { "key": "bar", "group": "Desktop", "label": "Bar", "title": "Bar", "blurb": "The status bar, its modules and how they open", "toggle": "barEnabled" },
-        { "key": "dock", "group": "Desktop", "label": "Dock", "title": "Dock", "blurb": "The dock, its icons and how it behaves", "toggle": "dockEnabled" },
-        { "key": "launcher", "group": "Desktop", "label": "Launcher", "title": "Launcher", "blurb": "What it lists and in what order, what a search finds, and the clipboard history it hands back" },
-        { "key": "widgets", "group": "Desktop", "label": "Widgets", "title": "Widgets", "blurb": "Cards you place on the desktop and arrange yourself", "toggle": "widgetsEnabled" },
-        { "key": "windows", "group": "Desktop", "label": "Windows", "title": "Windows", "blurb": "How Hyprland draws your windows, tiles them and hands them the focus" },
-        { "key": "workspaces", "group": "Desktop", "label": "Workspaces", "title": "Special Workspaces", "blurb": "Your music, chat, to-do list and a scratchpad, each one key away and gone again with the same key" },
-        { "key": "keybinds", "group": "Desktop", "label": "Keybinds", "title": "Keybinds", "blurb": "Every Hyprland shortcut: change one, switch it off or add your own" },
-        { "key": "input", "group": "Devices", "label": "Input", "title": "Input", "blurb": "Keyboard layouts and key repeat, the mouse, the touchpad and its gestures" },
-        { "key": "displays", "group": "Devices", "label": "Displays", "title": "Displays", "blurb": "Every screen this machine has: resolution, refresh rate, scale, how they are arranged and which one the shell sits on" },
-        { "key": "sound", "group": "Devices", "label": "Sound", "title": "Sound", "blurb": "Which speakers play and which microphone listens, what each application is using, and how loud any of it is" },
-        { "key": "network", "group": "Devices", "label": "Network", "title": "Network", "blurb": "Wi-Fi, wired, VPN and how this machine gets its address" },
-        { "key": "bluetooth", "group": "Devices", "label": "Bluetooth", "title": "Bluetooth and Devices", "blurb": "The radio, what it is paired with, and the phone you connect to it" },
-        { "key": "kdeconnect", "group": "Devices", "label": "Phone", "title": "Phone", "blurb": "Your phone on this machine over KDE Connect: files, notifications, clipboard and a remote", "toggle": "kdeConnectEnabled" },
-        { "key": "notifications", "group": "System", "label": "Notifications", "title": "Notifications", "blurb": "Popups, quiet hours, sound and which applications may interrupt you", "toggle": "showNotifications" },
-        { "key": "idle", "group": "System", "label": "Idle", "title": "Idle and Sleep", "blurb": "What happens when you walk away: dimming, locking, screen off and suspend", "toggle": "idleEnabled" },
-        { "key": "datetime", "group": "System", "label": "Date & Time", "title": "Date and Time", "blurb": "Where you are, which zone the clock keeps and how it reads" },
-        { "key": "about", "group": "System", "label": "About", "title": "About", "blurb": "CirOShell" },
-        { "key": "search", "group": "", "label": "Search", "title": "Search", "blurb": "", "hidden": true }
+        { "key": "users", "group": I18n.tr("Account"), "label": I18n.tr("Account"), "title": I18n.tr("Users and Accounts"), "blurb": I18n.tr("Who may sign in to this machine, what they are called and what they are allowed to do"), "hidden": true },
+        { "key": "general", "group": I18n.tr("Appearance"), "label": I18n.tr("General"), "title": I18n.tr("General"), "blurb": I18n.tr("Shape, colour and motion across the whole shell") },
+        { "key": "glass", "group": I18n.tr("Appearance"), "label": I18n.tr("Glass"), "title": I18n.tr("Glass"), "blurb": I18n.tr("How far the desktop shows through the shell, the terminal and your windows") },
+        { "key": "theme", "group": I18n.tr("Appearance"), "label": I18n.tr("Theme"), "title": I18n.tr("Theme and Appearance"), "blurb": I18n.tr("Colour schemes, wallpapers and themes you import") },
+        { "key": "colours", "group": I18n.tr("Appearance"), "label": I18n.tr("Colours"), "title": I18n.tr("Colours"), "blurb": I18n.tr("How Matugen and Your colour build a palette, the applications that follow it, and templates of your own") },
+        { "key": "palettes", "group": I18n.tr("Appearance"), "label": I18n.tr("Palettes"), "title": I18n.tr("Palettes"), "blurb": I18n.tr("A gallery of colour schemes, and themes from a repo or a file") },
+        { "key": "environment", "group": I18n.tr("Appearance"), "label": I18n.tr("Environment"), "title": I18n.tr("Environment"), "blurb": I18n.tr("Cursors, icons, fonts and application themes, across GTK, Qt and Hyprland alike") },
+        { "key": "bar", "group": I18n.tr("Desktop"), "label": I18n.tr("Bar"), "title": I18n.tr("Bar"), "blurb": I18n.tr("The status bar, its modules and how they open"), "toggle": "barEnabled" },
+        { "key": "dock", "group": I18n.tr("Desktop"), "label": I18n.tr("Dock"), "title": I18n.tr("Dock"), "blurb": I18n.tr("The dock, its icons and how it behaves"), "toggle": "dockEnabled" },
+        { "key": "launcher", "group": I18n.tr("Desktop"), "label": I18n.tr("Launcher"), "title": I18n.tr("Launcher"), "blurb": I18n.tr("What it lists and in what order, what a search finds, and the clipboard history it hands back") },
+        { "key": "widgets", "group": I18n.tr("Desktop"), "label": I18n.tr("Widgets"), "title": I18n.tr("Widgets"), "blurb": I18n.tr("Cards you place on the desktop and arrange yourself"), "toggle": "widgetsEnabled" },
+        { "key": "windows", "group": I18n.tr("Desktop"), "label": I18n.tr("Windows"), "title": I18n.tr("Windows"), "blurb": I18n.tr("How Hyprland draws your windows, tiles them and hands them the focus") },
+        { "key": "workspaces", "group": I18n.tr("Desktop"), "label": I18n.tr("Workspaces"), "title": I18n.tr("Special Workspaces"), "blurb": I18n.tr("Your music, chat, to-do list and a scratchpad, each one key away and gone again with the same key") },
+        { "key": "keybinds", "group": I18n.tr("Desktop"), "label": I18n.tr("Keybinds"), "title": I18n.tr("Keybinds"), "blurb": I18n.tr("Every Hyprland shortcut: change one, switch it off or add your own") },
+        { "key": "input", "group": I18n.tr("Devices"), "label": I18n.tr("Input"), "title": I18n.tr("Input"), "blurb": I18n.tr("Keyboard layouts and key repeat, the mouse, the touchpad and its gestures") },
+        { "key": "displays", "group": I18n.tr("Devices"), "label": I18n.tr("Displays"), "title": I18n.tr("Displays"), "blurb": I18n.tr("Every screen this machine has: resolution, refresh rate, scale, how they are arranged and which one the shell sits on") },
+        { "key": "sound", "group": I18n.tr("Devices"), "label": I18n.tr("Sound"), "title": I18n.tr("Sound"), "blurb": I18n.tr("Which speakers play and which microphone listens, what each application is using, and how loud any of it is") },
+        { "key": "network", "group": I18n.tr("Devices"), "label": I18n.tr("Network"), "title": I18n.tr("Network"), "blurb": I18n.tr("Wi-Fi, wired, VPN and how this machine gets its address") },
+        { "key": "bluetooth", "group": I18n.tr("Devices"), "label": I18n.tr("Bluetooth"), "title": I18n.tr("Bluetooth and Devices"), "blurb": I18n.tr("The radio, what it is paired with, and the phone you connect to it") },
+        { "key": "kdeconnect", "group": I18n.tr("Devices"), "label": I18n.tr("Phone"), "title": I18n.tr("Phone"), "blurb": I18n.tr("Your phone on this machine over KDE Connect: files, notifications, clipboard and a remote"), "toggle": "kdeConnectEnabled" },
+        { "key": "notifications", "group": I18n.tr("System"), "label": I18n.tr("Notifications"), "title": I18n.tr("Notifications"), "blurb": I18n.tr("Popups, quiet hours, sound and which applications may interrupt you"), "toggle": "showNotifications" },
+        { "key": "idle", "group": I18n.tr("System"), "label": I18n.tr("Idle"), "title": I18n.tr("Idle and Sleep"), "blurb": I18n.tr("What happens when you walk away: dimming, locking, screen off and suspend"), "toggle": "idleEnabled" },
+        { "key": "datetime", "group": I18n.tr("System"), "label": I18n.tr("Date & Time"), "title": I18n.tr("Date and Time"), "blurb": I18n.tr("Where you are, which zone the clock keeps and how it reads") },
+        { "key": "about", "group": I18n.tr("System"), "label": I18n.tr("About"), "title": I18n.tr("About"), "blurb": I18n.tr("CirOShell") },
+        { "key": "search", "group": I18n.tr(""), "label": I18n.tr("Search"), "title": I18n.tr("Search"), "blurb": "", "hidden": true }
     ]
 
     // what the rail actually lists
@@ -85,9 +85,9 @@ FloatingWindow {
     readonly property string searchSummary: {
         const n = win.searchRowCount;
         if (win.searchResults.length === 0)
-            return win.searchReady ? "Nothing matches “" + win.searchQuery + "”" : "";
+            return win.searchReady ? I18n.tr("Nothing matches “%1”", win.searchQuery) : "";
 
-        return n === 0 ? "Pages matching “" + win.searchQuery + "”" : (n === 1 ? "1 setting" : n + " settings") + " matching “" + win.searchQuery + "”";
+        return n === 0 ? I18n.tr("Pages matching “%1”", win.searchQuery) : I18n.trn("%1 setting matching “%2”", "%1 settings matching “%2”", n, n, win.searchQuery);
     }
     property int searchSel: 0
     property string searchReturn: "general"
@@ -205,20 +205,20 @@ FloatingWindow {
     function openEnvPicker(kind) {
         win.envPickKind = kind;
         if (kind === "cursor")
-            envPicker.open("Cursor theme", "cursor themes", Env.cursorThemes, Prefs.envCursorTheme, false);
+            envPicker.open(I18n.tr("Cursor theme"), I18n.tr("cursor themes"), Env.cursorThemes, Prefs.envCursorTheme, false);
         else if (kind === "icon") {
             Env.loadPreviews();
-            envPicker.open("Icon theme", "icon themes", Env.iconThemes, Prefs.envIconTheme, true);
+            envPicker.open(I18n.tr("Icon theme"), I18n.tr("icon themes"), Env.iconThemes, Prefs.envIconTheme, true);
         } else if (kind === "gtk")
-            envPicker.open("Application theme", "GTK themes", Env.gtkThemes, Prefs.envGtkTheme, false);
+            envPicker.open(I18n.tr("Application theme"), I18n.tr("GTK themes"), Env.gtkThemes, Prefs.envGtkTheme, false);
         else if (kind === "qtStyle")
-            envPicker.open("Qt style", "Qt styles", Env.qtStyles, Prefs.envQtStyle, false);
+            envPicker.open(I18n.tr("Qt style"), I18n.tr("Qt styles"), Env.qtStyles, Prefs.envQtStyle, false);
         else if (kind === "appFont")
-            envPicker.open("Application font", "fonts", Qt.fontFamilies(), Env.appFont, false);
+            envPicker.open(I18n.tr("Application font"), I18n.tr("fonts"), Qt.fontFamilies(), Env.appFont, false);
         else if (kind === "docFont")
-            envPicker.open("Document font", "fonts", Qt.fontFamilies(), Prefs.envDocumentFont, false);
+            envPicker.open(I18n.tr("Document font"), I18n.tr("fonts"), Qt.fontFamilies(), Prefs.envDocumentFont, false);
         else if (kind === "monoFont")
-            envPicker.open("Monospace font", "fonts", Qt.fontFamilies(), Prefs.envMonoFont, false);
+            envPicker.open(I18n.tr("Monospace font"), I18n.tr("fonts"), Qt.fontFamilies(), Prefs.envMonoFont, false);
     }
 
     // a rescan can finish while a list is open; keep it showing what is installed
@@ -272,7 +272,7 @@ FloatingWindow {
     onClosed: win.visible = false
 
     visible: false
-    title: "CirOShell Settings"
+    title: I18n.tr("CirOShell Settings")
     // a surface created fully opaque keeps qtwayland's opaque region for the life
     // of the process and hyprland never blurs it, so stay one step under solid
     color: Theme.alpha(Theme.bg, Math.min(Theme.bg.a, 254 / 255))
@@ -435,7 +435,7 @@ FloatingWindow {
 
         function reset(): void {
             win.show("");
-            Prefs.askReset("Reset every setting?", "Every setting on every page goes back to the value it ships with. Your theme, wallpaper, pinned applications and placed widgets are not touched.", Prefs.resetAllToken);
+            Prefs.askReset(I18n.tr("Reset every setting?"), I18n.tr("Every setting on every page goes back to the value it ships with. Your theme, wallpaper, pinned applications and placed widgets are not touched."), Prefs.resetAllToken);
         }
 
     }
@@ -787,7 +787,7 @@ FloatingWindow {
                         spacing: -1
 
                         Text {
-                            text: "CirOShell"
+                            text: I18n.tr("CirOShell")
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontTitleMd
@@ -795,7 +795,7 @@ FloatingWindow {
                         }
 
                         Text {
-                            text: "Settings"
+                            text: I18n.tr("Settings")
                             color: Theme.subtext
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontLabelMd
@@ -1068,10 +1068,10 @@ FloatingWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     variant: "text"
                     destructive: true
-                    text: "Reset all"
+                    text: I18n.tr("Reset all")
                     opacity: Math.max(0, (win.railT - 0.6) / 0.4)
                     visible: opacity > 0.01
-                    onClicked: Prefs.askReset("Reset every setting?", "Every setting on every page goes back to the value it ships with. Your theme, wallpaper, pinned applications and placed widgets are not touched.", Prefs.resetAllToken)
+                    onClicked: Prefs.askReset(I18n.tr("Reset every setting?"), I18n.tr("Every setting on every page goes back to the value it ships with. Your theme, wallpaper, pinned applications and placed widgets are not touched."), Prefs.resetAllToken)
                 }
 
                 M3IconButton {
@@ -1083,7 +1083,7 @@ FloatingWindow {
                     opacity: 1 - Math.min(1, win.railT * 2)
                     visible: opacity > 0.01
                     iconPath: "M17.65 6.35A7.958 7.958 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35Z"
-                    onClicked: Prefs.askReset("Reset every setting?", "Every setting on every page goes back to the value it ships with. Your theme, wallpaper, pinned applications and placed widgets are not touched.", Prefs.resetAllToken)
+                    onClicked: Prefs.askReset(I18n.tr("Reset every setting?"), I18n.tr("Every setting on every page goes back to the value it ships with. Your theme, wallpaper, pinned applications and placed widgets are not touched."), Prefs.resetAllToken)
                 }
 
             }
