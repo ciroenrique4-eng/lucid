@@ -14,13 +14,22 @@ Item {
         "center": I18n.tr("Centre"),
         "right": I18n.tr("Right")
     })
+
+    FontMetrics {
+        id: laneFm
+
+        font.family: Theme.fontFamily
+        font.pixelSize: Theme.fontLabelLg
+        font.weight: Font.Medium
+    }
     readonly property var modules: Prefs.barModuleById
     // the module whose card the page shows; a tap on its chip picks it
     // the module whose card shows below; the page owns it, a tap asks by chosen()
     property string selected: ""
 
     signal chosen(string id)
-    readonly property int labelWidth: 64
+    // wide enough for the longest lane name in the shell's language
+    readonly property int labelWidth: Math.max(64, Math.ceil(Math.max(laneFm.advanceWidth(editor.sideNames.left), laneFm.advanceWidth(editor.sideNames.center), laneFm.advanceWidth(editor.sideNames.right))) + 16)
     readonly property int laneHeight: 48
     readonly property int laneGap: 8
     readonly property int lanePad: 7

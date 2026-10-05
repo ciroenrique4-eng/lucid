@@ -4,6 +4,22 @@ import qs
 SettingCard {
     id: card
 
+    // NetworkManager names the state in English; the usual ones are said in the shell's language
+    function stateText(state) {
+        switch (state) {
+        case "connected":
+            return I18n.trc("network state", "connected");
+        case "connecting":
+            return I18n.trc("network state", "connecting");
+        case "disconnected":
+            return I18n.trc("network state", "disconnected");
+        case "unavailable":
+            return I18n.trc("network state", "unavailable");
+        default:
+            return state;
+        }
+    }
+
     required property var info
 
     property bool editing: false
@@ -45,7 +61,7 @@ SettingCard {
 
     SettingRow {
         title: I18n.tr("Addresses")
-        description: card.info.connection !== "" ? I18n.tr("On “%1”, %2.", card.info.connection, card.info.state) : I18n.tr("Not carrying a connection.")
+        description: card.info.connection !== "" ? I18n.tr("On “%1”, %2.", card.info.connection, card.stateText(card.info.state)) : I18n.tr("Not carrying a connection.")
         stacked: true
 
         Grid {
