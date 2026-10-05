@@ -27,8 +27,8 @@ WidgetBody {
         if (w.opt("showCpu") !== false)
             out.push({
                 "key": "cpu",
-                "label": "Processor",
-                "short": "CPU",
+                "label": I18n.tr("Processor"),
+                "short": I18n.tr("CPU"),
                 "value": w.cpu,
                 "text": Math.round(w.cpu * 100) + "%",
                 "detail": ""
@@ -37,8 +37,8 @@ WidgetBody {
         if (w.opt("showRam") !== false)
             out.push({
                 "key": "ram",
-                "label": "Memory",
-                "short": "RAM",
+                "label": I18n.tr("Memory"),
+                "short": I18n.tr("RAM"),
                 "value": w.ram,
                 "text": Math.round(w.ram * 100) + "%",
                 "detail": w.ramTotalGb > 0 ? w.ramUsedGb.toFixed(1) + " / " + w.ramTotalGb.toFixed(1) + " GB" : ""
@@ -47,18 +47,18 @@ WidgetBody {
         if (w.opt("showDisk") !== false)
             out.push({
                 "key": "disk",
-                "label": "Disk",
-                "short": "SSD",
+                "label": I18n.tr("Disk"),
+                "short": I18n.tr("SSD"),
                 "value": w.disk,
                 "text": Math.round(w.disk * 100) + "%",
-                "detail": w.diskTotalGb > 0 ? Math.round(w.diskTotalGb - w.diskUsedGb) + " GB free" : ""
+                "detail": w.diskTotalGb > 0 ? I18n.tr("%1 GB free", Math.round(w.diskTotalGb - w.diskUsedGb)) : ""
             });
 
         if (w.opt("showTemp") === true && w.temp >= 0)
             out.push({
                 "key": "temp",
-                "label": "Temperature",
-                "short": "TEMP",
+                "label": I18n.tr("Temperature"),
+                "short": I18n.tr("TEMP"),
                 "value": Math.min(1, w.temp / 100),
                 "text": Math.round(w.temp) + "°",
                 "detail": ""
@@ -335,11 +335,11 @@ WidgetBody {
             Repeater {
                 model: [{
                     "key": "cpu",
-                    "short": "CPU",
+                    "short": I18n.tr("CPU"),
                     "value": w.cpu
                 }, {
                     "key": "ram",
-                    "short": "RAM",
+                    "short": I18n.tr("RAM"),
                     "value": w.ram
                 }]
 
@@ -378,7 +378,7 @@ WidgetBody {
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.topMargin: 2
-            text: w.ramTotalGb > 0 ? w.ramUsedGb.toFixed(1) + " GB used" : ""
+            text: w.ramTotalGb > 0 ? I18n.tr("%1 GB used", w.ramUsedGb.toFixed(1)) : ""
             color: Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: 11

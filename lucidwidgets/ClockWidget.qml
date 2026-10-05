@@ -14,33 +14,33 @@ WidgetBody {
     readonly property color timeColor: w.opt("accentTime") === true ? Theme.accent : Theme.text
     readonly property var zoneSets: ({
         "eu": [{
-            "city": "London",
+            "city": I18n.tr("London"),
             "tz": "Europe/London"
         }, {
-            "city": "Paris",
+            "city": I18n.tr("Paris"),
             "tz": "Europe/Paris"
         }, {
-            "city": "Moscow",
+            "city": I18n.tr("Moscow"),
             "tz": "Europe/Moscow"
         }],
         "us": [{
-            "city": "New York",
+            "city": I18n.tr("New York"),
             "tz": "America/New_York"
         }, {
-            "city": "Chicago",
+            "city": I18n.tr("Chicago"),
             "tz": "America/Chicago"
         }, {
-            "city": "Los Angeles",
+            "city": I18n.tr("Los Angeles"),
             "tz": "America/Los_Angeles"
         }],
         "asia": [{
-            "city": "Dubai",
+            "city": I18n.tr("Dubai"),
             "tz": "Asia/Dubai"
         }, {
-            "city": "Tokyo",
+            "city": I18n.tr("Tokyo"),
             "tz": "Asia/Tokyo"
         }, {
-            "city": "Sydney",
+            "city": I18n.tr("Sydney"),
             "tz": "Australia/Sydney"
         }]
     })
@@ -78,7 +78,7 @@ WidgetBody {
         var here = Loc.trueOffsetMin;
         var diff = (minutesEast - here) / 60;
         if (Math.abs(diff) < 0.01)
-            return "same as here";
+            return I18n.tr("same as here");
 
         var sign = diff > 0 ? "+" : "−";
         var abs = Math.abs(diff);
@@ -182,7 +182,7 @@ WidgetBody {
                 }
 
                 Text {
-                    text: w.use24 ? "" : (w.now.getHours() < 12 ? "AM" : "PM")
+                    text: w.use24 ? "" : (w.now.getHours() < 12 ? I18n.tr("AM") : I18n.tr("PM"))
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: 15
@@ -196,7 +196,7 @@ WidgetBody {
 
         Text {
             width: parent.width
-            text: w.now.toLocaleDateString(Qt.locale(), "dddd, d MMMM")
+            text: w.now.toLocaleDateString(I18n.locale, I18n.tr("dddd, d MMMM"))
             color: Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: 14
@@ -242,7 +242,7 @@ WidgetBody {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 18
-            text: w.showDate ? w.now.toLocaleDateString(Qt.locale(), "ddd d MMM") : (w.use24 ? "" : (w.now.getHours() < 12 ? "AM" : "PM"))
+            text: w.showDate ? w.now.toLocaleDateString(I18n.locale, I18n.tr("ddd d MMM")) : (w.use24 ? "" : (w.now.getHours() < 12 ? I18n.tr("AM") : I18n.tr("PM")))
             color: Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: 13
@@ -358,7 +358,7 @@ WidgetBody {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 6
-            text: w.now.toLocaleDateString(Qt.locale(), "ddd d")
+            text: w.now.toLocaleDateString(I18n.locale, I18n.tr("ddd d"))
             color: Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: 11
@@ -386,7 +386,7 @@ WidgetBody {
 
         ShadowText {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: w.now.toLocaleDateString(Qt.locale(), "dddd, d MMMM")
+            text: w.now.toLocaleDateString(I18n.locale, I18n.tr("dddd, d MMMM"))
             color: Qt.rgba(1, 1, 1, 0.82)
             pixelSize: 13
             bold: true
