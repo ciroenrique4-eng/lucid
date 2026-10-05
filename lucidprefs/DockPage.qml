@@ -12,16 +12,16 @@ Column {
 
     // a bottom bar takes the dock's edge
     SettingCard {
-        title: "HIDDEN WHILE THE BAR IS AT THE BOTTOM"
+        title: I18n.tr("HIDDEN WHILE THE BAR IS AT THE BOTTOM")
         visible: Prefs.barBottom && Prefs.dockEnabled
 
         SettingRow {
-            title: "The bar is on the dock's edge"
-            description: "With the bar at the bottom of the screen the dock stays away, so the two never pile up. The launcher still works, and these settings are kept for when the bar goes back to the top."
+            title: I18n.tr("The bar is on the dock's edge")
+            description: I18n.tr("With the bar at the bottom of the screen the dock stays away, so the two never pile up. The launcher still works, and these settings are kept for when the bar goes back to the top.")
             showDivider: false
 
             M3Button {
-                text: "Move the bar up"
+                text: I18n.tr("Move the bar up")
                 variant: "tonal"
                 onClicked: Prefs.barPosition = "top"
             }
@@ -31,12 +31,12 @@ Column {
     }
 
     SettingCard {
-        title: "SIZE & PLACEMENT"
+        title: I18n.tr("SIZE & PLACEMENT")
 
         SettingRow {
-            title: "Icon size"
+            title: I18n.tr("Icon size")
             resetKey: "dockIconSize"
-            description: "The size of each icon's slot in the dock. The dock's own height follows it."
+            description: I18n.tr("The size of each icon's slot in the dock. The dock's own height follows it.")
             stacked: true
 
             M3Slider {
@@ -54,9 +54,9 @@ Column {
         }
 
         SettingRow {
-            title: "Icon spacing"
+            title: I18n.tr("Icon spacing")
             resetKey: "dockSpacing"
-            description: "The gap between neighbouring icons."
+            description: I18n.tr("The gap between neighbouring icons.")
             stacked: true
 
             M3Slider {
@@ -74,11 +74,11 @@ Column {
         }
 
         SettingRow {
-            title: "Distance from bottom"
+            title: I18n.tr("Distance from bottom")
             resetKey: "dockBottomMargin"
-            description: "How far the dock floats above the bottom edge of the screen."
+            description: I18n.tr("How far the dock floats above the bottom edge of the screen.")
             enabled: !Prefs.dockNotch
-            disabledReason: "Notches sit flush against the screen edge by definition - switch back to islands on the General page to float the dock."
+            disabledReason: I18n.tr("Notches sit flush against the screen edge by definition - switch back to islands on the General page to float the dock.")
             showDivider: false
             stacked: true
 
@@ -100,14 +100,14 @@ Column {
     }
 
     SettingCard {
-        title: "BEHAVIOUR"
+        title: I18n.tr("BEHAVIOUR")
 
         SettingRow {
-            title: "Edge blend"
+            title: I18n.tr("Edge blend")
             resetKey: "dockNotchFlare"
-            description: "How far the dock's lower corners sweep out into the bottom of the screen, so it reads as carved out of the edge rather than resting on it."
+            description: I18n.tr("How far the dock's lower corners sweep out into the bottom of the screen, so it reads as carved out of the edge rather than resting on it.")
             enabled: Prefs.dockNotch
-            disabledReason: "Islands float clear of the screen edge, so there is nothing to blend into - switch the dock to Notches on the General page."
+            disabledReason: I18n.tr("Islands float clear of the screen edge, so there is nothing to blend into - switch the dock to Notches on the General page.")
             stacked: true
 
             M3Slider {
@@ -126,9 +126,9 @@ Column {
         }
 
         SettingRow {
-            title: "Hover strength"
+            title: I18n.tr("Hover strength")
             resetKey: "dockHoverEffect"
-            description: "How far an icon swells and lifts under the pointer. At 0 the icons stay put - hovering still highlights them, it just stops moving them."
+            description: I18n.tr("How far an icon swells and lifts under the pointer. At 0 the icons stay put - hovering still highlights them, it just stops moving them.")
             stacked: true
 
             M3Slider {
@@ -146,8 +146,8 @@ Column {
         }
 
         SettingRow {
-            title: "Magnify on hover"
-            description: "Icons swell as the pointer passes over them, and their neighbours follow in a ripple."
+            title: I18n.tr("Magnify on hover")
+            description: I18n.tr("Icons swell as the pointer passes over them, and their neighbours follow in a ripple.")
 
             M3Switch {
                 checked: Prefs.dockMagnify
@@ -159,8 +159,8 @@ Column {
         }
 
         SettingRow {
-            title: "Auto-hide"
-            description: "The dock slides off the bottom of the screen and comes back when the pointer reaches the edge."
+            title: I18n.tr("Auto-hide")
+            description: I18n.tr("The dock slides off the bottom of the screen and comes back when the pointer reaches the edge.")
 
             M3Switch {
                 checked: Prefs.dockAutoHide
@@ -172,8 +172,8 @@ Column {
         }
 
         SettingRow {
-            title: "Show running applications"
-            description: "Applications that are running but not pinned appear in the dock beside the pinned ones."
+            title: I18n.tr("Show running applications")
+            description: I18n.tr("Applications that are running but not pinned appear in the dock beside the pinned ones.")
 
             M3Switch {
                 checked: Prefs.dockShowRunning
@@ -185,8 +185,8 @@ Column {
         }
 
         SettingRow {
-            title: "Icon tiles"
-            description: "Draws a filled tile behind every icon. Material 3 leaves the container empty and lets hover and press do the talking, which is how the dock looks with this off."
+            title: I18n.tr("Icon tiles")
+            description: I18n.tr("Draws a filled tile behind every icon. Material 3 leaves the container empty and lets hover and press do the talking, which is how the dock looks with this off.")
             showDivider: false
 
             M3Switch {
@@ -201,11 +201,11 @@ Column {
     }
 
     SettingCard {
-        title: "INDICATORS"
+        title: I18n.tr("INDICATORS")
 
         SettingRow {
-            title: "Running indicator"
-            description: "A mark beneath any icon whose application is running - one segment per window, widening into a single bar for the window you are focused on."
+            title: I18n.tr("Running indicator")
+            description: I18n.tr("A mark beneath any icon whose application is running - one segment per window, widening into a single bar for the window you are focused on.")
 
             M3Switch {
                 checked: Prefs.dockShowIndicators
@@ -217,8 +217,8 @@ Column {
         }
 
         SettingRow {
-            title: "Tooltips"
-            description: "The application's name appears above its icon after a short hover."
+            title: I18n.tr("Tooltips")
+            description: I18n.tr("The application's name appears above its icon after a short hover.")
             showDivider: false
 
             M3Switch {
@@ -233,15 +233,15 @@ Column {
     }
 
     SettingCard {
-        title: "LAUNCHER"
+        title: I18n.tr("LAUNCHER")
 
         SettingRow {
-            title: "Launcher settings"
-            description: "The dock opens into the launcher. Its size, what a search finds, the power buttons, favourite and hidden apps and the clipboard history are on a page of their own."
+            title: I18n.tr("Launcher settings")
+            description: I18n.tr("The dock opens into the launcher. Its size, what a search finds, the power buttons, favourite and hidden apps and the clipboard history are on a page of their own.")
             showDivider: false
 
             M3Button {
-                text: "Launcher…"
+                text: I18n.tr("Launcher…")
                 variant: "tonal"
                 onClicked: Prefs.settingsRequested("launcher")
             }
@@ -251,18 +251,18 @@ Column {
     }
 
     SettingCard {
-        title: "PINNED APPLICATIONS"
+        title: I18n.tr("PINNED APPLICATIONS")
 
         SettingRow {
-            title: "Reset pinned applications"
-            description: "Puts the dock back to its default set of pinned applications. Anything pinned or reordered since is discarded."
+            title: I18n.tr("Reset pinned applications")
+            description: I18n.tr("Puts the dock back to its default set of pinned applications. Anything pinned or reordered since is discarded.")
             showDivider: false
 
             M3Button {
-                text: "Reset dock"
+                text: I18n.tr("Reset dock")
                 variant: "text"
                 destructive: true
-                onClicked: Prefs.askReset("Reset pinned applications?", "The dock goes back to its default set of pinned applications. Anything pinned or reordered since is discarded.", Prefs.resetDockToken)
+                onClicked: Prefs.askReset(I18n.tr("Reset pinned applications?"), I18n.tr("The dock goes back to its default set of pinned applications. Anything pinned or reordered since is discarded."), Prefs.resetDockToken)
             }
 
         }

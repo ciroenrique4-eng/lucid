@@ -14,7 +14,7 @@ Column {
 
         bits.push(Loc.coordText);
         if (Loc.fixedAt > 0)
-            bits.push("found " + page.agoText(Date.now() - Loc.fixedAt));
+            bits.push(I18n.tr("found %1", page.agoText(Date.now() - Loc.fixedAt)));
 
         return bits.join("  ·  ");
     }
@@ -22,17 +22,17 @@ Column {
     function agoText(ms) {
         var mins = Math.floor(ms / 60000);
         if (mins < 1)
-            return "just now";
+            return I18n.tr("just now");
 
         if (mins < 60)
-            return mins + (mins === 1 ? " minute ago" : " minutes ago");
+            return mins + (mins === 1 ? I18n.tr(" minute ago") : I18n.tr(" minutes ago"));
 
         var hrs = Math.round(mins / 60);
         if (hrs < 24)
-            return hrs + (hrs === 1 ? " hour ago" : " hours ago");
+            return hrs + (hrs === 1 ? I18n.tr(" hour ago") : I18n.tr(" hours ago"));
 
         var days = Math.round(hrs / 24);
-        return days + (days === 1 ? " day ago" : " days ago");
+        return days + (days === 1 ? I18n.tr(" day ago") : I18n.tr(" days ago"));
     }
 
     spacing: 26
@@ -46,13 +46,13 @@ Column {
     }
 
     SettingCard {
-        title: "LOCATION"
+        title: I18n.tr("LOCATION")
 
         SettingRow {
-            title: "Auto-detect location"
+            title: I18n.tr("Auto-detect location")
             resetKey: "gpsEnabled"
-            description: "Works out roughly where you are from your network connection, and keeps checking every few hours. This is the same switch as the GPS tile in the bar's system panel."
-            warning: Prefs.gpsEnabled ? "Your address is sent to ipapi.co to be turned into a position." : ""
+            description: I18n.tr("Works out roughly where you are from your network connection, and keeps checking every few hours. This is the same switch as the GPS tile in the bar's system panel.")
+            warning: Prefs.gpsEnabled ? I18n.tr("Your address is sent to ipapi.co to be turned into a position.") : ""
 
             M3Switch {
                 checked: Prefs.gpsEnabled
@@ -64,15 +64,15 @@ Column {
         }
 
         SettingRow {
-            title: "Place"
+            title: I18n.tr("Place")
             enabled: !Prefs.gpsEnabled
-            disabledReason: "Auto-detect is choosing the place for you. Turn it off to name one yourself."
-            description: "A town or city to sit the shell in. Press Enter to look it up."
+            disabledReason: I18n.tr("Auto-detect is choosing the place for you. Turn it off to name one yourself.")
+            description: I18n.tr("A town or city to sit the shell in. Press Enter to look it up.")
 
             M3TextField {
                 width: 260
                 enabled: !Prefs.gpsEnabled
-                placeholder: "Poznań"
+                placeholder: I18n.tr("Poznań")
                 text: Prefs.locationName
                 onAccepted: (v) => {
                     Prefs.locationName = v;
@@ -83,13 +83,13 @@ Column {
         }
 
         SettingRow {
-            title: "Position"
+            title: I18n.tr("Position")
             description: page.positionText
             warning: Loc.lastError
             showDivider: false
 
             M3Button {
-                text: Loc.busy ? "Looking…" : (Prefs.gpsEnabled ? "Detect now" : "Look up")
+                text: Loc.busy ? I18n.tr("Looking…") : (Prefs.gpsEnabled ? I18n.tr("Detect now") : I18n.tr("Look up"))
                 variant: "tonal"
                 enabled: !Loc.busy
                 onClicked: Loc.refresh()
@@ -100,12 +100,12 @@ Column {
     }
 
     SettingCard {
-        title: "TIME ZONE"
+        title: I18n.tr("TIME ZONE")
 
         SettingRow {
-            title: "Time zone"
-            description: "The machine's own zone, shared with every application on it. Changing it here is the same as running timedatectl, so it asks for your password."
-            warning: Loc.zoneError !== "" ? "Unchanged \u2014 " + Loc.zoneError : ""
+            title: I18n.tr("Time zone")
+            description: I18n.tr("The machine's own zone, shared with every application on it. Changing it here is the same as running timedatectl, so it asks for your password.")
+            warning: Loc.zoneError !== "" ? I18n.tr("Unchanged — %1", Loc.zoneError) : ""
 
             Row {
                 spacing: 14
@@ -115,7 +115,7 @@ Column {
                     spacing: 2
 
                     Text {
-                        text: Loc.zone !== "" ? Loc.zone.replace(/_/g, " ") : "Reading…"
+                        text: Loc.zone !== "" ? Loc.zone.replace(/_/g, " ") : I18n.tr("Reading…")
                         color: Theme.text
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontTitle
@@ -133,7 +133,7 @@ Column {
 
                 M3Button {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: Loc.zoneBusy ? "Setting…" : "Change…"
+                    text: Loc.zoneBusy ? I18n.tr("Setting…") : I18n.tr("Change…")
                     variant: "tonal"
                     enabled: !Loc.zoneBusy
                     onClicked: Prefs.timeZonePickerRequested()
@@ -144,16 +144,16 @@ Column {
         }
 
         SettingRow {
-            title: "Set it from my location"
+            title: I18n.tr("Set it from my location")
             resetKey: "timeZoneAuto"
             description: {
                 if (Loc.zoneFromLocation === "")
-                    return "Your location has not named a zone yet. Find a place above and the machine can follow it.";
+                    return I18n.tr("Your location has not named a zone yet. Find a place above and the machine can follow it.");
 
                 if (Loc.locationAgrees)
-                    return "The machine already keeps the time of " + Loc.zoneFromLocation.replace(/_/g, " ") + ".";
+                    return I18n.tr("The machine already keeps the time of %1.", Loc.zoneFromLocation.replace(/_/g, " "));
 
-                return "Your location sits in " + Loc.zoneFromLocation.replace(/_/g, " ") + ", which the machine is not on.";
+                return I18n.tr("Your location sits in %1, which the machine is not on.", Loc.zoneFromLocation.replace(/_/g, " "));
             }
             showDivider: Loc.stale
 
@@ -167,11 +167,11 @@ Column {
         }
 
         SettingRow {
-            title: "Applications opened before the change"
+            title: I18n.tr("Applications opened before the change")
             visible: Loc.stale
             description: {
                 page.tick;
-                return "A program reads the time zone once, when it starts, so anything already running is still on the old one. Lucid corrects for that itself and shows " + Loc.now().toLocaleTimeString(Qt.locale(), "HH:mm") + " either way — restart the others, or log out, to bring them across.";
+                return I18n.tr("A program reads the time zone once, when it starts, so anything already running is still on the old one. Lucid corrects for that itself and shows %1 either way — restart the others, or log out, to bring them across.", Loc.now().toLocaleTimeString(I18n.locale, "HH:mm"));
             }
             showDivider: false
         }
@@ -179,12 +179,12 @@ Column {
     }
 
     SettingCard {
-        title: "CLOCK"
+        title: I18n.tr("CLOCK")
 
         SettingRow {
-            title: "24-hour time"
+            title: I18n.tr("24-hour time")
             resetKey: "clock24h"
-            description: "Show 14:30 instead of 02:30 PM."
+            description: I18n.tr("Show 14:30 instead of 02:30 PM.")
 
             M3Switch {
                 checked: Prefs.clock24h
@@ -196,9 +196,9 @@ Column {
         }
 
         SettingRow {
-            title: "Show date"
+            title: I18n.tr("Show date")
             resetKey: "clockShowDate"
-            description: "Keep the weekday and day-of-month beside the time in the bar."
+            description: I18n.tr("Keep the weekday and day-of-month beside the time in the bar.")
             showDivider: false
 
             M3Switch {
