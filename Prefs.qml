@@ -606,6 +606,7 @@ Singleton {
     property alias motionScale: s.motionScale
     property alias fontFamily: s.fontFamily
     property alias fontScale: s.fontScale
+    property alias language: s.language
     property alias wallpaperFolder: s.wallpaperFolder
     // bracket writes on the adapter are dropped, so this must go through the alias
     property alias themeOrder: s.themeOrder
@@ -1019,6 +1020,7 @@ Singleton {
         "motionScale": 1,
         "fontFamily": "Google Sans",
         "fontScale": 1,
+        "language": "auto",
         "wallpaperFolder": "",
         "themeOrder": "",
         "matugenScheme": "scheme-tonal-spot",
@@ -1656,6 +1658,7 @@ Singleton {
             property real motionScale: 1
             property string fontFamily: "Google Sans"
             property real fontScale: 1
+            property string language: "auto"
             property string wallpaperFolder: ""
             property string themeOrder: ""
             property string matugenScheme: "scheme-tonal-spot"
