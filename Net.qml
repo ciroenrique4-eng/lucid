@@ -347,7 +347,7 @@ Singleton {
             root.busy = false;
             if (code !== 0) {
                 const err = actionErr.text.trim();
-                root.lastError = err.split("\n").pop() || "NetworkManager refused that change";
+                root.lastError = err.split("\n").pop() || I18n.tr("NetworkManager refused that change");
             }
             settle.restart();
         }
