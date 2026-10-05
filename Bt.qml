@@ -26,6 +26,8 @@ Singleton {
 
     // devices that announce OBEX object push (phones, computers): the ones files can go to
     property var pushTargets: []
+    // where files went last, first in the lists that pick a device
+    property string lastSendTarget: ""
     readonly property int deviceCount: (root.adapter && root.adapter.devices) ? root.adapter.devices.values.length : 0
 
     // pairings started while pairable was off, see pair()
@@ -235,6 +237,7 @@ Singleton {
             "Can't send over Bluetooth": I18n.tr("Can't send over Bluetooth"),
             "Sending files needs bluez-obex.": I18n.tr("Sending files needs bluez-obex.")
         };
+        root.lastSendTarget = address;
         const helper = Qt.resolvedUrl("lucidprefs/bt-send.py").toString().replace("file://", "");
         Quickshell.execDetached(["python3", helper, "--address", address, "--name", name || "", "--strings", JSON.stringify(strings), "--"].concat(files || []));
     }
@@ -257,6 +260,7 @@ Singleton {
     }
 
     onDeviceCountChanged: root.probePush()
+    Component.onCompleted: root.probePush()
 
     // adapter address, alias and the rfkill state, in one shot
     Process {
