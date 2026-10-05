@@ -17,10 +17,10 @@ Item {
     function suggestion() {
         for (var n = Widgets.userPresets.length + 1; n < 1000; n++) {
             if (Widgets.userPresetNamed("Layout " + n) === null)
-                return "Layout " + n;
+                return I18n.tr("Layout %1", n);
 
         }
-        return "Layout";
+        return I18n.tr("Layout");
     }
 
     function begin() {
@@ -144,7 +144,7 @@ Item {
                 id: hint
 
                 anchors.centerIn: parent
-                text: tile.clash !== null ? "Updates “" + tile.clash.name + "”" : "Enter to save · Esc to cancel"
+                text: tile.clash !== null ? I18n.tr("Updates “%1”", tile.clash.name) : I18n.tr("Enter to save · Esc to cancel")
                 color: tile.clash !== null ? Theme.accent : Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(10)
@@ -169,7 +169,7 @@ Item {
             anchors.leftMargin: 14
             anchors.rightMargin: 14
             anchors.topMargin: 10
-            text: "Save this layout"
+            text: I18n.tr("Save this layout")
             color: Theme.text
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBody
@@ -186,7 +186,7 @@ Item {
             anchors.rightMargin: 14
             anchors.topMargin: 3
             height: 30
-            text: tile.empty ? "Place a widget or two first, then keep the arrangement here." : "Keep what is on your desktop now as a preset of your own."
+            text: tile.empty ? I18n.tr("Place a widget or two first, then keep the arrangement here.") : I18n.tr("Keep what is on your desktop now as a preset of your own.")
             color: Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fs(10)
@@ -221,7 +221,7 @@ Item {
 
             width: parent.width - save.width - parent.spacing
             height: 42
-            placeholder: "Name it"
+            placeholder: I18n.tr("Name it")
             commitOnBlur: false
             onEdited: (v) => {
                 return tile.draft = v;

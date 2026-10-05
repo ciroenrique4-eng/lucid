@@ -111,7 +111,7 @@ Item {
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.margins: 22
-            text: "Time zone"
+            text: I18n.tr("Time zone")
             color: Theme.text
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontHeadlineSm
@@ -160,7 +160,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
-                text: picker.zones.length > 0 ? "Search " + picker.zones.length + " zones" : "Reading the zone database…"
+                text: picker.zones.length > 0 ? I18n.tr("Search %1 zones", picker.zones.length) : I18n.tr("Reading the zone database…")
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBodyLg
