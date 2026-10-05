@@ -1594,7 +1594,7 @@ BarPill {
             columns: 7
 
             Repeater {
-                model: ["S", "M", "T", "W", "T", "F", "S"]
+                model: [0, 1, 2, 3, 4, 5, 6].map((d) => I18n.locale.dayName(d, Locale.NarrowFormat))
 
                 Text {
                     width: parent.width / 7
