@@ -103,8 +103,12 @@ Item {
     property bool headerOpensSettings: true
     readonly property bool surfaceHovered: pill.compactHovered || shellHover.hovered || pillHover.hovered
 
+    // the launcher took the bar's panels down when it opened; one shrinking
+    // under a pointer that has not moved must not bring itself back over it
+    readonly property bool launcherUp: pill.hostWindow !== null && pill.hostWindow.launcherOpen === true
+
     function openOnHover() {
-        if (!pill.hoverOpens || pill.anyOpen)
+        if (!pill.hoverOpens || pill.anyOpen || pill.launcherUp)
             return ;
 
         pill.hoverOpen = true;
