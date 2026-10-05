@@ -28,16 +28,16 @@ Item {
 
     readonly property var schedules: [{
         "key": "off",
-        "name": "By hand",
-        "desc": "Only when you turn it on"
+        "name": I18n.tr("By hand"),
+        "desc": I18n.tr("Only when you turn it on")
     }, {
         "key": "sun",
-        "name": "Sunset to sunrise",
-        "desc": NightLight.sun.polar ? "No sunset where you are today, so 9 pm to 7 am" : NightLight.clock(NightLight.sun.set) + " to " + NightLight.clock(NightLight.sun.rise) + (Loc.place !== "" ? " in " + Loc.place : "")
+        "name": I18n.tr("Sunset to sunrise"),
+        "desc": NightLight.sun.polar ? I18n.tr("No sunset where you are today, so 9 pm to 7 am") : (Loc.place !== "" ? I18n.tr("%1 to %2 in %3", NightLight.clock(NightLight.sun.set), NightLight.clock(NightLight.sun.rise), Loc.place) : I18n.tr("%1 to %2", NightLight.clock(NightLight.sun.set), NightLight.clock(NightLight.sun.rise)))
     }, {
         "key": "custom",
-        "name": "Set hours",
-        "desc": NightLight.clock(Prefs.nightLightFrom) + " to " + NightLight.clock(Prefs.nightLightTo)
+        "name": I18n.tr("Set hours"),
+        "desc": I18n.tr("%1 to %2", NightLight.clock(Prefs.nightLightFrom), NightLight.clock(Prefs.nightLightTo))
     }]
 
     implicitHeight: col.implicitHeight
@@ -52,7 +52,7 @@ Item {
             width: col.width
             leftPadding: 4
             rightPadding: 4
-            text: NightLight.available ? NightLight.status + (NightLight.active ? "  ·  " + NightLight.temperature + " K" : "") : "hyprsunset is not installed, so the screen can't be warmed."
+            text: NightLight.available ? NightLight.status + (NightLight.active ? "  ·  " + NightLight.temperature + " K" : "") : I18n.tr("hyprsunset is not installed, so the screen can't be warmed.") // i18n-skip
             color: NightLight.available ? (NightLight.active ? Theme.accent : Theme.subtext) : Theme.warning
             font.family: Theme.fontFamily
             font.bold: true
@@ -133,7 +133,7 @@ Item {
             Text {
                 anchors.left: parent.left
                 anchors.leftMargin: 4
-                text: "Cooler"
+                text: I18n.tr("Cooler")
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(10)
@@ -142,7 +142,7 @@ Item {
             Text {
                 anchors.right: parent.right
                 anchors.rightMargin: 4
-                text: "Warmer"
+                text: I18n.tr("Warmer")
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(10)
@@ -256,7 +256,7 @@ Item {
             width: col.width
             leftPadding: 4
             rightPadding: 4
-            text: "Hours and more in Settings"
+            text: I18n.tr("Hours and more in Settings")
             color: settingsArea.containsMouse ? Theme.accent : Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fs(10)
