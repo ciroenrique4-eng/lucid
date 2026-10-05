@@ -74,10 +74,10 @@ Singleton {
 
         var m = Math.round(sec / 60);
         if (m < 60)
-            return m + (m === 1 ? I18n.tr(" min") : I18n.tr(" min"));
+            return I18n.tr("%1 min", m);
 
         var h = m / 60;
-        return (h === Math.round(h) ? String(h) : h.toFixed(1)) + (h === 1 ? I18n.tr(" hour") : I18n.tr(" hours"));
+        return I18n.trn("%1 hour", "%1 hours", h, h === Math.round(h) ? String(h) : h.toFixed(1));
     }
 
     // the ladder, in the order it actually fires
