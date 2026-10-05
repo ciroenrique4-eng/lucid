@@ -24,41 +24,41 @@ Item {
         if (DesktopIcons.live) {
             arr.push({
                 "id": "newFolder",
-                "label": "New Folder",
+                "label": I18n.tr("New Folder"),
                 "glyph": DesktopIcons.glyphs.newFolder,
                 "divider": false
             });
             if (DesktopIcons.canPaste)
                 arr.push({
                 "id": "paste",
-                "label": "Paste",
+                "label": I18n.tr("Paste"),
                 "glyph": DesktopIcons.glyphs.paste,
                 "divider": false
             });
 
             arr.push({
                 "id": "arrange",
-                "label": "Arrange Icons",
+                "label": I18n.tr("Arrange Icons"),
                 "glyph": DesktopIcons.glyphs.arrange,
                 "divider": false
             });
         }
         arr.push({
             "id": "wallpaper",
-            "label": "Change Wallpaper",
+            "label": I18n.tr("Change Wallpaper"),
             "glyph": DockIcons.wallpaper,
             "divider": arr.length > 0
         });
         arr.push({
             "id": "theme",
-            "label": "Change Theme",
+            "label": I18n.tr("Change Theme"),
             "glyph": DockIcons.palette,
             "divider": false
         });
         if (Prefs.widgetsEnabled)
             arr.push({
             "id": "addWidget",
-            "label": "Add a Widget",
+            "label": I18n.tr("Add a Widget"),
             "glyph": DockIcons.widgets,
             "divider": true
         });
@@ -66,12 +66,12 @@ Item {
         if (Widgets.count > 0)
             arr.push(Prefs.widgetsEnabled ? {
             "id": "hideWidgets",
-            "label": "Hide Widgets",
+            "label": I18n.tr("Hide Widgets"),
             "glyph": DockIcons.hidden,
             "divider": false
         } : {
             "id": "showWidgets",
-            "label": "Show Widgets",
+            "label": I18n.tr("Show Widgets"),
             "glyph": DockIcons.visible,
             "divider": true
         });
@@ -81,31 +81,31 @@ Item {
         if (Prefs.desktopIcons)
             arr.push(Prefs.desktopIconsShown ? {
             "id": "hideIcons",
-            "label": "Hide Icons",
+            "label": I18n.tr("Hide Icons"),
             "glyph": DockIcons.hidden,
             "divider": !Prefs.widgetsEnabled && Widgets.count === 0
         } : {
             "id": "showIcons",
-            "label": "Show Icons",
+            "label": I18n.tr("Show Icons"),
             "glyph": DockIcons.visible,
             "divider": !Prefs.widgetsEnabled && Widgets.count === 0
         });
 
         arr.push({
             "id": "screenshot",
-            "label": "Take a Screenshot",
+            "label": I18n.tr("Take a Screenshot"),
             "glyph": DockIcons.camera,
             "divider": true
         });
         arr.push({
             "id": "keyboard",
-            "label": "On-Screen Keyboard",
+            "label": I18n.tr("On-Screen Keyboard"),
             "glyph": DockIcons.keyboard,
             "divider": false
         });
         arr.push({
             "id": "settings",
-            "label": "Settings",
+            "label": I18n.tr("Settings"),
             "glyph": DockIcons.settings,
             "divider": true
         });

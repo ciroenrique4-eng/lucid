@@ -100,7 +100,7 @@ WidgetBody {
 
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            text: w.focusOnly ? "UP NEXT" : "TO-DO"
+            text: w.focusOnly ? I18n.tr("UP NEXT") : I18n.tr("TO-DO")
             color: Theme.accent
             font.family: Theme.fontFamily
             font.pixelSize: 10
@@ -112,7 +112,7 @@ WidgetBody {
             anchors.left: headTitle.right
             anchors.leftMargin: 8
             anchors.verticalCenter: parent.verticalCenter
-            text: w.items.length === 0 ? "" : (w.focusOnly ? w.shown.length + " left" : w.doneCount + " of " + w.items.length + " done")
+            text: w.items.length === 0 ? "" : (w.focusOnly ? I18n.tr("%1 left", w.shown.length) : I18n.tr("%1 of %2 done", w.doneCount, w.items.length))
             color: Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: 10
@@ -241,7 +241,7 @@ WidgetBody {
     Text {
         anchors.centerIn: scroller
         width: scroller.width - 40
-        text: w.items.length === 0 ? "Nothing on the list yet." : "All done."
+        text: w.items.length === 0 ? I18n.tr("Nothing on the list yet.") : I18n.tr("All done.")
         color: Theme.subtextDim
         font.family: Theme.fontFamily
         font.pixelSize: 12
@@ -331,7 +331,7 @@ WidgetBody {
             anchors.left: addMark.right
             anchors.leftMargin: 12
             anchors.verticalCenter: parent.verticalCenter
-            text: "Add an item"
+            text: I18n.tr("Add an item")
             color: Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: 13
