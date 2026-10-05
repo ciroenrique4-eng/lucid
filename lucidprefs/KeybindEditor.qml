@@ -23,19 +23,19 @@ Item {
     property string heldMods: ""
     readonly property var optionList: [{
         "key": "locked",
-        "label": "Works on the lock screen"
+        "label": I18n.tr("Works on the lock screen")
     }, {
         "key": "repeating",
-        "label": "Repeats while held"
+        "label": I18n.tr("Repeats while held")
     }, {
         "key": "release",
-        "label": "Fires on release"
+        "label": I18n.tr("Fires on release")
     }, {
         "key": "mouse",
-        "label": "Mouse drag"
+        "label": I18n.tr("Mouse drag")
     }, {
         "key": "non_consuming",
-        "label": "Key still reaches the app"
+        "label": I18n.tr("Key still reaches the app")
     }]
     readonly property string actionText: editor.kind === "lua" ? editor.lua : editor.cmd
     readonly property bool canSave: editor.keys.trim() !== "" && editor.actionText.trim() !== "" && Keybinds.parseError === ""
@@ -60,17 +60,17 @@ Item {
                 names.push("“" + Keybinds.displayDesc(b) + "”");
 
         }
-        return names.length ? "Already used by " + names.join(", ") + " — both would fire." : "";
+        return names.length ? I18n.tr("Already used by %1 — both would fire.", names.join(", ")) : "";
     }
     readonly property string eachHint: {
         var placeholders = /\{key\}|\{n\}/.test(editor.keys + editor.actionText + editor.desc);
         if (!editor.each)
-            return placeholders ? "{key} and {n} only mean something with this on." : "";
+            return placeholders ? I18n.tr("{key} and {n} only mean something with this on.") : "";
 
         if (editor.keys.indexOf("{key}") === -1)
-            return "Put {key} where the number goes, as in SUPER + {key}.";
+            return I18n.tr("Put {key} where the number goes, as in SUPER + {key}.");
 
-        return "{key} becomes 1…9 and 0; {n} becomes 1…10 in the action and description.";
+        return I18n.tr("{key} becomes 1…9 and 0; {n} becomes 1…10 in the action and description.");
     }
 
     signal dismissed()
@@ -133,7 +133,7 @@ Item {
     function askDelete() {
         var b = Keybinds.find(editor.editingId);
         if (b)
-            Prefs.askConfirm("Delete this keybind?", "“" + Keybinds.displayDesc(b) + "” (" + Keybinds.tokens(b.keys).join(" + ") + ") is removed from keybinds.json and Hyprland reloads without it.", "Delete", "keybind-delete:" + b.id);
+            Prefs.askConfirm(I18n.tr("Delete this keybind?"), I18n.tr("“%1” (%2) is removed from keybinds.json and Hyprland reloads without it.", Keybinds.displayDesc(b), Keybinds.tokens(b.keys).join(" + ")), I18n.tr("Delete"), "keybind-delete:" + b.id);
 
     }
 
@@ -297,7 +297,7 @@ Item {
                 x: card.pad
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 12
-                text: editor.editingId === "" ? "New keybind" : "Edit keybind"
+                text: editor.editingId === "" ? I18n.tr("New keybind") : I18n.tr("Edit keybind")
                 color: Theme.text
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontHeadlineSm
@@ -326,7 +326,7 @@ Item {
                 spacing: 10
 
                 SectionLabel {
-                    text: "Keys"
+                    text: I18n.tr("Keys")
                 }
 
                 Rectangle {
@@ -352,7 +352,7 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         visible: keysPreview.shownKeys === ""
-                        text: editor.recording ? "Press the keys you want · Esc cancels" : "No keys yet"
+                        text: editor.recording ? I18n.tr("Press the keys you want · Esc cancels") : I18n.tr("No keys yet")
                         color: editor.recording ? Theme.accent : Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBodyLg
@@ -369,7 +369,7 @@ Item {
                         anchors.right: recordBtn.left
                         anchors.rightMargin: 10
                         anchors.verticalCenter: parent.verticalCenter
-                        placeholder: editor.each ? "SUPER + {key}" : "SUPER + SHIFT + T"
+                        placeholder: editor.each ? I18n.tr("SUPER + {key}") : I18n.tr("SUPER + SHIFT + T")
                         text: editor.keys
                         enabled: !editor.recording
                         onEdited: (v) => {
@@ -382,7 +382,7 @@ Item {
 
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        text: editor.recording ? "Stop" : "Record"
+                        text: editor.recording ? I18n.tr("Stop") : I18n.tr("Record")
                         variant: editor.recording ? "filled" : "tonal"
                         iconPath: "M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2Zm-9 3h2v2h-2V8Zm0 3h2v2h-2v-2ZM8 8h2v2H8V8Zm0 3h2v2H8v-2Zm-1 2H5v-2h2v2Zm0-3H5V8h2v2Zm9 7H8v-2h8v2Zm0-4h-2v-2h2v2Zm0-3h-2V8h2v2Zm3 3h-2v-2h2v2Zm0-3h-2V8h2v2Z"
                         onClicked: editor.recording ? editor.stopRecording() : editor.startRecording()
@@ -425,7 +425,7 @@ Item {
                         spacing: 2
 
                         Text {
-                            text: "Repeat for workspaces 1–10"
+                            text: I18n.tr("Repeat for workspaces 1–10")
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontBodyLg
@@ -447,12 +447,12 @@ Item {
                 }
 
                 SectionLabel {
-                    text: "Description"
+                    text: I18n.tr("Description")
                 }
 
                 M3TextField {
                     width: body.width
-                    placeholder: "What it does, the way the cheatsheet should say it"
+                    placeholder: I18n.tr("What it does, the way the cheatsheet should say it")
                     text: editor.desc
                     onEdited: (v) => {
                         editor.desc = v;
@@ -460,12 +460,12 @@ Item {
                 }
 
                 SectionLabel {
-                    text: "Category"
+                    text: I18n.tr("Category")
                 }
 
                 M3TextField {
                     width: body.width
-                    placeholder: "One of these, or a new one"
+                    placeholder: I18n.tr("One of these, or a new one")
                     text: editor.category
                     onEdited: (v) => {
                         editor.category = v;
@@ -492,7 +492,7 @@ Item {
                 }
 
                 SectionLabel {
-                    text: "Action"
+                    text: I18n.tr("Action")
                 }
 
                 M3Segmented {
@@ -500,10 +500,10 @@ Item {
                     current: editor.kind
                     options: [{
                         "key": "exec",
-                        "label": "Command"
+                        "label": I18n.tr("Command")
                     }, {
                         "key": "lua",
-                        "label": "Lua"
+                        "label": I18n.tr("Lua")
                     }]
                     onChosen: (key) => {
                         editor.kind = key;
@@ -513,7 +513,7 @@ Item {
                 M3TextField {
                     width: body.width
                     visible: editor.kind === "exec"
-                    placeholder: "kitty, or anything you would run in a terminal"
+                    placeholder: I18n.tr("kitty, or anything you would run in a terminal")
                     text: editor.cmd
                     onEdited: (v) => {
                         editor.cmd = v;
@@ -575,7 +575,7 @@ Item {
                         x: 14
                         y: 14
                         visible: luaEdit.text === ""
-                        text: "hl.dsp.window.close()"
+                        text: I18n.tr("hl.dsp.window.close()")
                         color: Theme.subtextDim
                         font.family: "monospace"
                         font.pixelSize: Theme.fontBodyMd
@@ -585,7 +585,7 @@ Item {
 
                 Text {
                     width: body.width
-                    text: editor.kind === "lua" ? "An expression giving a Hyprland dispatcher — hl.dsp.window.close(), hl.dsp.focus({ workspace = 3 }) — or function() … end, run on every press. fn (utils/functions.lua) and seq(a, b) are in scope." : "Runs through the shell, pipes and all."
+                    text: editor.kind === "lua" ? I18n.tr("An expression giving a Hyprland dispatcher — hl.dsp.window.close(), hl.dsp.focus({ workspace = 3 }) — or function() … end, run on every press. fn (utils/functions.lua) and seq(a, b) are in scope.") : I18n.tr("Runs through the shell, pipes and all.")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBodyMd
@@ -593,7 +593,7 @@ Item {
                 }
 
                 SectionLabel {
-                    text: "Options"
+                    text: I18n.tr("Options")
                 }
 
                 Flow {
@@ -632,7 +632,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 visible: editor.editingId !== ""
                 enabled: Keybinds.parseError === ""
-                text: "Delete"
+                text: I18n.tr("Delete")
                 variant: "text"
                 destructive: true
                 onClicked: editor.askDelete()
@@ -645,13 +645,13 @@ Item {
                 spacing: 8
 
                 M3Button {
-                    text: "Cancel"
+                    text: I18n.tr("Cancel")
                     variant: "text"
                     onClicked: editor.dismiss()
                 }
 
                 M3Button {
-                    text: "Save"
+                    text: I18n.tr("Save")
                     variant: "filled"
                     enabled: editor.canSave
                     onClicked: editor.save()

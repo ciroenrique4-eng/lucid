@@ -32,7 +32,7 @@ Item {
     function open(ws) {
         picker.workspace = ws;
         // "::desktop" is the desktop icons' own: a launcher on the desktop
-        picker.heading = ws === "::desktop" ? "Add an app to the desktop" : "Add an app to " + Specials.label(ws);
+        picker.heading = ws === "::desktop" ? I18n.tr("Add an app to the desktop") : I18n.tr("Add an app to %1", Specials.label(ws));
         picker.items = ws === "::desktop" ? DesktopIcons.installedApps() : Specials.installedApps(ws);
         picker.filter = "";
         searchInput.text = "";
@@ -145,7 +145,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Search " + picker.items.length + " installed apps"
+                text: I18n.tr("Search %1 installed apps", picker.items.length)
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBodyLg
@@ -157,7 +157,7 @@ Item {
         Text {
             anchors.centerIn: parent
             width: card.width - 60
-            text: picker.items.length === 0 ? "Nothing left to add" : "No apps match “" + picker.filter + "”"
+            text: picker.items.length === 0 ? I18n.tr("Nothing left to add") : I18n.tr("No apps match “%1”", picker.filter)
             color: Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBodyLg
