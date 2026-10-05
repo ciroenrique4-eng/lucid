@@ -136,7 +136,7 @@ PanelWindow {
                 preview.run(["sh", "-c", "wl-copy --type image/png < \"$1\"", "sh", f]);
             else
                 preview.run(["wl-copy", "--type", "text/uri-list", preview.fileUrl]);
-            preview.done = "Copied";
+            preview.done = I18n.tr("Copied");
             doneTimer.restart();
             return ;
         }
@@ -376,7 +376,7 @@ PanelWindow {
                 MouseArea {
                     id: shotArea
 
-                    readonly property string label: preview.kind === "image" ? "Open it, or drag it out" : "Play it, or drag it out"
+                    readonly property string label: preview.kind === "image" ? I18n.tr("Open it, or drag it out") : I18n.tr("Play it, or drag it out")
 
                     anchors.fill: parent
                     hoverEnabled: true
@@ -415,7 +415,7 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onEntered: preview.hint = "Dismiss"
+                        onEntered: preview.hint = I18n.tr("Dismiss")
                         onExited: preview.leave("Dismiss")
                         onClicked: preview.dismiss()
                     }
@@ -447,7 +447,7 @@ PanelWindow {
                         width: parent.width
                         text: {
                             if (preview.armedDelete)
-                                return "Click again to delete";
+                                return I18n.tr("Click again to delete");
 
                             if (preview.done !== "")
                                 return preview.done;
@@ -455,7 +455,7 @@ PanelWindow {
                             if (preview.hint !== "")
                                 return preview.hint;
 
-                            return preview.kind === "video" ? "Recording saved" : "Screenshot copied";
+                            return preview.kind === "video" ? I18n.tr("Recording saved") : I18n.tr("Screenshot copied");
                         }
                         color: preview.armedDelete ? Theme.error : Theme.text
                         font.family: Theme.fontFamily
@@ -494,23 +494,23 @@ PanelWindow {
 
                     ActionButton {
                         action: "copy"
-                        label: preview.kind === "image" ? "Copy the image" : "Copy the file"
+                        label: preview.kind === "image" ? I18n.tr("Copy the image") : I18n.tr("Copy the file")
                     }
 
                     ActionButton {
                         action: "edit"
-                        label: "Mark it up"
+                        label: I18n.tr("Mark it up")
                         visible: preview.kind === "image"
                     }
 
                     ActionButton {
                         action: "folder"
-                        label: "Show in folder"
+                        label: I18n.tr("Show in folder")
                     }
 
                     ActionButton {
                         action: "delete"
-                        label: "Delete"
+                        label: I18n.tr("Delete")
                         danger: true
                     }
 
