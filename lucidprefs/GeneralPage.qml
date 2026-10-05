@@ -9,6 +9,34 @@ Column {
     spacing: 26
 
     SettingCard {
+        title: I18n.tr("LANGUAGE")
+
+        SettingRow {
+            title: I18n.tr("Language")
+            description: I18n.tr("Automatic follows the system language. Text the translation doesn't cover stays in English.")
+
+            M3Segmented {
+                width: 360
+                current: Prefs.language
+                options: [{
+                    "key": "auto",
+                    "label": I18n.tr("Automatic (%1)", I18n.autoName)
+                }].concat(I18n.languages.map((l) => {
+                    return {
+                        "key": l.code,
+                        "label": l.name
+                    };
+                }))
+                onChosen: (key) => {
+                    return Prefs.language = key;
+                }
+            }
+
+        }
+
+    }
+
+    SettingCard {
         title: "SHAPE"
 
         SettingRow {
