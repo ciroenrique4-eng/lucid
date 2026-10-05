@@ -79,6 +79,55 @@ PanelWindow {
     readonly property bool showOverline: !osdWindow.notch || osdWindow.notchHeight >= 64
     readonly property int columnGap: osdWindow.notch ? Math.max(3, Math.round(osdWindow.notchHeight * 0.09)) : 7
 
+    // what else is open along the bottom edge - a bar panel, the launcher - as
+    // {x, w, top, bottom} in screen pixels, and how much of the edge the bar and
+    // dock keep below the card. shell.qml fills both in
+    property var obstacles: []
+    property real bottomReserve: 0
+    // the card's x: centred, or slid along the edge to the nearest place clear
+    // of whatever is open across its band. where nothing is clear (a wide card
+    // beside the launcher), the place that covers the least of it
+    readonly property real cardX: {
+        const cw = card.width;
+        const centre = Math.round((osdWindow.width - cw) / 2);
+        if (!osdWindow.screen || osdWindow.obstacles.length === 0)
+            return centre;
+
+        const bottom = osdWindow.screen.height - osdWindow.bottomReserve - osdWindow.margins.bottom;
+        const top = bottom - osdWindow.height;
+        const pad = (osdWindow.notch ? Prefs.dockNotchFlare : 0) + 12;
+        const spans = osdWindow.obstacles.filter((o) => {
+            return o.w > 0 && o.bottom > top && o.top < bottom;
+        });
+        const covered = (x) => {
+            let sum = 0;
+            for (const o of spans) {
+                sum += Math.max(0, Math.min(x + cw + pad, o.x + o.w) - Math.max(x - pad, o.x));
+            }
+            return sum;
+        };
+        const lo = pad;
+        const hi = osdWindow.width - cw - pad;
+        const wants = [centre, lo, hi];
+        for (const o of spans) {
+            wants.push(o.x - pad - cw, o.x + o.w + pad);
+        }
+        let best = centre;
+        let bestCover = covered(centre);
+        let bestDist = 0;
+        for (const want of wants) {
+            const x = Math.round(Math.max(lo, Math.min(hi, want)));
+            const cover = covered(x);
+            const dist = Math.abs(x - centre);
+            if (cover < bestCover || (cover === bestCover && dist < bestDist)) {
+                best = x;
+                bestCover = cover;
+                bestDist = dist;
+            }
+        }
+        return best;
+    }
+
     // notch style: the card sits flush on the bottom edge and slides out of it
     readonly property bool notch: Prefs.osdNotch
     // the notch card's size from settings; its width goes to the level track,
@@ -315,7 +364,6 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     // remapped with the rest of the shell when displays change
     visible: Monitors.surfacesUp
-    implicitWidth: osdWindow.notch ? Math.max(480, card.width + 2 * Prefs.dockNotchFlare + 8) : 480
     implicitHeight: osdWindow.notch ? osdWindow.notchHeight : 140
     margins.bottom: osdWindow.notch ? 0 : 96
     Component.onCompleted: {
@@ -405,8 +453,12 @@ PanelWindow {
     }
     BackgroundEffect.blurRegion: (Theme.blurAmount > 0 && card.visible) ? osdBlurRegion : null
 
+    // the whole edge, so the card can slide along it; the mask keeps the rest
+    // of the strip click-through
     anchors {
         bottom: true
+        left: true
+        right: true
     }
 
     PwObjectTracker {
@@ -657,7 +709,7 @@ PanelWindow {
         // how far the notch card is pushed below the screen edge
         property real drop: (osdWindow.notch && !osdWindow.cardVisible) ? card.height : 0
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        x: osdWindow.cardX
         // one vertical anchor for both styles, offset to the bottom edge for a
         // notch: swapping between bottom and verticalCenter at runtime makes the
         // anchor code write height itself, which drops the binding below and
@@ -1049,6 +1101,18 @@ PanelWindow {
                 duration: Theme.durEnter
                 easing.type: Easing.OutBack
                 easing.overshoot: Theme.emphasizedOvershoot
+            }
+
+        }
+
+        // a hidden card just takes its place; a showing one slides there
+        Behavior on x {
+            enabled: osdWindow.cardVisible
+
+            NumberAnimation {
+                duration: Theme.durLong
+                easing.type: Easing.Bezier
+                easing.bezierCurve: Theme.easeEmphasizedDecel
             }
 
         }

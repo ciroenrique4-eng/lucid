@@ -219,6 +219,52 @@ ShellRoot {
             readonly property bool barBusy: bar.modules.some((m) => {
                 return m && (m === workspacesMod ? m.expanded : m.anyOpen);
             })
+            // its pills hold off opening on hover while the launcher is up
+            readonly property bool launcherOpen: dock.menuOpen
+            // a panel the user opened, not one a hover or a popup brought out:
+            // it and the launcher take turns
+            readonly property bool panelChosen: bar.modules.some((m) => {
+                return m && m.expanded === true && m.hoverOpen !== true;
+            })
+            onPanelChosenChanged: {
+                if (bar.panelChosen)
+                    dock.menuOpen = false;
+
+            }
+            // what is open on this bar, as {x, w, top, bottom} in screen pixels,
+            // for the OSD to slide clear of. the same pieces the mask takes in
+            readonly property var openRects: {
+                const originY = bar.atBottom ? (bar.screen ? bar.screen.height : bar.height) - Prefs.effectiveBarTopMargin - bar.height : Prefs.effectiveBarTopMargin;
+                const out = [];
+                for (const m of bar.modules) {
+                    if (!m || !(m === workspacesMod ? m.expanded : m.anyOpen))
+                        continue;
+
+                    let x0 = m.x + (m.surfaceX !== undefined ? m.surfaceX : 0);
+                    let y0 = m.y + (m.surfaceY !== undefined ? m.surfaceY : 0);
+                    let x1 = x0 + (m.surfaceWidth !== undefined ? m.surfaceWidth : m.width);
+                    let y1 = y0 + (m.surfaceHeight !== undefined ? m.surfaceHeight : m.height);
+                    const take = (x, y, w, h) => {
+                        x0 = Math.min(x0, x);
+                        y0 = Math.min(y0, y);
+                        x1 = Math.max(x1, x + w);
+                        y1 = Math.max(y1, y + h);
+                    };
+                    if (m.popupOpen && m.popupItem)
+                        take(m.x + m.popupItem.x, m.y + m.popupItem.y, m.popupItem.width, m.popupItem.height);
+
+                    if (m.overlayOpen && m.overlayItem)
+                        take(m.x + m.overlayItem.x, m.y + (m.overlayY !== undefined ? m.overlayY : 0) + m.overlayItem.y, m.overlayItem.width, m.overlayItem.height);
+
+                    out.push({
+                        "x": x0,
+                        "w": x1 - x0,
+                        "top": originY + y0,
+                        "bottom": originY + y1
+                    });
+                }
+                return out;
+            }
             property bool slidingAway: false
             readonly property bool heldByPointer: revealArea.containsMouse || (!bar.slidingAway && bar.modules.some((m) => {
                 return m && (m === workspacesMod ? m.compactHovered : m.surfaceHovered);
@@ -1053,6 +1099,42 @@ ShellRoot {
 
     Osd {
         id: osdMod
+
+        obstacles: {
+            const out = [];
+            for (const b of bars.instances) {
+                if (root.sameScreen(b.screen, osdMod.screen))
+                    out.push(...b.openRects);
+
+            }
+            // the launcher is centred on the edge, in the dock's window
+            if (dock.menuOpen && root.sameScreen(dock.screen, osdMod.screen))
+                out.push({
+                "x": (osdMod.width - dock.menuWidth) / 2,
+                "w": dock.menuWidth,
+                "top": (osdMod.screen ? osdMod.screen.height : dock.height) - dock.height,
+                "bottom": osdMod.screen ? osdMod.screen.height : dock.height
+            });
+
+            return out;
+        }
+        // the card sits above what the bar and dock reserve along the bottom,
+        // unless it already goes down past a covered bar
+        bottomReserve: {
+            if (Monitors.barCoveredOn(osdMod.screen))
+                return 0;
+
+            let r = 0;
+            for (const b of bars.instances) {
+                if (b.visible && b.atBottom && b.exclusiveZone > 0 && root.sameScreen(b.screen, osdMod.screen))
+                    r += b.exclusiveZone + b.margins.bottom;
+
+            }
+            if (dock.visible && dock.exclusiveZone > 0 && root.sameScreen(dock.screen, osdMod.screen))
+                r += dock.exclusiveZone;
+
+            return r;
+        }
     }
 
     PinnedWindows {
@@ -1189,11 +1271,23 @@ ShellRoot {
             if (!dock.menuOpen)
                 return ;
 
-            for (const b of bars.instances)
-                b.workspacesModule.expanded = false;
+            // every panel the bar has open, not just the overview: the launcher
+            // covers them. popups (alt) are left to come and go on their own
+            for (const b of bars.instances) {
+                for (const m of b.modules) {
+                    if (m && m.expanded === true)
+                        m.expanded = false;
+
+                }
+            }
         }
 
         target: dock
+    }
+
+    // unset (hyprland's choice) is taken as the same display
+    function sameScreen(a, b) {
+        return !a || !b || a.name === b.name;
     }
 
     // the bar on the display being worked on, for ipc aimed at "the" bar
