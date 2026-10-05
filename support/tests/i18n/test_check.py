@@ -134,9 +134,13 @@ class CheckTest(unittest.TestCase):
             '"desc": "Lock screen",',
             '"note": "bar, dock, panels"',
             'tooltip: "Close"',
+            'warning: "Frosting is buggy."',
+            'unavailableReason: "Tap to click is off."',
+            'resetTitle: "Apps under glass"',
+            'heading: "Add a keyboard layout"',
         ]) + "\n"
         rc, out = Tree({"a.qml": src}).run()
-        self.assertEqual(out.count("unwrapped"), 7, out)
+        self.assertEqual(out.count("unwrapped"), 11, out)
 
     def test_paths_scope(self):
         t = Tree({"a/x.qml": 'Text { text: I18n.tr("Battery") }\n', "b/x.qml": 'Text { text: "Loose" }\n'}, {"Battery": "Batería"})
