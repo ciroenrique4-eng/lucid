@@ -106,6 +106,11 @@ class CheckTest(unittest.TestCase):
         self.assertNotIn("a.qml:5:", out)
         self.assertNotIn("a.qml:6:", out)
 
+    def test_comparison_operands_ignored(self):
+        src = 'description: Prefs.look === "objects" ? I18n.tr("Drawn") : "glass" !== mode ? I18n.tr("Glass") : I18n.tr("None")\n'
+        t = Tree({"a.qml": src}, {"Drawn": "Dibujado", "Glass": "Vidrio", "None": "Nada"})
+        self.assertEqual(t.run(), (0, ""))
+
     def test_paths_scope(self):
         t = Tree({"a/x.qml": 'Text { text: I18n.tr("Battery") }\n', "b/x.qml": 'Text { text: "Loose" }\n'}, {"Battery": "Batería"})
         rc, out = t.run(os.path.join(t.dir, "a"))
