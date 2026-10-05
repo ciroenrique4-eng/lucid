@@ -21,6 +21,12 @@ STR = re.compile(r'"(?:[^"\\\n]|\\.)*"')
 CALL = re.compile(r"\bI18n\.(trn|trc|tr)\(")
 PROP = re.compile(r'(?:^|[{;,])\s*(text|title|label|placeholderText|subtitle|description|blurb|"label"|"title"|"blurb"|"description")\s*:')
 MARK = re.compile(r"%[1-9]")
+CMP = re.compile(r"[!=]==?\s*$")
+
+
+def compared(line, m):
+    """a literal on either side of ==, ===, != or !== is a value, not a label"""
+    return bool(CMP.search(line[: m.start()])) or bool(re.match(r"\s*[!=]==?", line[m.end():]))
 SKIP_DIRS = {".git", ".superpowers", "docs", "node_modules", "__pycache__"}
 SKIP_PATHS = (os.path.join("support", "sddm"), os.path.join("support", "tests"))
 
@@ -130,7 +136,7 @@ def unwrapped(root, paths):
                     text = decode(m.group())
                     if not any(ch.isalpha() for ch in text):
                         continue
-                    if any(s <= m.start() < e for s, e, _k, _l in spans):
+                    if compared(line, m) or any(s <= m.start() < e for s, e, _k, _l in spans):
                         continue
                     out.append(f"{rel}:{no}: unwrapped: {m.group()}")
     return out
