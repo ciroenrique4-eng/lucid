@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs
 
 // what Settings search looks through: every page's rows, read out of the page
 // files themselves so a row added to a page is found without anyone listing it.
@@ -15,28 +16,29 @@ Item {
         return "";
     }
     property bool wanted: false
-    // words people search for that a page never uses itself
+    // words people search for that a page never uses itself. a translation keeps
+    // the English words and adds its own, so both languages find the page
     property var keywords: ({
-        "users": "password avatar picture login sign in",
-        "general": "accent animation motion rounding corners islands notches",
-        "glass": "blur transparency transparent opacity translucent frosted",
-        "theme": "palette wallpaper background dark light matugen",
-        "environment": "gtk qt cursor icon theme font",
-        "bar": "panel status tray top",
-        "dock": "taskbar pinned",
-        "launcher": "app menu start",
-        "widgets": "desktop cards",
-        "workspaces": "scratchpad special",
-        "keybinds": "shortcuts hotkeys keys keyboard",
-        "displays": "monitor monitors screen resolution refresh scale hdmi",
-        "sound": "audio volume speakers headphones microphone",
-        "network": "internet ethernet wired wireless",
-        "bluetooth": "pair headphones airpods",
-        "kdeconnect": "kde connect android",
-        "notifications": "dnd popups",
-        "idle": "lock suspend screen off timeout hypridle",
-        "datetime": "clock timezone time zone",
-        "about": "version update"
+        "users": I18n.trc("search keywords", "password avatar picture login sign in"),
+        "general": I18n.trc("search keywords", "language idioma accent animation motion rounding corners islands notches"),
+        "glass": I18n.trc("search keywords", "blur transparency transparent opacity translucent frosted"),
+        "theme": I18n.trc("search keywords", "palette wallpaper background dark light matugen"),
+        "environment": I18n.trc("search keywords", "gtk qt cursor icon theme font"),
+        "bar": I18n.trc("search keywords", "panel status tray top"),
+        "dock": I18n.trc("search keywords", "taskbar pinned"),
+        "launcher": I18n.trc("search keywords", "app menu start"),
+        "widgets": I18n.trc("search keywords", "desktop cards"),
+        "workspaces": I18n.trc("search keywords", "scratchpad special"),
+        "keybinds": I18n.trc("search keywords", "shortcuts hotkeys keys keyboard"),
+        "displays": I18n.trc("search keywords", "monitor monitors screen resolution refresh scale hdmi"),
+        "sound": I18n.trc("search keywords", "audio volume speakers headphones microphone"),
+        "network": I18n.trc("search keywords", "internet ethernet wired wireless"),
+        "bluetooth": I18n.trc("search keywords", "pair headphones airpods"),
+        "kdeconnect": I18n.trc("search keywords", "kde connect android"),
+        "notifications": I18n.trc("search keywords", "dnd popups"),
+        "idle": I18n.trc("search keywords", "lock suspend screen off timeout hypridle"),
+        "datetime": I18n.trc("search keywords", "clock timezone time zone"),
+        "about": I18n.trc("search keywords", "version update")
     })
     // { key, card, title, description }, in page order
     property var rows: []
@@ -59,7 +61,12 @@ Item {
     }
 
     // a quoted string and nothing else, as JSON reads it; anything else is live
+    // a plain "…", or the English inside I18n.tr("…") / I18n.trc("ctx", "…")
     function literal(v) {
+        var m = /^I18n\.trc?\((?:"(?:[^"\\]|\\.)*",\s*)?("(?:[^"\\]|\\.)*")\)$/.exec(v);
+        if (m)
+            v = m[1];
+
         if (v.charAt(0) !== "\"" || v.charAt(v.length - 1) !== "\"")
             return null;
 
@@ -127,9 +134,10 @@ Item {
         return out;
     }
 
-    // lower case; "wi-fi" and "wifi" read the same, and so do "colour" and "color"
+    // lower case and without accents ("bateria" finds "batería"); "wi-fi" and
+    // "wifi" read the same, and so do "colour" and "color"
     function norm(s) {
-        return s.toLowerCase().replace(/[-_.·'’]/g, "").replace(/colour/g, "color").replace(/behaviour/g, "behavior").replace(/favourite/g, "favorite").replace(/centre/g, "center").replace(/grey/g, "gray");
+        return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[-_.·'’]/g, "").replace(/colour/g, "color").replace(/behaviour/g, "behavior").replace(/favourite/g, "favorite").replace(/centre/g, "center").replace(/grey/g, "gray");
     }
 
     // how well one field answers one word: a word that starts there beats one
@@ -216,14 +224,19 @@ Item {
 
             // the page's name helps a row that matched on its own, but does not
             // list every row of a page that is already a result by itself
+            // the shell's language and English both find a row; the results
+            // show it the way the page prints it
+            var title = I18n.tr(row.title); // i18n-dynamic
+            var card = I18n.tr(row.card); // i18n-dynamic
+            var description = I18n.tr(row.description); // i18n-dynamic
             var rs = index.score([{
-                "text": row.title,
+                "text": title + " " + row.title,
                 "weight": 100
             }, {
-                "text": row.card,
+                "text": card + " " + row.card,
                 "weight": 40
             }, {
-                "text": row.description,
+                "text": description + " " + row.description,
                 "weight": 20
             }, {
                 "text": grp.title,
@@ -232,16 +245,16 @@ Item {
             if (rs === 0)
                 continue;
 
-            if (index.norm(row.title).indexOf(whole) === 0)
+            if (index.norm(title).indexOf(whole) === 0 || index.norm(row.title).indexOf(whole) === 0)
                 rs += 50;
 
             grp.rows.push({
                 "kind": "row",
                 "key": row.key,
-                "card": row.card,
-                "cardLabel": index.pretty(row.card),
-                "title": row.title,
-                "description": row.description,
+                "card": card,
+                "cardLabel": index.pretty(card),
+                "title": title,
+                "description": description,
                 "score": rs,
                 "order": r
             });
