@@ -53,7 +53,7 @@ Rectangle {
         Text {
             width: parent.width
             // base24 doubles some base16 names; say which one this is
-            text: (card.scheme.system === "base24" ? "base24" + (card.author !== "" ? " · " : "") : "") + card.author
+            text: (card.scheme.system === "base24" ? "base24" + (card.author !== "" ? " · " : "") : "") + card.author // i18n-skip
             visible: text !== ""
             color: card.c[4] || Theme.subtext
             font.family: Theme.fontFamily
@@ -107,7 +107,7 @@ Rectangle {
                 id: addLabel
 
                 anchors.centerIn: parent
-                text: card.busy ? "Adding..." : "Add"
+                text: card.busy ? I18n.tr("Adding...") : I18n.tr("Add")
                 color: card.c[5] || Theme.text
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabel - 1
@@ -137,7 +137,7 @@ Rectangle {
                 id: useLabel
 
                 anchors.centerIn: parent
-                text: "Use"
+                text: I18n.tr("Use")
                 color: card.c[0] || Theme.fgAccent
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabel - 1

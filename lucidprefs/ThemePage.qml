@@ -12,14 +12,14 @@ Column {
     readonly property string currentTheme: Prefs.currentTheme
     readonly property var modeOptions: [{
         "key": "dark",
-        "label": "Dark"
+        "label": I18n.tr("Dark")
     }, {
         "key": "light",
-        "label": "Light"
+        "label": I18n.tr("Light")
     }]
     // the two wallpaper-derived themes re-extract; everything else is authored
     // dark and gets a light variant built from its own colours
-    readonly property string modeHint: page.currentTheme === "matugen" || page.currentTheme === "pywal" ? "Re-derives the palette from your wallpaper in the mode you pick. Applications are asked to match." : (page.currentTheme === "colour" ? "Builds the palette from your colour again in the mode you pick. Applications are asked to match." : "Builds a light palette from this theme's own colours. Applications are asked to match.")
+    readonly property string modeHint: page.currentTheme === "matugen" || page.currentTheme === "pywal" ? I18n.tr("Re-derives the palette from your wallpaper in the mode you pick. Applications are asked to match.") : (page.currentTheme === "colour" ? I18n.tr("Builds the palette from your colour again in the mode you pick. Applications are asked to match.") : I18n.tr("Builds a light palette from this theme's own colours. Applications are asked to match."))
     property string appliedWallpaper: ""
     // same folder the dock's wallpaper strip browses
     readonly property string wallpaperDir: Prefs.wallpaperDir
@@ -193,10 +193,10 @@ Column {
     }
 
     SettingCard {
-        title: "THEME"
+        title: I18n.tr("THEME")
 
         SettingRow {
-            title: "Light or dark"
+            title: I18n.tr("Light or dark")
             description: page.modeHint
 
             M3Segmented {
@@ -211,8 +211,8 @@ Column {
         }
 
         SettingRow {
-            title: "Colour scheme"
-            description: "Switching also swaps the wallpaper folder below to that theme's own."
+            title: I18n.tr("Colour scheme")
+            description: I18n.tr("Switching also swaps the wallpaper folder below to that theme's own.")
             showDivider: false
             stacked: true
 
@@ -448,7 +448,7 @@ Column {
 
                             TapHandler {
                                 gesturePolicy: TapHandler.ReleaseWithinBounds
-                                onTapped: Prefs.askConfirm("Remove this theme?", "\"" + swatch.themeName + "\" and its generated palette are deleted. The wallpaper folder is left alone.", "Remove", "theme:" + swatch.themeId)
+                                onTapped: Prefs.askConfirm(I18n.tr("Remove this theme?"), I18n.tr("\"%1\" and its generated palette are deleted. The wallpaper folder is left alone.", swatch.themeName), I18n.tr("Remove"), "theme:" + swatch.themeId)
                             }
 
                         }
@@ -464,14 +464,14 @@ Column {
     }
 
     SettingCard {
-        title: "MORE ON COLOUR"
+        title: I18n.tr("MORE ON COLOUR")
 
         SettingRow {
-            title: "Palettes and applications"
-            description: "How Matugen and Your colour build a palette, which applications follow it, and templates of your own."
+            title: I18n.tr("Palettes and applications")
+            description: I18n.tr("How Matugen and Your colour build a palette, which applications follow it, and templates of your own.")
 
             M3Button {
-                text: "Colours"
+                text: I18n.tr("Colours")
                 variant: "tonal"
                 onClicked: Prefs.settingsRequested("colours")
             }
@@ -479,12 +479,12 @@ Column {
         }
 
         SettingRow {
-            title: "More themes"
-            description: "A gallery of hundreds of schemes, and importing one from a repo or a file."
+            title: I18n.tr("More themes")
+            description: I18n.tr("A gallery of hundreds of schemes, and importing one from a repo or a file.")
             showDivider: false
 
             M3Button {
-                text: "Palettes"
+                text: I18n.tr("Palettes")
                 variant: "tonal"
                 onClicked: Prefs.settingsRequested("palettes")
             }
@@ -494,11 +494,11 @@ Column {
     }
 
     SettingCard {
-        title: "WALLPAPER"
+        title: I18n.tr("WALLPAPER")
 
         SettingRow {
-            title: "Wallpaper strip"
-            description: wallpapers.count + " in " + page.wallpaperDir.replace(page.home, "~")
+            title: I18n.tr("Wallpaper strip")
+            description: I18n.tr("%1 in %2", wallpapers.count, page.wallpaperDir.replace(page.home, "~"))
             stacked: true
 
             Column {
@@ -745,7 +745,7 @@ Column {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: Prefs.askConfirm("Delete this wallpaper?", "\"" + tile.name + "\" is moved to the trash, so it can be restored from there if you change your mind.", "Delete", "wallpaper:" + tile.path)
+                                    onClicked: Prefs.askConfirm(I18n.tr("Delete this wallpaper?"), I18n.tr("\"%1\" is moved to the trash, so it can be restored from there if you change your mind.", tile.name), I18n.tr("Delete"), "wallpaper:" + tile.path)
                                 }
 
                             }
@@ -757,7 +757,7 @@ Column {
                 }
 
                 Text {
-                    text: "No images in this folder yet - add one below."
+                    text: I18n.tr("No images in this folder yet - add one below.")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontBody
@@ -768,7 +768,7 @@ Column {
                     spacing: 10
 
                     M3Button {
-                        text: "Add wallpaper..."
+                        text: I18n.tr("Add wallpaper...")
                         variant: "filled"
                         iconPath: "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"
                         onClicked: {
@@ -778,12 +778,12 @@ Column {
                     }
 
                     M3Button {
-                        text: "Open folder"
+                        text: I18n.tr("Open folder")
                         onClicked: Quickshell.execDetached(["sh", "-c", "xdg-open '" + page.wallpaperDir + "'"])
                     }
 
                     M3Button {
-                        text: "Rescan"
+                        text: I18n.tr("Rescan")
                         variant: "text"
                         onClicked: wallpaperScan.restart()
                     }
@@ -795,14 +795,14 @@ Column {
         }
 
         SettingRow {
-            title: "Custom folder"
-            description: "Leave empty to follow the current theme's own wallpaper folder."
+            title: I18n.tr("Custom folder")
+            description: I18n.tr("Leave empty to follow the current theme's own wallpaper folder.")
             showDivider: false
 
             M3TextField {
                 width: 260
                 text: Prefs.wallpaperFolder
-                placeholder: "~/Pictures/wallpapers/" + page.currentTheme
+                placeholder: "~/Pictures/wallpapers/" + page.currentTheme // i18n-skip
                 onAccepted: (v) => {
                     return Prefs.wallpaperFolder = v.trim().replace("~", page.home);
                 }
