@@ -31,12 +31,12 @@ Column {
             bits.push(page.inches(key));
 
         if (o.disabled)
-            bits.push("switched off");
+            bits.push(I18n.tr("switched off"));
         else
             bits.push(I18n.tr("%1 × %2 at %3", o.width, o.height, Monitors.rateLabel(o.refresh)) + (o.scale !== 1 ? I18n.tr(", scaled %1%", Math.round(o.scale * 100)) : ""));
 
         if (o.focused && Monitors.liveCount > 1)
-            bits.push("in use now");
+            bits.push(I18n.tr("in use now"));
 
         return bits.join("  ·  ");
     }
