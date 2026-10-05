@@ -271,7 +271,7 @@ BarPill {
                 Text {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "Tray"
+                    text: I18n.tr("Tray")
                     color: Theme.text
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -281,7 +281,7 @@ BarPill {
                 Text {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    text: root.attentionCount > 0 ? root.attentionCount + " needs attention" : (root.trayCount === 1 ? "1 running" : root.trayCount + " running")
+                    text: root.attentionCount > 0 ? I18n.tr("%1 needs attention", root.attentionCount) : I18n.tr("%1 running", root.trayCount)
                     color: root.attentionCount > 0 ? Theme.accent : Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(11)
@@ -554,7 +554,7 @@ BarPill {
 
         readonly property var item: card.modelData
         readonly property bool needsAttention: card.item.status === Status.NeedsAttention
-        readonly property string displayName: card.item.title || card.item.tooltipTitle || card.item.id || "Unknown"
+        readonly property string displayName: card.item.title || card.item.tooltipTitle || card.item.id || I18n.tr("Unknown")
         readonly property string supporting: {
             const desc = (card.item.tooltipDescription || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
             if (desc.length > 0)
@@ -566,11 +566,11 @@ BarPill {
 
             switch (card.item.category) {
             case Category.Hardware:
-                return "Hardware";
+                return I18n.tr("Hardware");
             case Category.SystemServices:
-                return "System service";
+                return I18n.tr("System service");
             case Category.Communications:
-                return "Communications";
+                return I18n.tr("Communications");
             default:
                 return "";
             }
