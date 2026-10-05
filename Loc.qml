@@ -198,7 +198,7 @@ Singleton {
                 return ;
             }
             const err = setZoneErr.text.trim();
-            root.zoneError = err.indexOf("uthenticat") >= 0 ? "no authentication agent is running to ask for your password" : (err.split("\n").pop() || "timedatectl refused the change");
+            root.zoneError = err.indexOf("uthenticat") >= 0 ? I18n.tr("no authentication agent is running to ask for your password") : (err.split("\n").pop() || I18n.tr("timedatectl refused the change"));
         }
 
         stderr: StdioCollector {

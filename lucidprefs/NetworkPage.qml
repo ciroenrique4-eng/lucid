@@ -78,7 +78,7 @@ Column {
                     return I18n.tr("Nothing is connected.");
 
                 return active.map((d) => {
-                    return d.connection + " on " + d.name + (d.ip4.length > 0 ? " (" + d.ip4[0].split("/")[0] + ")" : "");
+                    return I18n.tr("%1 on %2", d.connection, d.name) + (d.ip4.length > 0 ? " (" + d.ip4[0].split("/")[0] + ")" : "");
                 }).join("  ·  ");
             }
             warning: Net.lastError
