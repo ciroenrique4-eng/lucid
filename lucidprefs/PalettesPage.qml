@@ -206,7 +206,7 @@ Column {
                 if (!r) {
                     page.addState = "error";
                     // a crash leaves stdout empty, so the traceback is the only clue
-                    page.addMessage = themeImport.errText.trim().split("\n").pop() || "Import failed.";
+                    page.addMessage = themeImport.errText.trim().split("\n").pop() || I18n.tr("Import failed.");
                     return ;
                 }
                 if (!r.ok) {

@@ -235,7 +235,7 @@ BarPill {
 
         minute = Math.max(0, Math.min(59, minute));
         let hour = hour12 % 12;
-        if (root.reminderMeridiem === "PM")
+        if (root.reminderMeridiem === "PM") // i18n-skip: internal state, the button shows the translation
             hour += 12;
 
         root.addReminder(root.editingDate.year, root.editingDate.month, root.editingDate.day, hour, minute, name);
@@ -1345,7 +1345,7 @@ BarPill {
                                     height: parent.height
                                     radius: Theme.pill(height)
                                     color: Theme.accent
-                                    x: root.reminderMeridiem === "AM" ? 0 : parent.width / 2
+                                    x: root.reminderMeridiem === "AM" ? 0 : parent.width / 2 // i18n-skip: internal state, the button shows the translation
 
                                     Behavior on x {
                                         NumberAnimation {
@@ -1367,7 +1367,7 @@ BarPill {
                                         Text {
                                             anchors.centerIn: parent
                                             text: I18n.tr("AM")
-                                            color: root.reminderMeridiem === "AM" ? Theme.fgAccent : Theme.subtext
+                                            color: root.reminderMeridiem === "AM" ? Theme.fgAccent : Theme.subtext // i18n-skip: internal state, the button shows the translation
                                             font.family: Theme.fontFamily
                                             font.bold: true
                                             font.pixelSize: Theme.fontLabel
@@ -1396,7 +1396,7 @@ BarPill {
                                         Text {
                                             anchors.centerIn: parent
                                             text: I18n.tr("PM")
-                                            color: root.reminderMeridiem === "PM" ? Theme.fgAccent : Theme.subtext
+                                            color: root.reminderMeridiem === "PM" ? Theme.fgAccent : Theme.subtext // i18n-skip: internal state, the button shows the translation
                                             font.family: Theme.fontFamily
                                             font.bold: true
                                             font.pixelSize: Theme.fontLabel
