@@ -18,49 +18,49 @@ WidgetBody {
     readonly property color tint: w.low ? Theme.error : Theme.accent
     readonly property string stateText: {
         if (!w.present)
-            return "No battery";
+            return I18n.tr("No battery");
 
         if (w.full)
-            return "Fully charged";
+            return I18n.tr("Fully charged");
 
         if (w.charging)
-            return "Charging";
+            return I18n.tr("Charging");
 
         if (w.state === UPowerDeviceState.Empty)
-            return "Empty";
+            return I18n.tr("Empty");
 
-        return "On battery";
+        return I18n.tr("On battery");
     }
     // only the figures this battery actually reports, so no column reads as a dash
     readonly property var stats: {
         var out = [];
         if (w.timeText !== "")
             out.push({
-                "label": w.charging ? "UNTIL FULL" : "REMAINING",
+                "label": w.charging ? I18n.tr("UNTIL FULL") : I18n.tr("REMAINING"),
                 "value": w.timeText.replace(" to full", "").replace(" left", "")
             });
 
         if (w.rate > 0.05)
             out.push({
-                "label": w.charging ? "CHARGING AT" : "DRAWING",
+                "label": w.charging ? I18n.tr("CHARGING AT") : I18n.tr("DRAWING"),
                 "value": w.rate.toFixed(1) + " W"
             });
 
         if (w.capacity > 0)
             out.push({
-                "label": "CAPACITY",
+                "label": I18n.tr("CAPACITY"),
                 "value": w.capacity.toFixed(1) + " Wh"
             });
 
         if (w.health >= 0)
             out.push({
-                "label": "HEALTH",
+                "label": I18n.tr("HEALTH"),
                 "value": Math.round(w.health) + "%"
             });
 
         if (out.length === 0)
             out.push({
-                "label": "STATE",
+                "label": I18n.tr("STATE"),
                 "value": w.stateText
             });
 
@@ -73,12 +73,12 @@ WidgetBody {
 
         var secs = w.charging ? (w.dev ? w.dev.timeToFull : 0) : (w.dev ? w.dev.timeToEmpty : 0);
         if (!secs || secs <= 0)
-            return w.full ? "" : "estimating…";
+            return w.full ? "" : I18n.tr("estimating…");
 
         var h = Math.floor(secs / 3600);
         var m = Math.round((secs % 3600) / 60);
         var body = h > 0 ? h + " h " + m + " m" : m + " m";
-        return w.charging ? body + " to full" : body + " left";
+        return w.charging ? I18n.tr("%1 to full", body) : I18n.tr("%1 left", body);
     }
 
     Item {
@@ -144,7 +144,7 @@ WidgetBody {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: w.charging ? "charging" : (w.full ? "full" : w.stateText.toLowerCase())
+                    text: w.charging ? I18n.tr("charging") : (w.full ? I18n.tr("full") : w.stateText.toLowerCase())
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.pixelSize: 11
@@ -282,7 +282,7 @@ WidgetBody {
                 spacing: -2
 
                 Text {
-                    text: w.present ? w.percent + "%" : "No battery"
+                    text: w.present ? w.percent + "%" : I18n.tr("No battery")
                     color: Theme.text
                     font.family: Theme.fontFamily
                     font.pixelSize: 30
