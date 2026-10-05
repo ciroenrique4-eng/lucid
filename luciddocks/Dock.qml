@@ -340,21 +340,21 @@ PanelWindow {
         "name": I18n.tr("Lock Screen"),
         "desc": I18n.tr("Lock the session"),
         "keywords": "",
-        "confirm": I18n.tr(""),
+        "confirm": "",
         "glyph": DockIcons.lock
     }, {
         "id": "suspend",
         "name": I18n.tr("Suspend"),
         "desc": I18n.tr("Sleep, keeping the session in memory"),
         "keywords": "sleep",
-        "confirm": I18n.tr(""),
+        "confirm": "",
         "glyph": DockIcons.suspend
     }, {
         "id": "hibernate",
         "name": I18n.tr("Hibernate"),
         "desc": I18n.tr("Save the session to disk and power off"),
         "keywords": "sleep",
-        "confirm": I18n.tr(""),
+        "confirm": "",
         "glyph": DockIcons.hibernate
     }, {
         "id": "logout",
