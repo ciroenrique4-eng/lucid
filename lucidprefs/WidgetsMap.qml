@@ -22,7 +22,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         leftPadding: 22
-        text: "Your desktop"
+        text: I18n.tr("Your desktop")
         color: Theme.accent
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontTitleSm
@@ -35,7 +35,7 @@ Item {
         anchors.right: parent.right
         anchors.baseline: caption.baseline
         rightPadding: 22
-        text: "Click a widget to pin it in place"
+        text: I18n.tr("Click a widget to pin it in place")
         color: Theme.subtextDim
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontLabel
@@ -171,7 +171,7 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Nothing placed yet"
+                    text: I18n.tr("Nothing placed yet")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontTitle
@@ -180,7 +180,7 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Pick a preset or a widget below."
+                    text: I18n.tr("Pick a preset or a widget below.")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontLabel
