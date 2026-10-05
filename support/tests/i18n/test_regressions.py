@@ -69,6 +69,12 @@ class Locale(unittest.TestCase):
         self.assertEqual(left, [])
 
 
+class LanguagePicker(unittest.TestCase):
+    def test_automatic_button_stays_short(self):
+        # with Settings tiled to half the screen the segment has no room for the language name
+        self.assertNotIn('I18n.tr("Automatic (%1)"', read("lucidprefs/GeneralPage.qml"))
+
+
 class PresetNames(unittest.TestCase):
     def test_free_name_checks_what_it_suggests(self):
         src = read("lucidprefs/PresetSaveTile.qml")

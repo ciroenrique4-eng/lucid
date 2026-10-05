@@ -13,14 +13,14 @@ Column {
 
         SettingRow {
             title: I18n.tr("Language")
-            description: I18n.tr("Automatic follows the system language. Text the translation doesn't cover stays in English.")
+            description: I18n.tr("Automatic follows the system language, here %1. Text the translation doesn't cover stays in English.", I18n.autoName)
 
             M3Segmented {
                 width: 360
                 current: Prefs.language
                 options: [{
                     "key": "auto",
-                    "label": I18n.tr("Automatic (%1)", I18n.autoName)
+                    "label": I18n.tr("Automatic")
                 }].concat(I18n.languages.map((l) => {
                     return {
                         "key": l.code,
