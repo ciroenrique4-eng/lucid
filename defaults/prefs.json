@@ -44,6 +44,7 @@
     "doNotDisturb": false,
     "fontFamily": "Google Sans",
     "fontScale": 1,
+    "language": "auto",
     "gameModeOffCmd": "",
     "gameModeOnCmd": "",
     "gameModeStatusCmd": "",
