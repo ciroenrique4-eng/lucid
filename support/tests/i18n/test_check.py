@@ -125,6 +125,19 @@ class CheckTest(unittest.TestCase):
         src = '"description": (c.properties || {})["device.description"] || c.name,\n'
         self.assertEqual(Tree({"a.qml": src}).run(), (0, ""))
 
+    def test_more_label_properties(self):
+        src = "\n".join([
+            'disabledReason: "Turn Bluetooth on first."',
+            'placeholder: "Filter by name"',
+            'emptyText: "No output devices"',
+            '"hint": "Greys only.",',
+            '"desc": "Lock screen",',
+            '"note": "bar, dock, panels"',
+            'tooltip: "Close"',
+        ]) + "\n"
+        rc, out = Tree({"a.qml": src}).run()
+        self.assertEqual(out.count("unwrapped"), 7, out)
+
     def test_paths_scope(self):
         t = Tree({"a/x.qml": 'Text { text: I18n.tr("Battery") }\n', "b/x.qml": 'Text { text: "Loose" }\n'}, {"Battery": "Batería"})
         rc, out = t.run(os.path.join(t.dir, "a"))
