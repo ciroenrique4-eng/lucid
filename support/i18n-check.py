@@ -29,6 +29,9 @@ def compared(line, m):
     is a value, not a label"""
     if line[: m.start()].endswith("[") and line[m.end():].startswith("]"):
         return True
+    # the first argument of a call that is not I18n's: a key, an id, a path
+    if re.search(r"[\w$]\($", line[: m.start()]):
+        return True
     return bool(CMP.search(line[: m.start()])) or bool(re.match(r"\s*[!=]==?", line[m.end():]))
 SKIP_DIRS = {".git", ".superpowers", "docs", "node_modules", "__pycache__"}
 SKIP_PATHS = (os.path.join("support", "sddm"), os.path.join("support", "tests"))
