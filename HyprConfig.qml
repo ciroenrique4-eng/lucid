@@ -22,13 +22,13 @@ Singleton {
     // not Hyprland options but choices Lucid turns into some
     readonly property var borderModes: [{
         "key": "none",
-        "label": "None"
+        "label": I18n.tr("None")
     }, {
         "key": "accent",
-        "label": "Accent"
+        "label": I18n.tr("Accent")
     }, {
         "key": "gradient",
-        "label": "Gradient"
+        "label": I18n.tr("Gradient")
     }]
     // Hyprland as it is now, key -> value
     property var live: ({})
@@ -130,16 +130,16 @@ Singleton {
     // tertiary or a gradient between the two
     readonly property var pinModes: [{
         "key": "off",
-        "label": "Off"
+        "label": I18n.tr("Off")
     }, {
         "key": "accent",
-        "label": "Accent"
+        "label": I18n.tr("Accent")
     }, {
         "key": "tertiary",
-        "label": "Tertiary"
+        "label": I18n.tr("Tertiary")
     }, {
         "key": "gradient",
-        "label": "Gradient"
+        "label": I18n.tr("Gradient")
     }]
     readonly property var pinColours: {
         const m = Prefs.pinBorder;
@@ -266,7 +266,7 @@ Singleton {
 
     function failedText(key) {
         const f = (root.status.failed || {})[key];
-        return f ? "Hyprland did not take this: " + f + "." : "";
+        return f ? I18n.tr("Hyprland did not take this: %1.", f) : "";
     }
 
     // the whole words an option's name is made of, bar its section
@@ -288,8 +288,8 @@ Singleton {
                 names.push(f.name === "hyprland-gui.lua" ? "HyprMod (hyprland-gui.lua)" : f.name);
 
         }
-        const who = names.length > 0 ? names.join(" and ") : "Something in your Hyprland config after Lucid";
-        return who + " sets this too, and your own config wins over Settings. Take it out there to change it here.";
+        const who = names.length > 0 ? names.join(I18n.tr(" and ")) : I18n.tr("Something in your Hyprland config after Lucid");
+        return I18n.tr("%1 sets this too, and your own config wins over Settings. Take it out there to change it here.", who);
     }
 
     // a value from Settings until the file is on disk, Hyprland's after

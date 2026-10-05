@@ -116,7 +116,7 @@ Singleton {
             if (then)
                 then(r || {
                 "ok": false,
-                "error": "templates.py did not answer"
+                "error": I18n.tr("templates.py did not answer")
             });
 
         });
@@ -154,7 +154,7 @@ Singleton {
         root.run(["python3", root.helper, "try", input], (r) => {
             then(r || {
                 "ok": false,
-                "error": "templates.py did not answer"
+                "error": I18n.tr("templates.py did not answer")
             });
         });
     }
@@ -166,7 +166,7 @@ Singleton {
     }
 
     function check(r) {
-        root.lastError = r && r.ok ? "" : (r && r.error ? r.error : "templates.py did not answer");
+        root.lastError = r && r.ok ? "" : (r && r.error ? r.error : I18n.tr("templates.py did not answer"));
         return root.lastError === "";
     }
 

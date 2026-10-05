@@ -206,7 +206,7 @@ Singleton {
         return 3;
     }
 
-    readonly property var sectionNames: ["New", "Earlier today", "Yesterday", "Older"]
+    readonly property var sectionNames: [I18n.tr("New"), I18n.tr("Earlier today"), I18n.tr("Yesterday"), I18n.tr("Older")]
 
     function regroup() {
         root.timeTick;
@@ -306,7 +306,7 @@ Singleton {
 
         var s = Math.max(0, Math.floor((Loc.nowMs() - t) / 1000));
         if (s < 45)
-            return "now";
+            return I18n.tr("now");
 
         if (s < 3600)
             return Math.max(1, Math.round(s / 60)) + "m";
@@ -317,7 +317,7 @@ Singleton {
         if (s < 604800)
             return Math.floor(s / 86400) + "d";
 
-        return new Date(t).toLocaleDateString(Qt.locale(), Locale.ShortFormat);
+        return new Date(t).toLocaleDateString(I18n.locale, Locale.ShortFormat);
     }
 
     // freedesktop progress lives in a hint, under two spellings

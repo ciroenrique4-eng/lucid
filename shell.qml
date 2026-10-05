@@ -995,15 +995,15 @@ ShellRoot {
         onTextResult: (status) => {
             snapMod.finishTextRead();
             if (status === "copied")
-                toastMod.popup("copy", "Text copied", false);
+                toastMod.popup("copy", I18n.tr("Text copied"), false);
             else if (status === "notool")
-                toastMod.popup("alert", "Install tesseract to copy text", true);
+                toastMod.popup("alert", I18n.tr("Install tesseract to copy text"), true);
             else
-                toastMod.popup("alert", "No text found", true);
+                toastMod.popup("alert", I18n.tr("No text found"), true);
         }
         onColorResult: (value, hex, status) => {
             if (status === "notool") {
-                toastMod.popup("alert", "Install hyprpicker to pick colours", true);
+                toastMod.popup("alert", I18n.tr("Install hyprpicker to pick colours"), true);
             } else if (status === "ok") {
                 snapMod.open = false;
                 if (hex === "")
