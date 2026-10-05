@@ -21,9 +21,9 @@ BarPill {
         "shield": "M12 22q-3.475-.875-5.738-3.988T4 11.1V5l8-3l8 3v6.1q0 3.8-2.262 6.913T12 22Z"
     })
     readonly property var nouns: ({
-        "mic": "the microphone",
-        "camera": "the camera",
-        "screen": "the screen"
+        "mic": I18n.tr("the microphone"),
+        "camera": I18n.tr("the camera"),
+        "screen": I18n.tr("the screen")
     })
     readonly property var watched: String(Prefs.privacyWatch || "").split(",")
 
@@ -57,21 +57,21 @@ BarPill {
         if (root.watched.indexOf("mic") !== -1 && root.micApps.length > 0)
             out.push({
             "kind": "mic",
-            "title": "Microphone",
+            "title": I18n.tr("Microphone"),
             "apps": root.micApps
         });
 
         if (root.watched.indexOf("camera") !== -1 && root.cameraApps.length > 0)
             out.push({
             "kind": "camera",
-            "title": "Camera",
+            "title": I18n.tr("Camera"),
             "apps": root.cameraApps
         });
 
         if (root.watched.indexOf("screen") !== -1 && (root.screenApps.length > 0 || root.recording))
             out.push({
             "kind": "screen",
-            "title": "Screen",
+            "title": I18n.tr("Screen"),
             "apps": root.recording ? ["Lucid is recording"].concat(root.screenApps) : root.screenApps
         });
 
@@ -95,7 +95,7 @@ BarPill {
     // the microphone is its own
     function micLabel(stream) {
         if (/^input\.loopback/.test(stream.name || ""))
-            return root.recording ? "Lucid's recording" : "An audio loopback";
+            return root.recording ? I18n.tr("Lucid's recording") : I18n.tr("An audio loopback");
 
         return Audio.appLabel(stream);
     }
@@ -162,7 +162,7 @@ BarPill {
 
                     root.toast.enqueue({
                         "icon": root.icons[kind],
-                        "label": app + " is using " + root.nouns[kind],
+                        "label": I18n.tr("%1 is using %2", app, root.nouns[kind]),
                         "key": "privacy-" + kind
                     });
                 }
@@ -330,7 +330,7 @@ BarPill {
             spacing: 10
 
             Text {
-                text: root.rows.length > 0 ? "In use now" : "Nothing in use"
+                text: root.rows.length > 0 ? I18n.tr("In use now") : I18n.tr("Nothing in use")
                 color: Theme.accent
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLabelLg
@@ -340,7 +340,7 @@ BarPill {
             Text {
                 visible: root.rows.length === 0
                 width: parent.width
-                text: "No app is using the microphone, the camera or the screen."
+                text: I18n.tr("No app is using the microphone, the camera or the screen.")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBodyMd
@@ -429,7 +429,7 @@ BarPill {
                             id: stopLabel
 
                             anchors.centerIn: parent
-                            text: "Stop"
+                            text: I18n.tr("Stop")
                             color: Theme.fgError
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontLabelLg

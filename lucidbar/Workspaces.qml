@@ -1738,7 +1738,7 @@ Item {
                     visible: root.specialCount > 0
                     opacity: root.stagger(root.slotCount, 0)
                     verticalAlignment: Text.AlignVCenter
-                    text: root.specialCount > 1 ? "SCRATCHPADS" : "SCRATCHPAD"
+                    text: root.specialCount > 1 ? I18n.tr("SCRATCHPADS") : I18n.tr("SCRATCHPAD")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -1769,7 +1769,7 @@ Item {
                             if (w && w.name && w.name !== String(tile.index + 1))
                                 return w.name;
 
-                            return "Workspace " + (tile.index + 1);
+                            return I18n.tr("Workspace %1", tile.index + 1);
                         }
 
                         x: root.slotPosX(tile.index)

@@ -310,12 +310,12 @@ BarPill {
     function workspaceLabel(c) {
         const name = c.workspace ? String(c.workspace.name || c.workspace.id) : "";
         if (name === ShowDesktop.stash)
-            return "Put away · show desktop";
+            return I18n.tr("Put away · show desktop");
 
         if (name.indexOf("special:") === 0)
-            return "Special · " + name.substring(8);
+            return I18n.tr("Special · %1", name.substring(8));
 
-        return name !== "" ? "Workspace " + name : "";
+        return name !== "" ? I18n.tr("Workspace %1", name) : "";
     }
 
     // its own row of things to click: hovering must not open the panel over it
@@ -979,7 +979,7 @@ BarPill {
                             anchors.verticalCenter: parent.verticalCenter
                             readonly property int extra: previewCard.app ? previewCard.app.windows.length - previewCard.windows.length : 0
                             visible: extra > 0
-                            text: "+" + extra + " more"
+                            text: I18n.tr("+%1 more", extra)
                             color: Theme.subtext
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontLabel
@@ -991,7 +991,7 @@ BarPill {
                         id: previewHint
 
                         visible: previewCard.windows.length === 0
-                        text: previewCard.app && previewCard.app.command !== "" ? "Not open · click to open it" : "Not open"
+                        text: previewCard.app && previewCard.app.command !== "" ? I18n.tr("Not open · click to open it") : I18n.tr("Not open")
                         color: Theme.subtext
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontLabel
@@ -1208,8 +1208,8 @@ BarPill {
                                 return "";
 
                             const n = app.windows.length;
-                            const count = n === 0 ? "Not open" : (n === 1 ? "1 window" : n + " windows");
-                            return app.pinned ? count + "  ·  pinned" : count;
+                            const count = n === 0 ? I18n.tr("Not open") : I18n.trn("%1 window", "%1 windows", n);
+                            return app.pinned ? I18n.tr("%1  ·  pinned", count) : count;
                         }
                         color: Theme.subtext
                         font.family: Theme.fontFamily
@@ -1280,7 +1280,7 @@ BarPill {
 
                             Text {
                                 width: parent.width
-                                text: root.workspaceLabel(winRow.modelData) + (winRow.isFocused ? "  ·  in focus" : "")
+                                text: root.workspaceLabel(winRow.modelData) + (winRow.isFocused ? I18n.tr("  ·  in focus") : "")
                                 color: Theme.subtext
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontLabel
@@ -1335,7 +1335,7 @@ BarPill {
 
                 ActionButton {
                     visible: !!panelColumn.app && panelColumn.app.command !== ""
-                    label: panelColumn.app && panelColumn.app.windows.length === 0 ? "Open" : "New window"
+                    label: panelColumn.app && panelColumn.app.windows.length === 0 ? I18n.tr("Open") : I18n.tr("New window")
                     onClicked: {
                         const app = panelColumn.app;
                         root.expanded = false;
@@ -1346,7 +1346,7 @@ BarPill {
                 // an app with no desktop entry has nothing the dock could start it with
                 ActionButton {
                     visible: !!panelColumn.app && !!root.dockMod && (panelColumn.app.pinned || panelColumn.app.command !== "")
-                    label: panelColumn.app && panelColumn.app.pinned ? "Unpin" : "Pin"
+                    label: panelColumn.app && panelColumn.app.pinned ? I18n.tr("Unpin") : I18n.tr("Pin")
                     onClicked: {
                         const app = panelColumn.app;
                         if (app.pinned)
@@ -1358,7 +1358,7 @@ BarPill {
 
                 ActionButton {
                     visible: !!panelColumn.app && panelColumn.app.windows.length > 1
-                    label: "Close all"
+                    label: I18n.tr("Close all")
                     danger: true
                     onClicked: {
                         for (const w of panelColumn.app.windows)
