@@ -82,6 +82,37 @@ def call_spans(line):
     return out
 
 
+def value_spans(line):
+    """(start, end) of each label-like property's value on the line. a value runs
+    to the next , ; or closing bracket at its own depth; a list value is data
+    (window titles, key names), never a label, so it gets no span"""
+    out = []
+    for m in PROP.finditer(line):
+        i, n, depth = m.end(), len(line), 0
+        while i < n and line[i].isspace():
+            i += 1
+        if i < n and line[i] == "[":
+            continue
+        start = i
+        while i < n:
+            c = line[i]
+            if c == '"':
+                s = STR.match(line, i)
+                i = s.end() if s else n
+                continue
+            if c in "([{":
+                depth += 1
+            elif c in ")]}":
+                if depth == 0:
+                    break
+                depth -= 1
+            elif c in ",;" and depth == 0:
+                break
+            i += 1
+        out.append((start, i))
+    return out
+
+
 def files_under(root, paths=None):
     tops = paths or [root]
     for top in tops:
@@ -127,12 +158,13 @@ def unwrapped(root, paths):
         with open(path, encoding="utf-8") as f:
             for no, raw in enumerate(f, 1):
                 line = code_part(raw)
-                prop = PROP.search(line)
-                if "i18n-skip" in raw or not prop:
+                values = value_spans(line)
+                if "i18n-skip" in raw or not values:
                     continue
-                start = prop.end()
                 spans = call_spans(line)
-                for m in STR.finditer(line, start):
+                for m in STR.finditer(line):
+                    if not any(s <= m.start() < e for s, e in values):
+                        continue
                     text = decode(m.group())
                     if not any(ch.isalpha() for ch in text):
                         continue
