@@ -17,22 +17,22 @@ Singleton {
 
     function name(p) {
         if (p === PowerProfile.Performance)
-            return "Performance";
+            return I18n.tr("Performance");
 
         if (p === PowerProfile.PowerSaver)
-            return "Power saver";
+            return I18n.tr("Power saver");
 
-        return "Balanced";
+        return I18n.tr("Balanced");
     }
 
     function description(p) {
         if (p === PowerProfile.Performance)
-            return "Full speed, for more heat and less battery";
+            return I18n.tr("Full speed, for more heat and less battery");
 
         if (p === PowerProfile.PowerSaver)
-            return "Cooler and quieter, and the battery lasts longer";
+            return I18n.tr("Cooler and quieter, and the battery lasts longer");
 
-        return "Speed and battery life kept in step";
+        return I18n.tr("Speed and battery life kept in step");
     }
 
     // a bolt, a leaf and a gauge
@@ -48,12 +48,12 @@ Singleton {
 
     function degradationText(reason) {
         if (reason === "lap-detected")
-            return "Performance is held back while the laptop sits on a lap.";
+            return I18n.tr("Performance is held back while the laptop sits on a lap.");
 
         if (reason === "high-operating-temperature")
-            return "Performance is held back until the machine cools down.";
+            return I18n.tr("Performance is held back until the machine cools down.");
 
-        return "Performance is held back (" + reason + ").";
+        return I18n.tr("Performance is held back (%1).", reason);
     }
 
     function set(p) {

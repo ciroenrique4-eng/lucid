@@ -33,7 +33,7 @@ Singleton {
             out.push({
                 "key": "::home",
                 "name": "",
-                "label": "Home",
+                "label": I18n.tr("Home"),
                 "kind": "home",
                 "path": root.home,
                 "uri": "file://" + root.home,
@@ -49,7 +49,7 @@ Singleton {
             out.push({
                 "key": "::trash",
                 "name": "",
-                "label": "Trash",
+                "label": I18n.tr("Trash"),
                 "kind": "trash",
                 "path": "",
                 "uri": "trash:///",
@@ -1153,14 +1153,14 @@ Singleton {
         if (one && one.kind === "app" && !one.exec) {
             acts.push({
                 "id": "icon:trust",
-                "label": "Allow Launching",
+                "label": I18n.tr("Allow Launching"),
                 "glyph": root.glyphs.shield,
                 "divider": false
             });
         } else {
             acts.push({
                 "id": "icon:open",
-                "label": one ? (one.kind === "app" ? "Launch" : "Open") : "Open " + items.length + " Items",
+                "label": one ? (one.kind === "app" ? I18n.tr("Launch") : I18n.tr("Open")) : I18n.tr("Open %1 Items", items.length),
                 "glyph": one && one.kind === "app" ? root.glyphs.play : root.glyphs.open,
                 "divider": false
             });
@@ -1169,7 +1169,7 @@ Singleton {
             if (root.trashCount > 0)
                 acts.push({
                 "id": "icon:empty",
-                "label": "Empty Trash",
+                "label": I18n.tr("Empty Trash"),
                 "glyph": root.glyphs.trash,
                 "divider": true
             });
@@ -1178,7 +1178,7 @@ Singleton {
         if (one && files.length === 1)
             acts.push({
             "id": "icon:rename",
-            "label": "Rename…",
+            "label": I18n.tr("Rename…"),
             "glyph": root.glyphs.edit,
             "divider": false
         });
@@ -1186,19 +1186,19 @@ Singleton {
         if (files.length > 0) {
             acts.push({
                 "id": "icon:copy",
-                "label": "Copy",
+                "label": I18n.tr("Copy"),
                 "glyph": root.glyphs.copy,
                 "divider": true
             });
             acts.push({
                 "id": "icon:path",
-                "label": files.length > 1 ? "Copy Paths" : "Copy Path",
+                "label": files.length > 1 ? I18n.tr("Copy Paths") : I18n.tr("Copy Path"),
                 "glyph": root.glyphs.link,
                 "divider": false
             });
             acts.push({
                 "id": "icon:trash",
-                "label": "Move to Trash",
+                "label": I18n.tr("Move to Trash"),
                 "glyph": root.glyphs.trash,
                 "divider": true
             });
