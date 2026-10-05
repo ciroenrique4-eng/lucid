@@ -25,14 +25,14 @@ Column {
             return I18n.tr("just now");
 
         if (mins < 60)
-            return mins + (mins === 1 ? I18n.tr(" minute ago") : I18n.tr(" minutes ago"));
+            return I18n.trn("%1 minute ago", "%1 minutes ago", mins);
 
         var hrs = Math.round(mins / 60);
         if (hrs < 24)
-            return hrs + (hrs === 1 ? I18n.tr(" hour ago") : I18n.tr(" hours ago"));
+            return I18n.trn("%1 hour ago", "%1 hours ago", hrs);
 
         var days = Math.round(hrs / 24);
-        return days + (days === 1 ? I18n.tr(" day ago") : I18n.tr(" days ago"));
+        return I18n.trn("%1 day ago", "%1 days ago", days);
     }
 
     spacing: 26
