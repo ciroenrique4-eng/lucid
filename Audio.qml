@@ -596,7 +596,7 @@ Singleton {
         id: actionProc
 
         onExited: (code) => {
-            root.lastError = code === 0 ? "" : "pactl would not make that change";
+            root.lastError = code === 0 ? "" : I18n.tr("pactl would not make that change");
             root.refresh();
             if (String(actionProc.command[2] || "").indexOf("wpctl settings") === 0)
                 root.refreshWp();
