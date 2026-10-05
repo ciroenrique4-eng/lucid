@@ -58,28 +58,28 @@ WidgetBody {
 
         return w.paused ? Theme.alpha(Theme.accent, 0.55) : Theme.accent;
     }
-    readonly property string phaseLabel: w.phase === "long" ? "LONG BREAK" : (w.phase === "break" ? "BREAK" : "FOCUS")
+    readonly property string phaseLabel: w.phase === "long" ? I18n.tr("LONG BREAK") : (w.phase === "break" ? I18n.tr("BREAK") : I18n.tr("FOCUS"))
     readonly property string status: {
         if (w.finished)
-            return "Time's up";
+            return I18n.tr("Time's up");
 
         if (w.paused)
-            return "Paused";
+            return I18n.tr("Paused");
 
         if (w.counting)
             return "";
 
         if (w.mode === "pomodoro")
-            return w.preview ? "" : "Click to start";
+            return w.preview ? "" : I18n.tr("Click to start");
 
-        return "Scroll to set";
+        return I18n.tr("Scroll to set");
     }
     readonly property string lapText: {
         var n = w.laps.length;
         if (n === 0)
-            return w.swRunning ? "" : (w.elapsed > 0 ? "Paused" : "Click to start");
+            return w.swRunning ? "" : (w.elapsed > 0 ? I18n.tr("Paused") : I18n.tr("Click to start"));
 
-        return "Lap " + n + " · " + w.watch(w.laps[n - 1] - (n > 1 ? w.laps[n - 2] : 0));
+        return I18n.tr("Lap %1 · %2", n, w.watch(w.laps[n - 1] - (n > 1 ? w.laps[n - 2] : 0)));
     }
 
     function two(n) {
@@ -228,9 +228,9 @@ WidgetBody {
                 return ;
 
             if (n.phase === "focus")
-                w.alert("Break's over", "Round " + ((n.round - 1) % 4 + 1) + " of 4, back to it.");
+                w.alert(I18n.tr("Break's over"), I18n.tr("Round %1 of 4, back to it.", (n.round - 1) % 4 + 1));
             else
-                w.alert("Focus round done", "Take a " + Math.round(w.phaseLength(n.phase) / 60000) + " minute " + (n.phase === "long" ? "long break." : "break."));
+                w.alert(I18n.tr("Focus round done"), n.phase === "long" ? I18n.tr("Take a %1 minute long break.", Math.round(w.phaseLength(n.phase) / 60000)) : I18n.tr("Take a %1 minute break.", Math.round(w.phaseLength(n.phase) / 60000)));
             return ;
         }
         w.write({
@@ -239,7 +239,7 @@ WidgetBody {
             "doneAt": late ? 0 : Date.now()
         });
         if (!late)
-            w.alert("Time's up", "The " + w.clock(w.duration) + " timer has finished.");
+            w.alert(I18n.tr("Time's up"), I18n.tr("The %1 timer has finished.", w.clock(w.duration)));
 
     }
 
@@ -434,7 +434,7 @@ WidgetBody {
                 Chip {
                     required property var modelData
 
-                    label: modelData + "m"
+                    label: I18n.tr("%1m", modelData)
                     on: w.duration === modelData * 60000
                     onClicked: w.setDuration(modelData * 60000)
                 }
@@ -470,7 +470,7 @@ WidgetBody {
 
             Chip {
                 visible: w.mode === "countdown" && (w.counting || w.paused)
-                label: "+1m"
+                label: I18n.tr("+1m")
                 onClicked: w.addMinute()
             }
 

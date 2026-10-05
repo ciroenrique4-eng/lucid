@@ -151,7 +151,7 @@ Item {
                 visible: menu.typeInfo && menu.typeInfo.variants.length > 1
 
                 Text {
-                    text: "STYLE"
+                    text: I18n.tr("STYLE")
                     color: Theme.accent
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(10)
@@ -222,7 +222,7 @@ Item {
                 spacing: 7
 
                 Text {
-                    text: "SIZE"
+                    text: I18n.tr("SIZE")
                     color: Theme.accent
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(10)
@@ -238,16 +238,16 @@ Item {
                     current: menu.frame ? String(menu.frame.zoom) : "1"
                     options: [{
                         "key": "0.75",
-                        "label": "S"
+                        "label": I18n.tr("S")
                     }, {
                         "key": "1",
-                        "label": "M"
+                        "label": I18n.tr("M")
                     }, {
                         "key": "1.25",
-                        "label": "L"
+                        "label": I18n.tr("L")
                     }, {
                         "key": "1.5",
-                        "label": "XL"
+                        "label": I18n.tr("XL")
                     }]
                     onChosen: (key) => {
                         if (menu.frame)
@@ -261,7 +261,7 @@ Item {
                 Text {
                     width: parent.width
                     visible: menu.resizable
-                    text: menu.frame ? (Math.round(menu.frame.bodyW) + " × " + Math.round(menu.frame.bodyH) + " · drag any edge") : ""
+                    text: menu.frame ? I18n.tr("%1 × %2 · drag any edge", Math.round(menu.frame.bodyW), Math.round(menu.frame.bodyH)) : ""
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontLabel
@@ -276,10 +276,10 @@ Item {
                     Repeater {
                         model: [{
                             "key": "full",
-                            "label": "Full width"
+                            "label": I18n.tr("Full width")
                         }, {
                             "key": "reset",
-                            "label": "Reset"
+                            "label": I18n.tr("Reset")
                         }]
 
                         Rectangle {
@@ -339,7 +339,7 @@ Item {
                 visible: menu.optionList.length > 0
 
                 Text {
-                    text: "OPTIONS"
+                    text: I18n.tr("OPTIONS")
                     color: Theme.accent
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(10)
@@ -437,7 +437,7 @@ Item {
                 visible: menu.screens.length > 1
 
                 Text {
-                    text: "SCREEN"
+                    text: I18n.tr("SCREEN")
                     color: Theme.accent
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(10)
@@ -500,7 +500,7 @@ Item {
 
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Duplicate"
+                            text: I18n.tr("Duplicate")
                             color: Theme.subtext
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontLabel
@@ -550,7 +550,7 @@ Item {
 
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Remove"
+                            text: I18n.tr("Remove")
                             color: remArea.containsMouse ? Theme.fgErrorContainer : Theme.error
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontLabel
