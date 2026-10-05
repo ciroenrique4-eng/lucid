@@ -52,7 +52,7 @@ BarPill {
         return list.length > 0 ? list[0] : null;
     }
     readonly property bool isPlaying: root.player ? root.player.isPlaying : false
-    readonly property string title: root.player ? (root.player.trackTitle || "Unknown") : "Nothing playing"
+    readonly property string title: root.player ? (root.player.trackTitle || I18n.tr("Unknown")) : I18n.tr("Nothing playing")
     readonly property string artist: root.player ? root.player.trackArtist : ""
     readonly property string album: root.player ? root.player.trackAlbum : ""
     readonly property string artUrl: root.player ? root.player.trackArtUrl : ""
@@ -61,7 +61,7 @@ BarPill {
     readonly property bool coverFace: Prefs.mediaStyle === "cover"
     readonly property bool compactFace: Prefs.mediaStyle === "compact"
     readonly property bool coverPanel: Prefs.mediaPanelStyle === "cover"
-    readonly property string sourceName: root.player ? (root.player.identity || "Media") : ""
+    readonly property string sourceName: root.player ? (root.player.identity || I18n.tr("Media")) : ""
     readonly property string metaLine: {
         if (!root.player)
             return "";
@@ -140,15 +140,15 @@ BarPill {
     function agoText(ts, now) {
         const diff = Math.max(0, now - ts) / 1000;
         if (diff < 60)
-            return "just now";
+            return I18n.tr("just now");
 
         if (diff < 3600)
-            return Math.floor(diff / 60) + "m ago";
+            return I18n.tr("%1m ago", Math.floor(diff / 60));
 
         if (diff < 86400)
-            return Math.floor(diff / 3600) + "h ago";
+            return I18n.tr("%1h ago", Math.floor(diff / 3600));
 
-        return Math.floor(diff / 86400) + "d ago";
+        return I18n.tr("%1d ago", Math.floor(diff / 86400));
     }
 
     function volumeGlyphFor(vol) {
@@ -321,11 +321,11 @@ BarPill {
         const images = track.images || {};
         const result = {
             "key": track.key || "",
-            "title": track.title || "Unknown",
+            "title": track.title || I18n.tr("Unknown"),
             "artist": track.subtitle || "",
             "album": root.metaValue(track, "Album"),
             "year": root.metaValue(track, "Released"),
-            "label": root.metaValue(track, "Label"),
+            "label": root.metaValue(track, "Label"), // i18n-skip
             "genre": (track.genres && track.genres.primary) || "",
             "art": images.coverarthq || images.coverart || "",
             "url": track.url || (track.share && track.share.href) || "",
@@ -1307,7 +1307,7 @@ BarPill {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: root.player ? "LIVE  ·  " + root.fmt(root.livePosSec) : "NOTHING QUEUED"
+                        text: root.player ? I18n.tr("LIVE  ·  %1", root.fmt(root.livePosSec)) : I18n.tr("NOTHING QUEUED")
                         color: Theme.subtext
                         font.family: Theme.fontFamily
                         font.bold: true
@@ -1445,7 +1445,7 @@ BarPill {
                 PillBtn {
                     anchors.centerIn: parent
                     visible: root.player === null
-                    label: "Identify what's playing"
+                    label: I18n.tr("Identify what's playing")
                     path: root.identifyGlyph
                     accented: true
                     onActivated: root.openPanel("shazam")
@@ -1521,7 +1521,7 @@ BarPill {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "IDENTIFY"
+                        text: I18n.tr("IDENTIFY")
                         color: Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.bold: true
@@ -1740,13 +1740,13 @@ BarPill {
                             text: {
                                 switch (root.shazamState) {
                                 case "listening":
-                                    return "Listening…";
+                                    return I18n.tr("Listening…");
                                 case "nomatch":
-                                    return "No match";
+                                    return I18n.tr("No match");
                                 case "error":
-                                    return "Couldn't listen";
+                                    return I18n.tr("Couldn't listen");
                                 default:
-                                    return root.listenSource === "mic" ? "Identify what's in the room" : "Identify what's playing here";
+                                    return root.listenSource === "mic" ? I18n.tr("Identify what's in the room") : I18n.tr("Identify what's playing here");
                                 }
                             }
                             color: Theme.text
@@ -1761,13 +1761,13 @@ BarPill {
                             text: {
                                 switch (root.shazamState) {
                                 case "listening":
-                                    return root.listenElapsed + "s  ·  tap to stop";
+                                    return I18n.tr("%1s  ·  tap to stop", root.listenElapsed);
                                 case "nomatch":
-                                    return "Nothing recognisable in the last " + root.listenLimit + "s — tap to try again";
+                                    return I18n.tr("Nothing recognisable in the last %1s — tap to try again", root.listenLimit);
                                 case "error":
-                                    return "songrec couldn't reach the mic, the device or Shazam";
+                                    return I18n.tr("songrec couldn't reach the mic, the device or Shazam");
                                 default:
-                                    return "via songrec  ·  " + (root.listenDevice === "" ? "default device" : "takes about 10s");
+                                    return root.listenDevice === "" ? I18n.tr("via songrec  ·  default device") : I18n.tr("via songrec  ·  takes about 10s");
                                 }
                             }
                             color: Theme.subtextDim
@@ -1849,7 +1849,7 @@ BarPill {
                             spacing: 6
 
                             PillBtn {
-                                label: "Shazam"
+                                label: I18n.tr("Shazam")
                                 path: root.openGlyph
                                 onActivated: root.openUrl(root.shazamResult ? root.shazamResult.url : "")
                             }
@@ -1907,7 +1907,7 @@ BarPill {
                     Text {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "RECENT"
+                        text: I18n.tr("RECENT")
                         color: Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.bold: true
