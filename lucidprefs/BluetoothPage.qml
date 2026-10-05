@@ -45,21 +45,21 @@ Column {
     })
     readonly property string adapterSummary: {
         if (!page.adapter)
-            return "No Bluetooth adapter is plugged into this machine.";
+            return I18n.tr("No Bluetooth adapter is plugged into this machine.");
 
         if (Bt.hardBlocked)
             return Bt.blockReason;
 
         if (!page.on)
-            return "The radio is off, so nothing can connect.";
+            return I18n.tr("The radio is off, so nothing can connect.");
 
         if (page.connectedList.length === 1)
-            return page.connectedList[0].name + " is connected.";
+            return I18n.tr("%1 is connected.", page.connectedList[0].name);
 
         if (page.connectedList.length > 1)
-            return page.connectedList.length + " devices are connected.";
+            return I18n.tr("%1 devices are connected.", page.connectedList.length);
 
-        return "On, with nothing connected.";
+        return I18n.tr("On, with nothing connected.");
     }
 
     spacing: 26
@@ -68,10 +68,10 @@ Column {
         page.agoTick;
         const s = Math.max(0, Math.round((Date.now() - ms) / 1000));
         if (s < 60)
-            return "just now";
+            return I18n.tr("just now");
 
         if (s < 3600)
-            return Math.round(s / 60) + " min ago";
+            return I18n.tr("%1 min ago", Math.round(s / 60));
 
         return new Date(ms).toLocaleTimeString(Qt.locale(), Locale.ShortFormat);
     }
@@ -106,13 +106,13 @@ Column {
     }
 
     SettingCard {
-        title: "ADAPTER"
+        title: I18n.tr("ADAPTER")
 
         SettingRow {
-            title: "Bluetooth"
+            title: I18n.tr("Bluetooth")
             description: page.adapterSummary
             enabled: !!page.adapter && !Bt.hardBlocked
-            disabledReason: page.adapter ? Bt.blockReason : "No Bluetooth adapter is plugged into this machine."
+            disabledReason: page.adapter ? Bt.blockReason : I18n.tr("No Bluetooth adapter is plugged into this machine.")
 
             M3Switch {
                 enabled: !!page.adapter && !Bt.hardBlocked
@@ -125,10 +125,10 @@ Column {
         }
 
         SettingRow {
-            title: "Let other devices find this one"
+            title: I18n.tr("Let other devices find this one")
             enabled: page.on
-            disabledReason: "Turn Bluetooth on first."
-            description: page.on && page.adapter && page.adapter.discoverable ? "Anything nearby can see this machine as “" + (Bt.alias !== "" ? Bt.alias : "this computer") + "” and ask to pair." : "Turn this on while you pair something that has to start the pairing itself, then turn it back off."
+            disabledReason: I18n.tr("Turn Bluetooth on first.")
+            description: page.on && page.adapter && page.adapter.discoverable ? I18n.tr("Anything nearby can see this machine as “%1” and ask to pair.", Bt.alias !== "" ? Bt.alias : I18n.tr("this computer")) : I18n.tr("Turn this on while you pair something that has to start the pairing itself, then turn it back off.")
 
             M3Switch {
                 enabled: page.on
@@ -143,10 +143,10 @@ Column {
         }
 
         SettingRow {
-            title: "Accept pairing requests"
+            title: I18n.tr("Accept pairing requests")
             enabled: page.on
-            disabledReason: "Turn Bluetooth on first."
-            description: "With this off, a device can see this machine but cannot pair with it."
+            disabledReason: I18n.tr("Turn Bluetooth on first.")
+            description: I18n.tr("With this off, a device can see this machine but cannot pair with it.")
 
             M3Switch {
                 enabled: page.on
@@ -161,16 +161,16 @@ Column {
         }
 
         SettingRow {
-            title: "Name other devices see"
+            title: I18n.tr("Name other devices see")
             enabled: !!page.adapter
-            description: Bt.address !== "" ? "The adapter's address is " + Bt.address + "." : "Reading the adapter…"
+            description: Bt.address !== "" ? I18n.tr("The adapter's address is %1.", Bt.address) : I18n.tr("Reading the adapter…")
             warning: Bt.aliasError
             showDivider: false
 
             M3TextField {
                 width: 260
                 enabled: !!page.adapter && !Bt.aliasBusy
-                placeholder: "this computer"
+                placeholder: I18n.tr("this computer")
                 text: Bt.alias
                 onAccepted: (v) => {
                     return Bt.setAlias(v);
@@ -182,29 +182,29 @@ Column {
     }
 
     SettingCard {
-        title: "RECEIVING FILES"
+        title: I18n.tr("RECEIVING FILES")
 
         SettingRow {
-            title: "Receive files"
+            title: I18n.tr("Receive files")
             enabled: !!page.adapter
-            disabledReason: "No Bluetooth adapter is plugged into this machine."
+            disabledReason: I18n.tr("No Bluetooth adapter is plugged into this machine.")
             description: {
                 if (!Prefs.btReceive)
-                    return "Files sent to this machine are turned away.";
+                    return I18n.tr("Files sent to this machine are turned away.");
 
                 if (BtReceive.status === "missing")
-                    return "Needs obexd, which comes in the bluez-obex package.";
+                    return I18n.tr("Needs obexd, which comes in the bluez-obex package.");
 
                 if (BtReceive.status === "taken")
-                    return "Another app is already answering incoming files, so it handles them instead.";
+                    return I18n.tr("Another app is already answering incoming files, so it handles them instead.");
 
                 if (BtReceive.status === "error")
-                    return BtReceive.detail !== "" ? BtReceive.detail : "Something went wrong starting the receiver.";
+                    return BtReceive.detail !== "" ? BtReceive.detail : I18n.tr("Something went wrong starting the receiver.");
 
                 if (BtReceive.status === "starting")
-                    return "Starting…";
+                    return I18n.tr("Starting…");
 
-                return "Each file asks first, in a notification. Devices that haven't paired can only find this machine while “Let other devices find this one” is on.";
+                return I18n.tr("Each file asks first, in a notification. Devices that haven't paired can only find this machine while “Let other devices find this one” is on.");
             }
 
             M3Switch {
@@ -218,23 +218,23 @@ Column {
         }
 
         SettingRow {
-            title: "Save to"
+            title: I18n.tr("Save to")
             enabled: Prefs.btReceive
-            description: BtReceive.folder !== "" ? BtReceive.pretty(BtReceive.folder) : "Your Downloads folder"
+            description: BtReceive.folder !== "" ? BtReceive.pretty(BtReceive.folder) : I18n.tr("Your Downloads folder")
             resetKey: "btReceiveFolder"
 
             Row {
                 spacing: 8
 
                 M3Button {
-                    text: "Open"
+                    text: I18n.tr("Open")
                     variant: "text"
                     enabled: Prefs.btReceive && BtReceive.folder !== ""
                     onClicked: BtReceive.openFolder()
                 }
 
                 M3Button {
-                    text: folderPicker.running ? "Choosing…" : "Change…"
+                    text: folderPicker.running ? I18n.tr("Choosing…") : I18n.tr("Change…")
                     enabled: Prefs.btReceive && !folderPicker.running
                     onClicked: {
                         folderPicker.command = ["sh", "-c", "zenity --file-selection --directory --title='Save received files to' --filename=\"$1/\" 2>/dev/null || true", "sh", BtReceive.folder];
@@ -247,9 +247,9 @@ Column {
         }
 
         SettingRow {
-            title: "Accept from paired devices without asking"
+            title: I18n.tr("Accept from paired devices without asking")
             enabled: Prefs.btReceive
-            description: "Your own phone or laptop sends straight to the folder. Anything else still asks."
+            description: I18n.tr("Your own phone or laptop sends straight to the folder. Anything else still asks.")
 
             M3Switch {
                 enabled: Prefs.btReceive
@@ -268,19 +268,19 @@ Column {
                 required property var modelData
 
                 title: modelData.name
-                description: "From " + modelData.device + " · " + page.ago(modelData.time)
+                description: I18n.tr("From %1 · %2", modelData.device, page.ago(modelData.time))
 
                 Row {
                     spacing: 8
 
                     M3Button {
-                        text: "Show in folder"
+                        text: I18n.tr("Show in folder")
                         variant: "text"
                         onClicked: BtReceive.showInFolder(modelData.file)
                     }
 
                     M3Button {
-                        text: "Open"
+                        text: I18n.tr("Open")
                         onClicked: BtReceive.openFile(modelData.file)
                     }
 
@@ -316,13 +316,13 @@ Column {
     }
 
     SettingCard {
-        title: "DEVICES"
+        title: I18n.tr("DEVICES")
 
         SettingRow {
-            title: page.discovering ? "Searching" + ".".repeat(dots.n) : "Nearby devices"
+            title: page.discovering ? I18n.tr("Searching") + ".".repeat(dots.n) : I18n.tr("Nearby devices")
             enabled: page.on
-            disabledReason: "Turn Bluetooth on to see what is around."
-            description: page.discovering ? "Leave the device you want in pairing mode. Searching stops on its own after a minute." : "Put the device into pairing mode first, then search."
+            disabledReason: I18n.tr("Turn Bluetooth on to see what is around.")
+            description: page.discovering ? I18n.tr("Leave the device you want in pairing mode. Searching stops on its own after a minute.") : I18n.tr("Put the device into pairing mode first, then search.")
             stacked: true
             showDivider: page.on
 
@@ -333,7 +333,7 @@ Column {
                 M3TextField {
                     width: parent.width - scanBtn.implicitWidth - unnamedBox.implicitWidth - autoScanBox.implicitWidth - 30
                     enabled: page.on
-                    placeholder: "Filter by name or address"
+                    placeholder: I18n.tr("Filter by name or address")
                     onEdited: (v) => {
                         return page.filter = v;
                     }
@@ -345,7 +345,7 @@ Column {
                     anchors.verticalCenter: parent.verticalCenter
                     variant: page.discovering ? "filled" : "tonal"
                     enabled: page.on
-                    text: page.discovering ? "Stop" : "Search"
+                    text: page.discovering ? I18n.tr("Stop") : I18n.tr("Search")
                     onClicked: {
                         if (page.adapter)
                             page.adapter.discovering = !page.adapter.discovering;
@@ -358,7 +358,7 @@ Column {
 
                     anchors.verticalCenter: parent.verticalCenter
                     enabled: page.on
-                    label: "Unnamed"
+                    label: I18n.tr("Unnamed")
                     checked: Prefs.btShowUnnamed
                     onToggled: Prefs.btShowUnnamed = !Prefs.btShowUnnamed
                 }
@@ -368,7 +368,7 @@ Column {
 
                     anchors.verticalCenter: parent.verticalCenter
                     enabled: page.on
-                    label: "Search when this page opens"
+                    label: I18n.tr("Search when this page opens")
                     checked: Prefs.btScanOnOpen
                     onToggled: Prefs.btScanOnOpen = !Prefs.btScanOnOpen
                 }
@@ -385,7 +385,7 @@ Column {
             spacing: 2
 
             GroupLabel {
-                text: "Connected"
+                text: I18n.tr("Connected")
                 visible: page.connectedList.length > 0
             }
 
@@ -401,7 +401,7 @@ Column {
             }
 
             GroupLabel {
-                text: "Paired"
+                text: I18n.tr("Paired")
                 visible: page.pairedList.length > 0
             }
 
@@ -417,7 +417,7 @@ Column {
             }
 
             GroupLabel {
-                text: "Available"
+                text: I18n.tr("Available")
                 visible: page.nearbyList.length > 0
             }
 
@@ -438,7 +438,7 @@ Column {
                 horizontalAlignment: Text.AlignHCenter
                 topPadding: 18
                 bottomPadding: 18
-                text: page.filter.trim() !== "" ? "Nothing matches “" + page.filter.trim() + "”." : (page.discovering ? "Looking for devices…" : "No devices yet. Press Search to look for some.")
+                text: page.filter.trim() !== "" ? I18n.tr("Nothing matches “%1”.", page.filter.trim()) : (page.discovering ? I18n.tr("Looking for devices…") : I18n.tr("No devices yet. Press Search to look for some."))
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBody

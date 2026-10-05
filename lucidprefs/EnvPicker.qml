@@ -149,7 +149,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Search " + picker.items.length + " installed " + picker.noun
+                text: I18n.tr("Search %1 installed %2", picker.items.length, picker.noun)
                 color: Theme.subtextDim
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBodyLg
@@ -161,7 +161,7 @@ Item {
         Text {
             anchors.centerIn: parent
             width: card.width - 60
-            text: picker.items.length === 0 ? "Nothing installed to choose from" : "No " + picker.noun + " match “" + picker.filter + "”"
+            text: picker.items.length === 0 ? I18n.tr("Nothing installed to choose from") : I18n.tr("No %1 match “%2”", picker.noun, picker.filter)
             color: Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontBodyLg

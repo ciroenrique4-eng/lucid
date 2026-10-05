@@ -9,50 +9,50 @@ Column {
     readonly property bool beta: true
     readonly property var components: [{
         "name": "lucidbar",
-        "desc": "Status bar - workspaces, media, tray, clock, bluetooth, network, notifications, system"
+        "desc": I18n.tr("Status bar - workspaces, media, tray, clock, bluetooth, network, notifications, system")
     }, {
         "name": "luciddocks",
-        "desc": "Dock, application launcher, wallpaper and theme strips, power menu"
+        "desc": I18n.tr("Dock, application launcher, wallpaper and theme strips, power menu")
     }, {
         "name": "lucidprefs",
-        "desc": "This settings app"
+        "desc": I18n.tr("This settings app")
     }, {
         "name": "lucidlock",
-        "desc": "Lock screen"
+        "desc": I18n.tr("Lock screen")
     }, {
         "name": "lucidosd",
-        "desc": "Volume and brightness on-screen display"
+        "desc": I18n.tr("Volume and brightness on-screen display")
     }, {
         "name": "lucidshot",
-        "desc": "Screenshot overlay and region capture"
+        "desc": I18n.tr("Screenshot overlay and region capture")
     }, {
         "name": "lucidmoji",
-        "desc": "Emoji and GIF picker"
+        "desc": I18n.tr("Emoji and GIF picker")
     }]
     readonly property var commands: [{
         "cmd": "qs ipc call settings open",
-        "desc": "Open this app - also >settings in the launcher"
+        "desc": I18n.tr("Open this app - also >settings in the launcher")
     }, {
         "cmd": "qs ipc call settings toggle",
-        "desc": "Open or close it"
+        "desc": I18n.tr("Open or close it")
     }, {
         "cmd": "qs ipc call settings bar",
-        "desc": "Open straight to a page - also general, dock"
+        "desc": I18n.tr("Open straight to a page - also general, dock")
     }, {
         "cmd": "qs ipc call -- settings show about",
-        "desc": "Any page by name. The separator before the target is required whenever a function takes an argument."
+        "desc": I18n.tr("Any page by name. The separator before the target is required whenever a function takes an argument.")
     }, {
         "cmd": "qs ipc call launcher toggle",
-        "desc": "Application launcher"
+        "desc": I18n.tr("Application launcher")
     }, {
         "cmd": "qs ipc call launcher wallpaper",
-        "desc": "Wallpaper strip"
+        "desc": I18n.tr("Wallpaper strip")
     }, {
         "cmd": "qs ipc call launcher theme",
-        "desc": "Theme strip"
+        "desc": I18n.tr("Theme strip")
     }, {
         "cmd": "qs ipc call launcher power",
-        "desc": "Power menu"
+        "desc": I18n.tr("Power menu")
     }]
 
     spacing: 26
@@ -83,7 +83,7 @@ Column {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "CirOShell"
+                        text: I18n.tr("CirOShell")
                         color: Theme.text
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fs(30)
@@ -104,7 +104,7 @@ Column {
                             id: betaLabel
 
                             anchors.centerIn: parent
-                            text: "BETA"
+                            text: I18n.tr("BETA")
                             color: Theme.accent
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fs(10)
@@ -138,7 +138,7 @@ Column {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Built on Lucid by Sn3akyy1."
+                        text: I18n.tr("Built on Lucid by Sn3akyy1.")
                         color: Theme.subtext
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontBody
@@ -153,24 +153,24 @@ Column {
     }
 
     SettingCard {
-        title: "UPDATES"
+        title: I18n.tr("UPDATES")
 
         SettingRow {
-            title: Updates.available ? "CirOShell v" + Updates.latest + " is out" : "Version " + Updates.currentLabel
+            title: Updates.available ? I18n.tr("CirOShell v%1 is out", Updates.latest) : I18n.tr("Version %1", Updates.currentLabel)
             description: Updates.status
 
             Row {
                 spacing: 8
 
                 M3Button {
-                    text: Updates.busy ? "Checking…" : "Check now"
+                    text: Updates.busy ? I18n.tr("Checking…") : I18n.tr("Check now")
                     variant: "tonal"
                     enabled: !Updates.busy && Updates.current !== ""
                     onClicked: Updates.check()
                 }
 
                 M3Button {
-                    text: "What's new"
+                    text: I18n.tr("What's new")
                     variant: Updates.available ? "filled" : "outlined"
                     onClicked: Updates.openLatest()
                 }
@@ -180,11 +180,11 @@ Column {
         }
 
         SettingRow {
-            title: Updates.upstreamAhead ? "Lucid v" + Updates.upstreamLatest + " is out upstream" : "Based on Lucid v" + Updates.base
-            description: (Updates.upstreamAhead ? "Upstream moved ahead of what this is built on. It gets pulled into CirOShell, nothing to do here. " : "") + "CirOShell is a fork of Lucid by Sn3akyy1, released under the MIT licence."
+            title: Updates.upstreamAhead ? I18n.tr("Lucid v%1 is out upstream", Updates.upstreamLatest) : I18n.tr("Based on Lucid v%1", Updates.base)
+            description: (Updates.upstreamAhead ? I18n.tr("Upstream moved ahead of what this is built on. It gets pulled into CirOShell, nothing to do here. ") : "") + I18n.tr("CirOShell is a fork of Lucid by Sn3akyy1, released under the MIT licence.")
 
             M3Button {
-                text: "Lucid releases"
+                text: I18n.tr("Lucid releases")
                 variant: "outlined"
                 onClicked: Updates.openUpstream()
             }
@@ -192,9 +192,9 @@ Column {
         }
 
         SettingRow {
-            title: "Check for updates"
+            title: I18n.tr("Check for updates")
             resetKey: "updateCheck"
-            description: "Once a day CirOShell asks GitHub for the newest release, and tells you once when there is one. The request carries nothing about you or this machine."
+            description: I18n.tr("Once a day CirOShell asks GitHub for the newest release, and tells you once when there is one. The request carries nothing about you or this machine.")
             showDivider: false
 
             M3Switch {
@@ -209,7 +209,7 @@ Column {
     }
 
     SettingCard {
-        title: "COMMAND LINE"
+        title: I18n.tr("COMMAND LINE")
 
         Repeater {
             model: page.commands
@@ -231,7 +231,7 @@ Column {
     }
 
     SettingCard {
-        title: "COMPONENTS"
+        title: I18n.tr("COMPONENTS")
 
         Repeater {
             model: page.components
@@ -252,15 +252,15 @@ Column {
     }
 
     SettingCard {
-        title: "CONFIGURATION"
+        title: I18n.tr("CONFIGURATION")
 
         SettingRow {
-            title: "Settings file"
-            description: "~/.config/quickshell/lucidprefs/prefs.json"
+            title: I18n.tr("Settings file")
+            description: I18n.tr("~/.config/quickshell/lucidprefs/prefs.json")
             showDivider: false
 
             M3Button {
-                text: "Open folder"
+                text: I18n.tr("Open folder")
                 onClicked: Quickshell.execDetached(["sh", "-c", "xdg-open ~/.config/quickshell/lucidprefs"])
             }
 

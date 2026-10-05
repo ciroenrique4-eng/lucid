@@ -963,14 +963,14 @@ Singleton {
     property alias envApplyHypr: s.envApplyHypr
 
     readonly property var builtinThemes: [
-        { "id": "matugen", "name": "Matugen", "desc": "Colors generated from your wallpaper", "swatchBg": "#12171a", "swatchAccent": "#8ad0ee" },
-        { "id": "pywal", "name": "Pywal", "desc": "Wallpaper colors via pywal's classic palette", "swatchBg": "#1a1e24", "swatchAccent": "#c9a1a9" },
-        { "id": "catppuccin-mocha", "name": "Catppuccin Mocha", "desc": "Soothing pastel dark theme", "swatchBg": "#1e1e2e", "swatchAccent": "#89b4fa" },
-        { "id": "gruvbox", "name": "Gruvbox", "desc": "Retro groove warm palette", "swatchBg": "#282828", "swatchAccent": "#83a598" },
-        { "id": "nightfox", "name": "Nightfox", "desc": "Deep navy with muted blue accents", "swatchBg": "#192330", "swatchAccent": "#719cd6" },
-        { "id": "nord", "name": "Nord", "desc": "Arctic blue-grey palette", "swatchBg": "#232831", "swatchAccent": "#88c0d0" },
-        { "id": "tokyo-night", "name": "Tokyo Night", "desc": "Dark blues and violets", "swatchBg": "#1a1b26", "swatchAccent": "#7aa2f7" },
-        { "id": "colour", "name": "Your colour", "desc": "A palette built from one colour you pick", "swatchBg": "#14121a", "swatchAccent": root.themeColour }
+        { "id": "matugen", "name": "Matugen", "desc": I18n.tr("Colors generated from your wallpaper"), "swatchBg": "#12171a", "swatchAccent": "#8ad0ee" },
+        { "id": "pywal", "name": "Pywal", "desc": I18n.tr("Wallpaper colors via pywal's classic palette"), "swatchBg": "#1a1e24", "swatchAccent": "#c9a1a9" },
+        { "id": "catppuccin-mocha", "name": "Catppuccin Mocha", "desc": I18n.tr("Soothing pastel dark theme"), "swatchBg": "#1e1e2e", "swatchAccent": "#89b4fa" },
+        { "id": "gruvbox", "name": "Gruvbox", "desc": I18n.tr("Retro groove warm palette"), "swatchBg": "#282828", "swatchAccent": "#83a598" },
+        { "id": "nightfox", "name": "Nightfox", "desc": I18n.tr("Deep navy with muted blue accents"), "swatchBg": "#192330", "swatchAccent": "#719cd6" },
+        { "id": "nord", "name": "Nord", "desc": I18n.tr("Arctic blue-grey palette"), "swatchBg": "#232831", "swatchAccent": "#88c0d0" },
+        { "id": "tokyo-night", "name": "Tokyo Night", "desc": I18n.tr("Dark blues and violets"), "swatchBg": "#1a1b26", "swatchAccent": "#7aa2f7" },
+        { "id": "colour", "name": I18n.tr("Your colour"), "desc": I18n.tr("A palette built from one colour you pick"), "swatchBg": "#14121a", "swatchAccent": root.themeColour }
     ]
     // themes imported from a scheme repo, read back from their meta.json
     property var userThemes: []
