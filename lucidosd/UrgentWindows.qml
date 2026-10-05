@@ -337,7 +337,7 @@ Scope {
 
                         y: tab.faceY - implicitHeight / 2
                         x: root.cornerRight ? 10 : tabWindow.bs + tabWindow.size - 2
-                        text: "Show"
+                        text: I18n.tr("Show")
                         color: root.ink
                         opacity: tab.open ? 1 : 0
                         visible: opacity > 0
