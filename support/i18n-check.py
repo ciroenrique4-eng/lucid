@@ -25,7 +25,10 @@ CMP = re.compile(r"[!=]==?\s*$")
 
 
 def compared(line, m):
-    """a literal on either side of ==, ===, != or !== is a value, not a label"""
+    """a literal on either side of ==, ===, != or !==, or a subscript ["key"],
+    is a value, not a label"""
+    if line[: m.start()].endswith("[") and line[m.end():].startswith("]"):
+        return True
     return bool(CMP.search(line[: m.start()])) or bool(re.match(r"\s*[!=]==?", line[m.end():]))
 SKIP_DIRS = {".git", ".superpowers", "docs", "node_modules", "__pycache__"}
 SKIP_PATHS = (os.path.join("support", "sddm"), os.path.join("support", "tests"))
