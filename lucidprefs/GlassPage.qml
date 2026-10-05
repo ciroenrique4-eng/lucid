@@ -6,7 +6,7 @@ Column {
     id: page
 
     readonly property var blurSteps: [0, 0.2, 0.5, 0.8, 1]
-    readonly property var blurLabels: [I18n.tr("Off"), I18n.tr("Light"), I18n.tr("Balanced"), I18n.tr("Heavy"), I18n.tr("Full")]
+    readonly property var blurLabels: [I18n.tr("Off"), I18n.trc("blur", "Light"), I18n.tr("Balanced"), I18n.tr("Heavy"), I18n.tr("Full")]
     readonly property int blurIndex: {
         var best = 0, dist = 999;
         for (var i = 0; i < page.blurSteps.length; i++) {

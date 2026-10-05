@@ -32,7 +32,7 @@ Column {
 
         const bits = [];
         if (net.known)
-            bits.push("Saved");
+            bits.push(I18n.tr("Saved"));
 
         bits.push(Net.strengthLabel(net.strength));
         const sec = Net.securityLabel(net.modelData.security);

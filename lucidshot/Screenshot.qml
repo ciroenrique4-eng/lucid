@@ -44,9 +44,9 @@ PanelWindow {
             flashWindow.saved(file, kind);
         } else if (Prefs.shotPreview === "notify") {
             if (kind === "video")
-                Quickshell.execDetached(["notify-send", "Recording saved", "Saved to " + file]);
+                Quickshell.execDetached(["notify-send", I18n.tr("Recording saved"), I18n.tr("Saved to %1", file)]);
             else
-                Quickshell.execDetached(["sh", "-c", "ACTION=$(notify-send 'Screenshot taken!' \"Saved to $1\" -i \"$1\" -A 'open=Open Screenshot' --wait) && [ \"$ACTION\" = open ] && swappy -f \"$1\"; true", "sh", file]);
+                Quickshell.execDetached(["sh", "-c", "ACTION=$(notify-send \"$2\" \"$3\" -i \"$1\" -A \"open=$4\" --wait) && [ \"$ACTION\" = open ] && swappy -f \"$1\"; true", "sh", file, I18n.tr("Screenshot taken!"), I18n.tr("Saved to %1", file), I18n.tr("Open Screenshot")]);
         }
     }
 
