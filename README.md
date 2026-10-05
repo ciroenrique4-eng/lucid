@@ -2,7 +2,11 @@
 
 <img src="assets/logo.svg" width="104" alt="Lucid">
 
-# Lucid
+# CirOShell
+
+<p><b>English</b> · <a href="README.es.md">Español</a></p>
+
+**Built on Lucid Sn3akyy1 v1.10.5**
 
 **A Material 3 Expressive desktop shell for Hyprland, built on [Quickshell](https://quickshell.org).**
 
@@ -73,6 +77,7 @@ Settings still follows upstream's releases, and this branch follows them too.
 |  | Special workspaces: blur behind, a margin like a card, and your own | [#45](https://github.com/Sn3akyy1/lucid/pull/45) |
 |  | One dial for how round the whole shell is | [#18](https://github.com/Sn3akyy1/lucid/pull/18) |
 |  | Sound: level meters, balance, a channel test, WirePlumber's settings, a click per volume step | [#11](https://github.com/Sn3akyy1/lucid/pull/11) |
+|  | The whole shell in your language: Spanish today, Automatic follows the system, it switches live, and another language is one JSON file | this fork only |
 | **Colour** | Templates follow every palette, not just the wallpaper, rendered one at a time with a record | [#36](https://github.com/Sn3akyy1/lucid/pull/36) |
 |  | A Colours page: generated palettes and the app templates | [#38](https://github.com/Sn3akyy1/lucid/pull/38) |
 |  | A Palettes page: a gallery of base16/base24 schemes, themes from a file, an editor and export | [#40](https://github.com/Sn3akyy1/lucid/pull/40) |
