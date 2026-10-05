@@ -66,50 +66,50 @@ Singleton {
     function ago(ts) {
         var m = Math.max(0, Math.round((Date.now() - ts) / 60000));
         if (m < 2)
-            return "just now";
+            return I18n.tr("just now");
 
         if (m < 60)
-            return m + " minutes ago";
+            return I18n.trn("%1 minute ago", "%1 minutes ago", m);
 
         var h = Math.round(m / 60);
         if (h < 24)
-            return h === 1 ? "an hour ago" : h + " hours ago";
+            return h === 1 ? I18n.tr("an hour ago") : I18n.tr("%1 hours ago", h);
 
         var d = Math.round(h / 24);
-        return d === 1 ? "yesterday" : d + " days ago";
+        return d === 1 ? I18n.tr("yesterday") : I18n.tr("%1 days ago", d);
     }
 
     readonly property string status: {
         if (root.current === "")
-            return "CirOShell cannot tell which version it is — there is no VERSION file beside shell.qml.";
+            return I18n.tr("CirOShell cannot tell which version it is — there is no VERSION file beside shell.qml.");
 
         if (root.busy)
-            return "Asking GitHub…";
+            return I18n.tr("Asking GitHub…");
 
         if (root.problem === "offline")
-            return "Could not reach GitHub. CirOShell tries again later.";
+            return I18n.tr("Could not reach GitHub. CirOShell tries again later.");
 
         if (root.problem === "ratelimited")
-            return "GitHub is rate-limiting this address. CirOShell tries again later.";
+            return I18n.tr("GitHub is rate-limiting this address. CirOShell tries again later.");
 
         if (root.problem === "norelease")
-            return "No release has been published yet.";
+            return I18n.tr("No release has been published yet.");
 
         if (root.problem === "unreadable")
-            return "GitHub answered with something CirOShell could not read.";
+            return I18n.tr("GitHub answered with something CirOShell could not read.");
 
         if (root.available)
-            return (root.latestName !== "" ? root.latestName + ". " : "") + "Pull the integrated branch and run ./install.sh to update.";
+            return (root.latestName !== "" ? root.latestName + ". " : "") + I18n.tr("Pull the integrated branch and run ./install.sh to update.");
 
         // a saved timestamp outlives the reason for it, so an empty latest after
         // a real check means nothing is published rather than up to date
         if (root.checkedAt > 0 && root.latest === "")
-            return "No release has been published yet.";
+            return I18n.tr("No release has been published yet.");
 
         if (root.checkedAt > 0)
-            return "Up to date — checked " + root.ago(root.checkedAt) + ".";
+            return I18n.tr("Up to date — checked %1.", root.ago(root.checkedAt));
 
-        return Prefs.updateCheck ? "Not checked yet." : "The daily check is off.";
+        return Prefs.updateCheck ? I18n.tr("Not checked yet.") : I18n.tr("The daily check is off.");
     }
 
     function check() {
@@ -143,11 +143,11 @@ Singleton {
 
         root.notified = root.latest;
         root.save();
-        var body = "You have v" + root.current + ". Pull the repo and run ./install.sh to update.";
+        var body = I18n.tr("You have v%1. Pull the repo and run ./install.sh to update.", root.current);
         if (root.latestName !== "" && root.latestName.trim().replace(/^v/i, "") !== root.latest)
             body = root.latestName + "\n" + body;
 
-        Quickshell.execDetached(["sh", "-c", "A=$(notify-send -a CirOShell -i \"$1\" \"$2\" \"$3\" -A \"open=What's new\" --wait) && [ \"$A\" = open ] && xdg-open \"$4\"; true", "sh", root.iconPath, "CirOShell v" + root.latest + " is out", body, root.latestUrl]);
+        Quickshell.execDetached(["sh", "-c", "A=$(notify-send -a CirOShell -i \"$1\" \"$2\" \"$3\" -A \"open=$5\" --wait) && [ \"$A\" = open ] && xdg-open \"$4\"; true", "sh", root.iconPath, I18n.tr("CirOShell v%1 is out", root.latest), body, root.latestUrl, I18n.tr("What's new")]);
     }
 
     readonly property string iconPath: Qt.resolvedUrl("assets/logo-mark.svg").toString().replace("file://", "")

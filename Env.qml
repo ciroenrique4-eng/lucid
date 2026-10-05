@@ -47,10 +47,10 @@ Singleton {
     readonly property int scopeCount: (Prefs.envApplyGtk ? 1 : 0) + (Prefs.envApplyQt ? 1 : 0) + (Prefs.envApplyHypr ? 1 : 0)
     readonly property string summary: {
         if (!root.probed)
-            return "Looking at what this machine has installed…";
+            return I18n.tr("Looking at what this machine has installed…");
 
         if (root.scopeCount === 0)
-            return "Nothing is being written — every toolkit below is turned off";
+            return I18n.tr("Nothing is being written — every toolkit below is turned off");
 
         var parts = [];
         if (Prefs.envApplyGtk)
@@ -62,7 +62,7 @@ Singleton {
         if (Prefs.envApplyHypr)
             parts.push("Hyprland");
 
-        return "Applied to " + parts.join(", ");
+        return I18n.tr("Applied to %1", parts.join(", "));
     }
     // everything envtool.py needs, in the shape it reads
     readonly property string payload: JSON.stringify({
@@ -279,7 +279,7 @@ Singleton {
                 try {
                     d = JSON.parse(this.text.trim() || "{}");
                 } catch (e) {
-                    root.lastError = "could not read the machine's appearance settings";
+                    root.lastError = I18n.tr("could not read the machine's appearance settings");
                     root.probed = true;
                     return ;
                 }
@@ -347,7 +347,7 @@ Singleton {
                 if (r.ok && r.theme)
                     root.markBuilt(r.theme);
                 else
-                    root.shadowError = r.error || "could not rebuild the theme without its shadow";
+                    root.shadowError = r.error || I18n.tr("could not rebuild the theme without its shadow");
             }
         }
 
@@ -386,9 +386,9 @@ Singleton {
                 try {
                     var r = JSON.parse(this.text.trim() || "{}");
                     root.lastTouched = r.touched || [];
-                    root.lastError = r.ok === false ? (r.error || "could not apply") : "";
+                    root.lastError = r.ok === false ? (r.error || I18n.tr("could not apply")) : "";
                 } catch (e) {
-                    root.lastError = "could not apply";
+                    root.lastError = I18n.tr("could not apply");
                 }
             }
         }
