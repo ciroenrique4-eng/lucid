@@ -101,7 +101,7 @@ WidgetBody {
         anchors.leftMargin: 18
         anchors.rightMargin: 18
         anchors.topMargin: 16
-        text: "Note"
+        text: I18n.tr("Note")
         color: w.faded
         font.family: Theme.fontFamily
         font.pixelSize: 11
@@ -181,7 +181,7 @@ WidgetBody {
         Text {
             anchors.left: parent.left
             anchors.top: parent.top
-            text: w.variant === "lined" ? "Type here. It stays put across reboots." : "Write something…"
+            text: w.variant === "lined" ? I18n.tr("Type here. It stays put across reboots.") : I18n.tr("Write something…")
             color: Theme.alpha(w.ink, 0.32)
             font.family: Theme.fontFamily
             font.pixelSize: 13
@@ -250,7 +250,7 @@ WidgetBody {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 10
-        text: w.editing ? "esc to finish" : ""
+        text: w.editing ? I18n.tr("esc to finish") : ""
         color: Theme.alpha(w.ink, 0.4)
         font.family: Theme.fontFamily
         font.pixelSize: 10
