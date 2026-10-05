@@ -6,27 +6,27 @@ Item {
 
     readonly property var actions: [{
         "id": "lock",
-        "label": "Lock",
+        "label": I18n.tr("Lock"),
         "glyph": DockIcons.lock
     }, {
         "id": "logout",
-        "label": "Log Out",
+        "label": I18n.tr("Log Out"),
         "glyph": DockIcons.logout
     }, {
         "id": "suspend",
-        "label": "Suspend",
+        "label": I18n.tr("Suspend"),
         "glyph": DockIcons.suspend
     }, {
         "id": "hibernate",
-        "label": "Hibernate",
+        "label": I18n.tr("Hibernate"),
         "glyph": DockIcons.hibernate
     }, {
         "id": "reboot",
-        "label": "Reboot",
+        "label": I18n.tr("Reboot"),
         "glyph": DockIcons.reboot
     }, {
         "id": "shutdown",
-        "label": "Shutdown",
+        "label": I18n.tr("Shutdown"),
         "glyph": DockIcons.power
     }]
     // settled height once the panel resize finishes
