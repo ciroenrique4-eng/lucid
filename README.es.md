@@ -97,6 +97,7 @@ Ajustes sigue las versiones del proyecto original, y esta rama también las sigu
 |  | Sonidos de respuesta: un clic para el brillo como el del volumen, y sonidos al conectar y desconectar, bloquear, vaciar la papelera y hacer capturas; varios de cada uno para elegir, o un archivo propio | solo este fork |
 |  | Widget de teléfono: explora sus archivos, botones según los plugins y un segundo teléfono | [#15](https://github.com/Sn3akyy1/lucid/pull/15) |
 |  | Recibir archivos por Bluetooth, con Aceptar y Rechazar en una notificación | solo este fork |
+|  | Enviar archivos por Bluetooth a un teléfono o computadora emparejados, con progreso y Cancelar en una notificación | solo este fork |
 |  | Las ventanas fijadas llevan un borde propio, una pestaña en la esquina que las desfija, y una onda al fijarlas | solo este fork |
 |  | Una ventana que pide atención recibe una pestaña con una campana sonando en su esquina, y una onda la primera vez que la ves | solo este fork |
 |  | Iconos de escritorio: la carpeta Escritorio sobre el fondo de pantalla, compartiendo espacio con los widgets (un icono se aparta ante uno, incluso a mitad de arrastre); arrastra archivos hacia dentro, hacia fuera, a carpetas y a la papelera, renombra en el lugar | solo este fork |
@@ -631,7 +632,10 @@ cambiar, pasarse del vecino y crear un espacio de trabajo nuevo al final.
   envía algo por Bluetooth recibe una notificación con Aceptar y Rechazar; una vez
   aceptado, la misma notificación sigue la transferencia y la última abre el archivo o lo
   muestra en su carpeta. Elige la carpeta (Descargas por defecto) y si los dispositivos
-  emparejados se saltan la pregunta
+  emparejados se saltan la pregunta. **Enviar archivos**: un teléfono o computadora
+  emparejados tienen *Enviar archivos* en su fila, aquí y en el centro de control; eliges
+  los archivos y una sola notificación sigue todo: la espera a que el otro lado acepte,
+  el progreso, Cancelar y cómo terminó
 - **Teléfono**: una página *Teléfono* que es un auténtico cliente de KDE Connect, no un
   lanzador del de otro. Maneja el demonio de KDE Connect por D-Bus, así que empareja,
   desempareja y responde solicitudes de emparejamiento con la clave de verificación
@@ -900,7 +904,7 @@ sepas qué se está instalando.
 | `networkmanager` | Panel Wi-Fi |
 | `qrencode` | El código QR que comparte una red Wi-Fi guardada. Sin él la contraseña se sigue mostrando, sin código |
 | `bluez`, `bluez-utils` | Panel Bluetooth y la página de ajustes de Bluetooth |
-| `bluez-obex`, `python-gobject` | Recibir archivos por Bluetooth. Sin `bluez-obex` la página lo dice y los archivos enviados al equipo se rechazan |
+| `bluez-obex`, `python-gobject` | Enviar y recibir archivos por Bluetooth. Sin `bluez-obex` la página lo dice, los archivos enviados al equipo se rechazan y al enviar se avisa qué falta |
 | `kdeconnect`, `python-gobject` | La página KDE Connect. El demonio es el backend y se inicia solo; `python-gobject` respalda el puente por el que Lucid habla con él. Sin alguno de los dos la página lo dice y no hace nada más |
 | `libpulse`, `wireplumber` | Volumen, dispositivos de audio |
 | `brightnessctl`, `upower` | Brillo, batería |
@@ -987,6 +991,7 @@ Cada superficie es automatizable. `qs ipc call -- <objetivo> <función> [argumen
 | `network` | `status` `list` `rescan` |
 | `nightlight` | `toggle` `on` `off` `status` |
 | `kdeconnect` | `status` `list` `rescan` `ring <id>` `ping <id>` `clipboard <id>` `files <id>` `send <id> <ruta>` |
+| `bluetooth` | `send <dirección> <ruta>` (una ruta vacía abre el selector de archivos) |
 | `widgets` | `add <tipo> <variante>` `remove <uid>` `clear` `toggle` `lock` `unlock` `list` `catalogue` `settings` `resize <uid> <ancho> <alto>` |
 | `moji` | `toggle` `open` `close` `emoji` `kaomoji` `gif` `center` |
 | `keyboard` | `toggle` `open` `close` `letters` `fnkeys` `center` `bigger` `smaller` |
