@@ -852,7 +852,7 @@ function stopRecordingBackend() {
 
                     IconAction {
                         iconPath: "M3,3H9V5H5V9H3V3M15,3H21V9H19V5H15V3M19,15H21V21H15V19H19V15M3,15H5V19H9V21H3V15Z"
-                        label: snapWindow.captureMode === "text" ? "Copy Text in Region" : "Snap Select"
+                        label: snapWindow.captureMode === "text" ? I18n.tr("Copy Text in Region") : I18n.tr("Snap Select")
                         active: snapWindow.activeTool === "select"
                         disabled: snapWindow.ocrBusy || (snapWindow.captureMode === "video" && snapWindow.recordingState !== "idle")
                         onTapped: snapWindow.runTool("select")
@@ -860,7 +860,7 @@ function stopRecordingBackend() {
 
                     IconAction {
                         iconPath: "M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z"
-                        label: snapWindow.captureMode === "text" ? "Copy All Text on Screen" : "Fullscreen"
+                        label: snapWindow.captureMode === "text" ? I18n.tr("Copy All Text on Screen") : I18n.tr("Fullscreen")
                         active: snapWindow.activeTool === "fullscreen"
                         disabled: snapWindow.ocrBusy || (snapWindow.captureMode === "video" && snapWindow.recordingState !== "idle")
                         onTapped: snapWindow.runTool("fullscreen")
@@ -877,7 +877,7 @@ function stopRecordingBackend() {
                     IconAction {
                         anchors.verticalCenter: parent.verticalCenter
                         iconPath: "M19.35,11.72L17.22,13.85L15.81,12.43L8.1,20.14L3.5,21.5L2.5,20.5L3.86,15.9L11.57,8.19L10.15,6.78L12.28,4.65L19.35,11.72Z"
-                        label: "Pick a Colour"
+                        label: I18n.tr("Pick a Colour")
                         activeColor: Theme.accent
                         onTapped: snapWindow.startColorPick()
                     }
@@ -925,10 +925,10 @@ function stopRecordingBackend() {
                             }
                             label: {
                                 if (snapWindow.recordingState === "recording")
-                                    return "Pause";
+                                    return I18n.tr("Pause");
                                 if (snapWindow.recordingState === "paused")
-                                    return "Resume";
-                                return "Start Recording";
+                                    return I18n.tr("Resume");
+                                return I18n.tr("Start Recording");
                             }
                             active: snapWindow.recordingState !== "idle"
                             activeColor: snapWindow.recordingState === "recording" ? Theme.error : Theme.accent
@@ -938,14 +938,14 @@ function stopRecordingBackend() {
 
                         IconAction {
                             iconPath: "M6 6H18V18H6V6Z"
-                            label: "Stop"
+                            label: I18n.tr("Stop")
                             disabled: snapWindow.recordingState === "idle"
                             onTapped: snapWindow.stopRecording()
                         }
 
                         IconAction {
                             iconPath: "M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.08L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.74,7.13 11.35,7 12,7Z"
-                            label: "Hide (switch to Video to bring back)"
+                            label: I18n.tr("Hide (switch to Video to bring back)")
                             disabled: snapWindow.recordingState === "idle"
                             onTapped: snapWindow.hideToolbar()
                         }
@@ -964,8 +964,8 @@ function stopRecordingBackend() {
                         ToggleChip {
                             anchors.verticalCenter: parent.verticalCenter
                             iconPath: "M12.06 15c1.66 0 2.99-1.34 2.99-3V6c.01-1.66-1.33-3-2.99-3s-3 1.34-3 3v6c0 1.66 1.34 3 3 3m6.93-2.03a.857.857 0 0 0-.85-.97c-.42 0-.77.3-.83.71-.37 2.61-2.72 4.39-5.25 4.39s-4.88-1.77-5.25-4.39a.84.84 0 0 0-.83-.71c-.52 0-.92.46-.85.97.46 2.97 2.96 5.3 5.93 5.75V20H9c-.55 0-1 .45-1 1s.45 1 1 1h6c.55 0 1-.45 1-1s-.45-1-1-1h-1.94v-1.28c2.96-.43 5.47-2.78 5.93-5.75" + (snapWindow.micOn ? "" : " M4 5L6 3L20 17L18 19Z")
-                            labelOn: "Mic"
-                            labelOff: "Mic Off"
+                            labelOn: I18n.tr("Mic")
+                            labelOff: I18n.tr("Mic Off")
                             on: snapWindow.micOn
                             onTapped: {
                                 Quickshell.execDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle"]);
@@ -977,8 +977,8 @@ function stopRecordingBackend() {
                         ToggleChip {
                             anchors.verticalCenter: parent.verticalCenter
                             iconPath: "M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" + (snapWindow.headphoneOn ? "" : " M4 5L6 3L20 17L18 19Z")
-                            labelOn: "Audio"
-                            labelOff: "Audio Off"
+                            labelOn: I18n.tr("Audio")
+                            labelOff: I18n.tr("Audio Off")
                             on: snapWindow.headphoneOn
                             onTapped: {
                                 snapWindow.headphoneOn = !snapWindow.headphoneOn;
@@ -1340,7 +1340,7 @@ function stopRecordingBackend() {
                 anchors.margins: 3
 
                 ModeSegment {
-                    label: "Photo"
+                    label: I18n.tr("Photo")
                     iconPath: "M9,2L7.17,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6A2,2 0 0,0 20,4H16.83L15,2H9M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"
                     active: snapWindow.captureMode === "camera"
                     disabled: modeSwitch.recording || snapWindow.ocrBusy
@@ -1348,7 +1348,7 @@ function stopRecordingBackend() {
                 }
 
                 ModeSegment {
-                    label: "Video"
+                    label: I18n.tr("Video")
                     iconPath: "M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"
                     active: modeSwitch.videoMode
                     onTapped: {
@@ -1360,7 +1360,7 @@ function stopRecordingBackend() {
                 }
 
                 ModeSegment {
-                    label: "Text"
+                    label: I18n.tr("Text")
                     iconPath: "M5,4V7H10.5V19H13.5V7H19V4H5Z"
                     active: snapWindow.captureMode === "text"
                     disabled: modeSwitch.recording || snapWindow.ocrBusy
@@ -1368,7 +1368,7 @@ function stopRecordingBackend() {
                 }
 
                 ModeSegment {
-                    label: "Colour"
+                    label: I18n.tr("Colour")
                     iconPath: "M19.35,11.72L17.22,13.85L15.81,12.43L8.1,20.14L3.5,21.5L2.5,20.5L3.86,15.9L11.57,8.19L10.15,6.78L12.28,4.65L19.35,11.72Z"
                     active: snapWindow.captureMode === "color"
                     disabled: modeSwitch.recording || snapWindow.ocrBusy
