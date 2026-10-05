@@ -29,19 +29,19 @@ Item {
             return e.meta;
 
         if (e.kind === "binary")
-            return "Binary data · " + e.meta;
+            return I18n.tr("Binary data · %1", e.meta);
 
         if (e.kind === "color")
-            return "Colour · " + e.preview.trim();
+            return I18n.tr("Colour · %1", e.preview.trim());
 
-        const what = e.kind === "url" ? "Link" : (e.kind === "email" ? "Email address" : "Text");
+        const what = e.kind === "url" ? I18n.tr("Link") : (e.kind === "email" ? I18n.tr("Email address") : I18n.tr("Text"));
         if (!preview.textReady)
             return what;
 
         const t = Clip.textBody;
         const lines = t.replace(/\n$/, "").split("\n").length;
         const more = Clip.textTruncated ? "+" : "";
-        return what + " · " + lines + more + (lines === 1 && more === "" ? " line · " : " lines · ") + t.length + more + " characters";
+        return I18n.tr("%1 · %2 · %3 characters", what, lines === 1 && more === "" ? I18n.tr("1 line") : I18n.tr("%1 lines", lines + more), t.length + more);
     }
 
     onEntryChanged: {
@@ -184,7 +184,7 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: preview.kind === "image" ? (parent.imageBroken ? "Couldn't load image" : "Loading image…") : (preview.kind === "binary" ? "No preview for binary data" : "Nothing selected")
+                text: preview.kind === "image" ? (parent.imageBroken ? I18n.tr("Couldn't load image") : I18n.tr("Loading image…")) : (preview.kind === "binary" ? I18n.tr("No preview for binary data") : I18n.tr("Nothing selected"))
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontBody
@@ -218,7 +218,7 @@ Item {
         Text {
             width: parent.width
             elide: Text.ElideRight
-            text: preview.clearArmed ? "Press Ctrl+Shift+Del again to clear everything" : "↵ Copy   Del Delete   Ctrl⇧Del Clear all"
+            text: preview.clearArmed ? I18n.tr("Press Ctrl+Shift+Del again to clear everything") : I18n.tr("↵ Copy   Del Delete   Ctrl⇧Del Clear all")
             color: preview.clearArmed ? Theme.error : Theme.subtextDim
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontLabel
