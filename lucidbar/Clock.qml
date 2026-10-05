@@ -15,7 +15,7 @@ BarPill {
     readonly property bool stacked: Prefs.clockStyle === "stacked"
     readonly property bool accentFace: Prefs.clockStyle === "accent"
     readonly property bool calendarOnly: Prefs.clockPanelStyle === "calendar"
-    readonly property string dateFormat: Prefs.clockDateFormat === "long" ? "ddd d MMM" : (Prefs.clockDateFormat === "numeric" ? Qt.locale().dateFormat(Locale.ShortFormat) : "ddd d")
+    readonly property string dateFormat: Prefs.clockDateFormat === "long" ? I18n.tr("ddd d MMM") : (Prefs.clockDateFormat === "numeric" ? I18n.locale.dateFormat(Locale.ShortFormat) : I18n.tr("ddd d"))
     readonly property string fullTimeFormat: Prefs.clock24h ? "H:mm:ss" : "h:mm:ss AP"
     readonly property int horizontalPadding: 17
     readonly property int temp: WeatherSource.report ? WeatherSource.report.tempC : 0
@@ -85,8 +85,8 @@ BarPill {
     // the locale's own AM/PM ("PM", "P.M.", "午後") is cut back out
     function hourText() {
         const now = Loc.now();
-        const text = now.toLocaleTimeString(Qt.locale(), root.hourFormat);
-        return Prefs.clock24h ? text : text.replace(now.toLocaleTimeString(Qt.locale(), "AP"), "").trim();
+        const text = now.toLocaleTimeString(I18n.locale, root.hourFormat);
+        return Prefs.clock24h ? text : text.replace(now.toLocaleTimeString(I18n.locale, "AP"), "").trim();
     }
 
     function untilText(at) {
@@ -98,14 +98,14 @@ BarPill {
             return "now";
 
         if (mins < 60)
-            return "in " + mins + " min";
+            return I18n.tr("in %1 min", mins);
 
         const hrs = Math.round(mins / 60);
         if (hrs < 24)
-            return "in " + hrs + (hrs === 1 ? " hour" : " hours");
+            return I18n.trn("in %1 hour", "in %1 hours", hrs);
 
         const days = Math.round(hrs / 24);
-        return days === 1 ? "tomorrow" : "in " + days + " days";
+        return days === 1 ? I18n.tr("tomorrow") : I18n.tr("in %1 days", days);
     }
 
     function buildCalendarModel(year, month) {
@@ -397,10 +397,10 @@ BarPill {
         repeat: true
         onTriggered: {
             clockHourText.text = root.hourText();
-            clockMinuteText.text = Loc.now().toLocaleTimeString(Qt.locale(), root.minuteFormat);
-            dateText.text = Loc.now().toLocaleDateString(Qt.locale(), root.dateFormat);
-            expandedTimeText.text = Loc.now().toLocaleTimeString(Qt.locale(), root.fullTimeFormat);
-            expandedDateText.text = Loc.now().toLocaleDateString(Qt.locale(), "dddd, MMMM d");
+            clockMinuteText.text = Loc.now().toLocaleTimeString(I18n.locale, root.minuteFormat);
+            dateText.text = Loc.now().toLocaleDateString(I18n.locale, root.dateFormat);
+            expandedTimeText.text = Loc.now().toLocaleTimeString(I18n.locale, root.fullTimeFormat);
+            expandedDateText.text = Loc.now().toLocaleDateString(I18n.locale, I18n.tr("dddd, MMMM d"));
             root.clockTick++;
             root.checkReminders();
         }
@@ -479,7 +479,7 @@ BarPill {
                 Text {
                     id: clockMinuteText
 
-                    text: Loc.now().toLocaleTimeString(Qt.locale(), root.minuteFormat)
+                    text: Loc.now().toLocaleTimeString(I18n.locale, root.minuteFormat)
                     color: root.accentFace ? Theme.fgAccent : Theme.text
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -500,7 +500,7 @@ BarPill {
             Text {
                 id: dateText
 
-                text: Loc.now().toLocaleDateString(Qt.locale(), root.dateFormat)
+                text: Loc.now().toLocaleDateString(I18n.locale, root.dateFormat)
                 visible: Prefs.clockShowDate
                 // under the time there is no room for the bell: the date
                 // takes the accent instead while a reminder is coming up
@@ -717,7 +717,7 @@ BarPill {
                             id: snoozeLabel
 
                             anchors.centerIn: parent
-                            text: "Snooze"
+                            text: I18n.tr("Snooze")
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -760,7 +760,7 @@ BarPill {
                             id: closeLabel
 
                             anchors.centerIn: parent
-                            text: "Close"
+                            text: I18n.tr("Close")
                             color: Theme.fgAccent
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -855,7 +855,7 @@ BarPill {
                                 id: expandedTimeText
 
                                 width: heroCard.width
-                                text: Loc.now().toLocaleTimeString(Qt.locale(), root.fullTimeFormat)
+                                text: Loc.now().toLocaleTimeString(I18n.locale, root.fullTimeFormat)
                                 color: Theme.text
                                 font.family: Theme.fontFamily
                                 font.bold: true
@@ -867,7 +867,7 @@ BarPill {
                                 id: expandedDateText
 
                                 width: heroCard.width
-                                text: Loc.now().toLocaleDateString(Qt.locale(), "dddd, MMMM d")
+                                text: Loc.now().toLocaleDateString(I18n.locale, I18n.tr("dddd, MMMM d"))
                                 color: Theme.accent
                                 font.family: Theme.fontFamily
                                 font.bold: true
@@ -949,7 +949,7 @@ BarPill {
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 Text {
-                                    text: root.temp + "°C"
+                                    text: root.temp + "°C" // i18n-skip
                                     color: Theme.text
                                     font.family: Theme.fontFamily
                                     font.bold: true
@@ -957,14 +957,14 @@ BarPill {
                                 }
 
                                 Text {
-                                    text: WeatherSource.descFor(root.weatherCode) + " • " + root.humidity + "% Hum"
+                                    text: WeatherSource.descFor(root.weatherCode) + " • " + I18n.tr("%1% Hum", root.humidity)
                                     color: Theme.subtext
                                     font.family: Theme.fontFamily
                                     font.pixelSize: Theme.fontLabel
                                 }
 
                                 Text {
-                                    text: "Feels like " + root.feelsLike + "°C"
+                                    text: I18n.tr("Feels like %1°C", root.feelsLike)
                                     color: Theme.subtextDim
                                     font.family: Theme.fontFamily
                                     font.pixelSize: Theme.fontLabel
@@ -1002,7 +1002,7 @@ BarPill {
                             spacing: 3
 
                             Text {
-                                text: "UP NEXT"
+                                text: I18n.tr("UP NEXT")
                                 color: Theme.subtextDim
                                 font.family: Theme.fontFamily
                                 font.bold: true
@@ -1012,7 +1012,7 @@ BarPill {
 
                             Text {
                                 width: parent.width
-                                text: root.nextReminder ? root.nextReminder.item.name : "Nothing scheduled"
+                                text: root.nextReminder ? root.nextReminder.item.name : I18n.tr("Nothing scheduled")
                                 color: root.nextReminder ? Theme.text : Theme.subtext
                                 font.family: Theme.fontFamily
                                 font.bold: true
@@ -1066,7 +1066,7 @@ BarPill {
                                 id: monthText
 
                                 anchors.centerIn: parent
-                                text: new Date(root.viewYear, root.viewMonth, 1).toLocaleDateString(Qt.locale(), "MMMM yyyy") + (root.isViewingCurrentMonth ? "  •  Today" : "")
+                                text: new Date(root.viewYear, root.viewMonth, 1).toLocaleDateString(I18n.locale, I18n.tr("MMMM yyyy")) + (root.isViewingCurrentMonth ? I18n.tr("  •  Today") : "")
                                 color: root.isViewingCurrentMonth ? Theme.accent : Theme.text
                                 font.family: Theme.fontFamily
                                 font.bold: true
@@ -1173,7 +1173,7 @@ BarPill {
                             Text {
                                 anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: root.editingDate ? new Date(root.editingDate.year, root.editingDate.month, root.editingDate.day).toLocaleDateString(Qt.locale(), "MMM d, yyyy") : ""
+                                text: root.editingDate ? new Date(root.editingDate.year, root.editingDate.month, root.editingDate.day).toLocaleDateString(I18n.locale, I18n.tr("MMM d, yyyy")) : ""
                                 color: Theme.text
                                 font.family: Theme.fontFamily
                                 font.bold: true
@@ -1257,7 +1257,7 @@ BarPill {
 
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: "Reminder name"
+                                text: I18n.tr("Reminder name")
                                 color: Theme.subtextDim
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontBody
@@ -1366,7 +1366,7 @@ BarPill {
 
                                         Text {
                                             anchors.centerIn: parent
-                                            text: "AM"
+                                            text: I18n.tr("AM")
                                             color: root.reminderMeridiem === "AM" ? Theme.fgAccent : Theme.subtext
                                             font.family: Theme.fontFamily
                                             font.bold: true
@@ -1395,7 +1395,7 @@ BarPill {
 
                                         Text {
                                             anchors.centerIn: parent
-                                            text: "PM"
+                                            text: I18n.tr("PM")
                                             color: root.reminderMeridiem === "PM" ? Theme.fgAccent : Theme.subtext
                                             font.family: Theme.fontFamily
                                             font.bold: true
@@ -1442,7 +1442,7 @@ BarPill {
                                     id: addLabel
 
                                     anchors.centerIn: parent
-                                    text: "Add"
+                                    text: I18n.tr("Add")
                                     color: Theme.fgAccent
                                     font.family: Theme.fontFamily
                                     font.bold: true

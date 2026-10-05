@@ -22,7 +22,7 @@ Item {
 
     readonly property string label: {
         if (!root.btEnabled)
-            return "Off";
+            return I18n.tr("Off");
 
         if (root.connectedDevices.length === 1) {
             let d = root.connectedDevices[0];
@@ -30,15 +30,15 @@ Item {
             return d.name + (batt !== "" ? " (" + batt + ")" : "");
         }
         if (root.connectedDevices.length > 1)
-            return root.connectedDevices.length + " devices connected";
+            return I18n.trn("%1 device connected", "%1 devices connected", root.connectedDevices.length);
 
         if (root.anyConnecting)
-            return "Connecting...";
+            return I18n.tr("Connecting...");
 
         if (root.discovering)
-            return "Scanning...";
+            return I18n.tr("Scanning...");
 
-        return "Not connected";
+        return I18n.tr("Not connected");
     }
 
     function getBatteryText(dev) {
@@ -174,7 +174,7 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: root.discovering ? "Searching" + ".".repeat(scanButton.dotCount) : "Search for devices"
+                    text: root.discovering ? I18n.tr("Searching") + ".".repeat(scanButton.dotCount) : I18n.tr("Search for devices")
                     color: root.discovering ? Theme.accent : (scanArea.containsMouse ? Theme.text : Theme.subtext)
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(12)
@@ -195,7 +195,7 @@ Item {
                 anchors.rightMargin: 4
                 anchors.verticalCenter: parent.verticalCenter
                 visible: root.discovering
-                text: "tap to stop"
+                text: I18n.tr("tap to stop")
                 color: Theme.accentMuted
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(10)
@@ -225,7 +225,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 4
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Visible to other devices"
+                text: I18n.tr("Visible to other devices")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(11)
@@ -286,7 +286,7 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Bluetooth is off"
+                text: I18n.tr("Bluetooth is off")
                 color: Theme.subtext
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(12)
@@ -294,7 +294,7 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Turn it on to see nearby devices"
+                text: I18n.tr("Turn it on to see nearby devices")
                 color: Theme.outlineStrong
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(10)
@@ -315,7 +315,7 @@ Item {
                 visible: root.connectedDevices.length > 0
 
                 Text {
-                    text: "CONNECTED"
+                    text: I18n.tr("CONNECTED")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -342,7 +342,7 @@ Item {
                 visible: root.pairedDevices.length > 0
 
                 Text {
-                    text: "PAIRED"
+                    text: I18n.tr("PAIRED")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -369,7 +369,7 @@ Item {
                 visible: root.nearbyDevices.length > 0
 
                 Text {
-                    text: "NEARBY"
+                    text: I18n.tr("NEARBY")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -399,7 +399,7 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: root.discovering ? "Looking for devices…" : "No devices found"
+                    text: root.discovering ? I18n.tr("Looking for devices…") : I18n.tr("No devices found")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(12)
@@ -408,7 +408,7 @@ Item {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     visible: !root.discovering
-                    text: "Tap “Search for devices” to scan"
+                    text: I18n.tr("Tap “Search for devices” to scan")
                     color: Theme.outlineStrong
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(10)
@@ -776,19 +776,19 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             text: {
                                 if (devItem.isPairing)
-                                    return "Pairing…";
+                                    return I18n.tr("Pairing…");
 
                                 if (devItem.isConnecting)
-                                    return "Connecting…";
+                                    return I18n.tr("Connecting…");
 
                                 if (devItem.isConnected) {
                                     let batt = root.getBatteryText(devItem.modelData);
-                                    return "Connected" + (batt !== "" ? " · " + batt : "");
+                                    return I18n.tr("Connected") + (batt !== "" ? " · " + batt : "");
                                 }
                                 if (devItem.isPaired)
-                                    return devItem.modelData.trusted ? "Paired · Trusted" : "Paired";
+                                    return devItem.modelData.trusted ? I18n.tr("Paired · Trusted") : I18n.tr("Paired");
 
-                                return "Available";
+                                return I18n.tr("Available");
                             }
                             color: devItem.isConnected ? Theme.accent : Theme.subtext
                             font.family: Theme.fontFamily
@@ -901,15 +901,15 @@ Item {
                             anchors.centerIn: parent
                             text: {
                                 if (devItem.isPairing)
-                                    return "Pairing…";
+                                    return I18n.tr("Pairing…");
 
                                 if (devItem.isConnecting)
-                                    return "Connecting…";
+                                    return I18n.tr("Connecting…");
 
                                 if (devItem.group === "nearby")
-                                    return "Pair";
+                                    return I18n.tr("Pair");
 
-                                return devItem.isConnected ? "Disconnect" : "Connect";
+                                return devItem.isConnected ? I18n.tr("Disconnect") : I18n.tr("Connect");
                             }
                             color: primaryBtn.busy ? Theme.subtext : (devItem.isConnected ? Theme.accent : Theme.bgOpaque)
                             font.family: Theme.fontFamily
@@ -966,7 +966,7 @@ Item {
 
                         Text {
                             anchors.centerIn: parent
-                            text: "Forget"
+                            text: I18n.tr("Forget")
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -1006,7 +1006,7 @@ Item {
 
                 Text {
                     visible: devItem.isPairing
-                    text: "Cancel pairing"
+                    text: I18n.tr("Cancel pairing")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(11)
@@ -1026,7 +1026,7 @@ Item {
                 Text {
                     visible: devItem.actionFailed && !devItem.isConnected && !devItem.isPairing && !devItem.isConnecting
                     width: parent.width - 46
-                    text: devItem.group === "nearby" ? "Pairing failed. Please try again." : "Failed to connect. The device may be out of range."
+                    text: devItem.group === "nearby" ? I18n.tr("Pairing failed. Please try again.") : I18n.tr("Failed to connect. The device may be out of range.")
                     color: Theme.error
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(10)
@@ -1066,7 +1066,7 @@ Item {
                         }
 
                         Text {
-                            text: "Auto-reconnect"
+                            text: I18n.tr("Auto-reconnect")
                             color: Theme.subtext
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -1112,7 +1112,7 @@ Item {
                         }
 
                         Text {
-                            text: "Allow wake"
+                            text: I18n.tr("Allow wake")
                             color: Theme.subtext
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -1157,7 +1157,7 @@ Item {
                         }
 
                         Text {
-                            text: "Block"
+                            text: I18n.tr("Block")
                             color: Theme.subtext
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -1178,7 +1178,7 @@ Item {
 
                 Text {
                     visible: devItem.group !== "nearby" && !devItem.renaming
-                    text: "Rename"
+                    text: I18n.tr("Rename")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(11)

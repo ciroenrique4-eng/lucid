@@ -563,7 +563,7 @@ BarPill {
 
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: root.popupOverflow + " more"
+                                text: I18n.tr("%1 more", root.popupOverflow)
                                 color: Theme.subtext
                                 font.family: Theme.fontFamily
                                 font.bold: true
@@ -641,7 +641,7 @@ BarPill {
                 Text {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    text: "Notifications"
+                    text: I18n.tr("Notifications")
                     color: Theme.text
                     font.family: Theme.fontFamily
                     font.weight: Font.DemiBold
@@ -683,15 +683,15 @@ BarPill {
                     anchors.verticalCenter: parent.verticalCenter
                     text: {
                         if (Notifs.dnd)
-                            return "Do Not Disturb · " + root.notifCount + " waiting";
+                            return I18n.tr("Do Not Disturb · %1 waiting", root.notifCount);
 
                         if (Notifs.quietNow)
-                            return "Quiet hours · " + root.notifCount + " waiting";
+                            return I18n.tr("Quiet hours · %1 waiting", root.notifCount);
 
                         if (root.notifCount === 0)
-                            return "Nothing waiting";
+                            return I18n.tr("Nothing waiting");
 
-                        return root.notifCount === 1 ? "1 notification" : root.notifCount + " notifications";
+                        return I18n.trn("%1 notification", "%1 notifications", root.notifCount);
                     }
                     color: (Notifs.dnd || Notifs.quietNow) ? Theme.accent : Theme.subtext
                     font.family: Theme.fontFamily
@@ -702,7 +702,7 @@ BarPill {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     visible: Notifs.rows.length > 0 && Prefs.notifGrouping
-                    label: "Expand all"
+                    label: I18n.tr("Expand all")
                     labelColor: Theme.subtext
                     onClicked: Notifs.expandAll()
                 }
@@ -730,7 +730,7 @@ BarPill {
 
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        text: "You're all caught up"
+                        text: I18n.tr("You're all caught up")
                         color: Theme.subtext
                         font.family: Theme.fontFamily
                         font.weight: Font.DemiBold
@@ -739,7 +739,7 @@ BarPill {
 
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        text: Notifs.dnd ? "Notifications are being held back" : "New notifications will show up here"
+                        text: Notifs.dnd ? I18n.tr("Notifications are being held back") : I18n.tr("New notifications will show up here")
                         color: Theme.subtextDim
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fs(10)
@@ -921,7 +921,7 @@ BarPill {
                 NotifTextButton {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    label: "Clear all"
+                    label: I18n.tr("Clear all")
                     enabled: root.notifCount > 0
                     onClicked: Notifs.clearAll()
                 }
