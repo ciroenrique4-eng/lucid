@@ -202,7 +202,7 @@ Item {
                     }
 
                     Text {
-                        text: netItem.isConnected ? "Connected · " + root.strengthLabel(netItem.modelData.signalStrength || 0) : root.strengthLabel(netItem.modelData.signalStrength || 0)
+                        text: netItem.isConnected ? I18n.tr("Connected · %1", root.strengthLabel(netItem.modelData.signalStrength || 0)) : root.strengthLabel(netItem.modelData.signalStrength || 0)
                         color: netItem.isConnected ? Theme.accent : Theme.subtext
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fs(10)
@@ -282,7 +282,7 @@ Item {
                         anchors.left: parent.left
                         anchors.leftMargin: 10
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Enter password..."
+                        text: I18n.tr("Enter password...")
                         color: Theme.outlineStrong
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fs(11)
@@ -334,7 +334,7 @@ Item {
 
                         Text {
                             anchors.centerIn: parent
-                            text: netItem.isConnecting ? "Connecting..." : (netItem.isConnected ? "Disconnect" : "Connect")
+                            text: netItem.isConnecting ? I18n.tr("Connecting...") : (netItem.isConnected ? I18n.tr("Disconnect") : I18n.tr("Connect"))
                             color: netItem.isConnecting ? Theme.subtext : (netItem.isConnected ? Theme.accent : Theme.bgOpaque)
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -397,7 +397,7 @@ Item {
 
                         Text {
                             anchors.centerIn: parent
-                            text: "Forget Network"
+                            text: I18n.tr("Forget Network")
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.bold: true
@@ -508,7 +508,7 @@ Item {
 
                     visible: netItem.connectFailed && !netItem.isConnected && !netItem.isConnecting
                     width: parent.width - 46
-                    text: netItem.failReason || (netItem.attemptedWithNewPassword ? "Incorrect password." : "Connection failed.")
+                    text: netItem.failReason || (netItem.attemptedWithNewPassword ? I18n.tr("Incorrect password.") : I18n.tr("Connection failed."))
                     color: Theme.error
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(10)
@@ -547,7 +547,7 @@ Item {
                     }
 
                     Text {
-                        text: "Connect automatically"
+                        text: I18n.tr("Connect automatically")
                         color: Theme.subtext
                         font.family: Theme.fontFamily
                         font.bold: true
@@ -620,7 +620,7 @@ Item {
     property string hiddenSsid: ""
     property string hiddenPsk: ""
     property bool hiddenFailed: false
-    readonly property string hiddenErrorDetail: root.hiddenFailed ? (hiddenStderr.text.trim().length > 0 ? hiddenStderr.text.trim() : "nmcli failed to connect (no further detail available).") : ""
+    readonly property string hiddenErrorDetail: root.hiddenFailed ? (hiddenStderr.text.trim().length > 0 ? hiddenStderr.text.trim() : I18n.tr("nmcli failed to connect (no further detail available).")) : ""
     readonly property bool ethernetConnected: !!(root.wiredDevice && root.wiredDevice.connected)
     readonly property bool connecting: wifiDevice && wifiDevice.state === ConnectionState.Connecting
     readonly property bool wifiConnected: wifiDevice ? wifiDevice.connected : false
@@ -636,15 +636,15 @@ Item {
     }
     readonly property string statusText: {
         if (root.primaryIsEthernet)
-            return "Ethernet";
+            return I18n.tr("Ethernet");
 
         if (root.connecting)
-            return "Connecting...";
+            return I18n.tr("Connecting...");
 
         if (root.wifiConnected && root.activeNetwork)
             return root.activeNetwork.name;
 
-        return "Disconnected";
+        return I18n.tr("Disconnected");
     }
     property real lastRx: -1
     property real lastTx: -1
@@ -679,15 +679,15 @@ Item {
     function failReasonText(reason) {
         switch (reason) {
         case ConnectionFailReason.NoSecrets:
-            return "No password saved for this network.";
+            return I18n.tr("No password saved for this network.");
         case ConnectionFailReason.WifiAuthTimeout:
-            return "Authentication timed out.";
+            return I18n.tr("Authentication timed out.");
         case ConnectionFailReason.WifiClientFailed:
-            return "The Wi-Fi client failed to connect.";
+            return I18n.tr("The Wi-Fi client failed to connect.");
         case ConnectionFailReason.WifiClientDisconnected:
-            return "Disconnected during the connection attempt.";
+            return I18n.tr("Disconnected during the connection attempt.");
         case ConnectionFailReason.WifiNetworkLost:
-            return "The network went out of range.";
+            return I18n.tr("The network went out of range.");
         default:
             return ConnectionFailReason.toString(reason);
         }
@@ -768,12 +768,12 @@ Item {
 
     function strengthLabel(s) {
         if (s >= 66)
-            return "Strong";
+            return I18n.tr("Strong");
 
         if (s >= 33)
-            return "Good";
+            return I18n.tr("Good");
 
-        return "Weak";
+        return I18n.tr("Weak");
     }
 
     function refreshActiveNetwork() {
@@ -820,11 +820,11 @@ Item {
     function connectivityLabel() {
         switch (Networking.connectivity) {
         case NetworkConnectivity.None:
-            return "No internet access";
+            return I18n.tr("No internet access");
         case NetworkConnectivity.Portal:
-            return "Sign-in required";
+            return I18n.tr("Sign-in required");
         case NetworkConnectivity.Limited:
-            return "Limited connectivity";
+            return I18n.tr("Limited connectivity");
         default:
             return "";
         }
@@ -867,7 +867,7 @@ Item {
             root.pendingNetworkName = "";
             root.setUiState(targetNetwork.name, {
                 "connectFailed": true,
-                "failReason": "Timed out waiting for a response from the network.",
+                "failReason": I18n.tr("Timed out waiting for a response from the network."),
                 "showPasswordInput": secured,
                 "isUntrustedAttempt": secured
             });
@@ -1008,7 +1008,7 @@ Item {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 visible: Networking.canCheckConnectivity
-                text: "Recheck"
+                text: I18n.tr("Recheck")
                 color: Theme.accentMuted
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(10)
@@ -1049,7 +1049,7 @@ Item {
                 spacing: 1
 
                 Text {
-                    text: "Ethernet"
+                    text: I18n.tr("Ethernet")
                     color: Theme.text
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -1059,15 +1059,15 @@ Item {
                 Text {
                     text: {
                         if (!root.wiredDevice)
-                            return "No cable connected";
+                            return I18n.tr("No cable connected");
 
                         if (root.ethernetConnected)
-                            return "Connected" + (root.wiredDevice.linkSpeed > 0 ? " · " + root.wiredDevice.linkSpeed + " Mbps" : "");
+                            return I18n.tr("Connected") + (root.wiredDevice.linkSpeed > 0 ? " · " + root.wiredDevice.linkSpeed + " Mbps" : "");
 
                         if (root.wiredDevice.hasLink)
-                            return "Cable connected · not configured";
+                            return I18n.tr("Cable connected · not configured");
 
-                        return "No cable connected";
+                        return I18n.tr("No cable connected");
                     }
                     color: root.ethernetConnected ? Theme.accent : Theme.subtext
                     font.family: Theme.fontFamily
@@ -1089,7 +1089,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: "Disconnect"
+                    text: I18n.tr("Disconnect")
                     color: Theme.text
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -1127,7 +1127,7 @@ Item {
             Text {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Wi-Fi"
+                text: I18n.tr("Wi-Fi")
                 color: Theme.text
                 font.family: Theme.fontFamily
                 font.bold: true
@@ -1182,7 +1182,7 @@ Item {
         Text {
             visible: !Networking.wifiHardwareEnabled
             width: parent.width
-            text: "Wi-Fi is disabled by a hardware switch"
+            text: I18n.tr("Wi-Fi is disabled by a hardware switch")
             color: Theme.subtext
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fs(11)
@@ -1240,7 +1240,7 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: scanButton.scanning ? "Scanning" + ".".repeat(scanButton.dotCount) : "Search for networks"
+                    text: scanButton.scanning ? I18n.tr("Scanning") + ".".repeat(scanButton.dotCount) : I18n.tr("Search for networks")
                     color: scanButton.scanning ? Theme.accent : (scanArea.containsMouse ? Theme.text : Theme.subtext)
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(12)
@@ -1261,7 +1261,7 @@ Item {
                 anchors.rightMargin: 4
                 anchors.verticalCenter: parent.verticalCenter
                 visible: scanButton.scanning
-                text: "tap to stop"
+                text: I18n.tr("tap to stop")
                 color: Theme.accentMuted
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fs(10)
@@ -1295,7 +1295,7 @@ Item {
                 visible: root.connectedNetworks.length > 0
 
                 Text {
-                    text: "CONNECTED"
+                    text: I18n.tr("CONNECTED")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -1321,7 +1321,7 @@ Item {
                 visible: root.savedNetworks.length > 0
 
                 Text {
-                    text: "SAVED"
+                    text: I18n.tr("SAVED")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -1347,7 +1347,7 @@ Item {
                 visible: root.nearbyNetworks.length > 0
 
                 Text {
-                    text: "NEARBY"
+                    text: I18n.tr("NEARBY")
                     color: Theme.subtextDim
                     font.family: Theme.fontFamily
                     font.bold: true
@@ -1376,7 +1376,7 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: scanButton.scanning ? "Looking for networks…" : "No networks found"
+                    text: scanButton.scanning ? I18n.tr("Looking for networks…") : I18n.tr("No networks found")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(12)
@@ -1391,7 +1391,7 @@ Item {
 
                 Text {
                     visible: !root.hiddenFormOpen
-                    text: "Connect to hidden network"
+                    text: I18n.tr("Connect to hidden network")
                     color: Theme.subtext
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fs(11)
@@ -1428,7 +1428,7 @@ Item {
                             anchors.left: parent.left
                             anchors.leftMargin: 10
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Network name (SSID)"
+                            text: I18n.tr("Network name (SSID)")
                             color: Theme.outlineStrong
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fs(11)
@@ -1470,7 +1470,7 @@ Item {
                             anchors.left: parent.left
                             anchors.leftMargin: 10
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "Password (leave blank if open)"
+                            text: I18n.tr("Password (leave blank if open)")
                             color: Theme.outlineStrong
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fs(11)
@@ -1525,7 +1525,7 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "Connect"
+                                text: I18n.tr("Connect")
                                 color: Theme.bg
                                 font.family: Theme.fontFamily
                                 font.bold: true
@@ -1553,7 +1553,7 @@ Item {
 
                             Text {
                                 anchors.centerIn: parent
-                                text: "Cancel"
+                                text: I18n.tr("Cancel")
                                 color: Theme.text
                                 font.family: Theme.fontFamily
                                 font.bold: true
