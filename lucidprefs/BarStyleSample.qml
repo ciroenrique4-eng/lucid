@@ -51,8 +51,12 @@ Item {
         "system/battery": systemBattery,
         "tray/collapsed": trayCollapsed,
         "tray/icons": trayIcons,
+        "tray/drawer": trayDrawer,
+        "tray/dots": trayDots,
         "privacy/marks": privacyMarks,
         "privacy/dot": privacyDot,
+        "privacy/chip": privacyChip,
+        "privacy/pulse": privacyPulse,
         "power/icon": powerIcon,
         "power/accent": powerAccent,
         "power/panel/list": powerPanelList,
@@ -71,8 +75,14 @@ Item {
         "system/panel/minimal": systemPanelMinimal,
         "start/logo": startLogo,
         "start/grid": startGrid,
+        "start/distro": startDistro,
+        "start/avatar": startAvatar,
+        "start/label": startLabel,
         "desktop/sliver": desktopSliver,
-        "desktop/icon": desktopIcon
+        "desktop/icon": desktopIcon,
+        "desktop/windows": desktopWindows,
+        "desktop/label": desktopLabel,
+        "apps/stack": appsStack
     })
     readonly property string powerPath: "M11 3h2v10h-2V3Zm6.36 2.64 1.42-1.42A9.96 9.96 0 0 1 22 12c0 5.52-4.48 10-10 10S2 17.52 2 12c0-2.76 1.12-5.26 2.93-7.07l1.42 1.42A7.96 7.96 0 0 0 4 12c0 4.42 3.58 8 8 8s8-3.58 8-8c0-2.21-.9-4.21-2.64-5.36Z"
     readonly property string micPath: "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
@@ -1382,6 +1392,137 @@ Item {
     }
 
     Component {
+        id: trayDrawer
+
+        Row {
+            spacing: 4
+
+            MiniGlyph {
+                path: "M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+                implicitWidth: 16
+                implicitHeight: 16
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Rectangle {
+                width: 16
+                height: 16
+                radius: Theme.pill(height)
+                color: Theme.accent
+                anchors.verticalCenter: parent.verticalCenter
+
+                BarText {
+                    anchors.centerIn: parent
+                    text: "3"
+                    color: Theme.bgOpaque
+                    font.pixelSize: Theme.fs(11)
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: trayDots
+
+        Row {
+            spacing: 4
+
+            Repeater {
+                model: 3
+
+                Rectangle {
+                    required property int index
+
+                    width: 6
+                    height: 6
+                    radius: 3
+                    color: index === 0 ? Theme.accent : Theme.subtext
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: privacyChip
+
+        Rectangle {
+            implicitWidth: chipSampleRow.implicitWidth + 18
+            implicitHeight: 22
+            radius: Theme.pill(height)
+            color: Theme.alpha(Theme.warning, 0.2)
+
+            Row {
+                id: chipSampleRow
+
+                anchors.centerIn: parent
+                spacing: 5
+
+                MiniGlyph {
+                    anchors.verticalCenter: parent.verticalCenter
+                    implicitWidth: 13
+                    implicitHeight: 13
+                    path: sample.micPath
+                    ink: Theme.warning
+                }
+
+                BarText {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: I18n.tr("Microphone") + " · App" // i18n-skip
+                    color: Theme.warning
+                    font.pixelSize: Theme.fs(11)
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: privacyPulse
+
+        Item {
+            implicitWidth: 24
+            implicitHeight: 24
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 22
+                height: 22
+                radius: 11
+                color: "transparent"
+                border.width: 2
+                border.color: Theme.alpha(Theme.error, 0.4)
+            }
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: 16
+                height: 16
+                radius: 8
+                color: Theme.alpha(Theme.error, 0.25)
+
+                MiniGlyph {
+                    anchors.centerIn: parent
+                    implicitWidth: 10
+                    implicitHeight: 10
+                    ink: Theme.error
+                    path: "M4 17q-.825 0-1.412-.587T2 15V5q0-.825.588-1.412T4 3h16q.825 0 1.413.588T22 5v10q0 .825-.587 1.413T20 17h-5v2h2v2H7v-2h2v-2H4Z"
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
         id: privacyMarks
 
         Row {
@@ -1916,6 +2057,175 @@ Item {
                 width: 8
                 height: 1.6
                 color: Theme.text
+            }
+
+        }
+
+    }
+
+    Component {
+        id: startDistro
+
+        // a generic peak, in the accent: the real logo is read on the bar
+        MiniGlyph {
+            implicitWidth: 20
+            implicitHeight: 20
+            ink: Theme.accent
+            path: "M12 2 3 21h4.5L12 11l4.5 10H21Z"
+        }
+
+    }
+
+    Component {
+        id: startAvatar
+
+        Rectangle {
+            implicitWidth: 22
+            implicitHeight: 22
+            radius: 11
+            color: Theme.secondaryContainer
+
+            BarText {
+                anchors.centerIn: parent
+                text: (Users.me && Users.me.name ? Users.me.name : "U").charAt(0).toUpperCase() // i18n-skip
+                color: Theme.fgSecondaryContainer
+                font.pixelSize: Theme.fs(11)
+            }
+
+        }
+
+    }
+
+    Component {
+        id: startLabel
+
+        Rectangle {
+            implicitWidth: startLabelText.implicitWidth + 20
+            implicitHeight: 24
+            radius: Theme.pill(height)
+            color: Theme.accent
+
+            BarText {
+                id: startLabelText
+
+                anchors.centerIn: parent
+                text: I18n.trc("start button", "Start")
+                color: Theme.fgAccent
+                font.pixelSize: Theme.fs(12)
+            }
+
+        }
+
+    }
+
+    Component {
+        id: desktopWindows
+
+        Item {
+            implicitWidth: 20
+            implicitHeight: 16
+
+            Rectangle {
+                width: 13
+                height: 10
+                radius: Theme.rad(2.5)
+                color: "transparent"
+                border.width: 1.6
+                border.color: Theme.text
+            }
+
+            Rectangle {
+                x: 6
+                y: 4
+                width: 13
+                height: 10
+                radius: Theme.rad(2.5)
+                color: Theme.alpha(Theme.accent, 0.25)
+                border.width: 1.6
+                border.color: Theme.accent
+            }
+
+            Rectangle {
+                y: 14
+                width: 20
+                height: 2
+                radius: 1
+                color: Theme.alpha(Theme.text, 0.3)
+            }
+
+        }
+
+    }
+
+    Component {
+        id: desktopLabel
+
+        Row {
+            spacing: 6
+
+            Item {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 18
+                height: 14
+
+                Rectangle {
+                    width: 18
+                    height: 11
+                    radius: 2
+                    color: "transparent"
+                    border.width: 1.6
+                    border.color: Theme.text
+                }
+
+                Rectangle {
+                    x: 5
+                    y: 12
+                    width: 8
+                    height: 1.6
+                    color: Theme.text
+                }
+
+            }
+
+            BarText {
+                anchors.verticalCenter: parent.verticalCenter
+                text: I18n.tr("Desktop")
+                font.pixelSize: Theme.fs(12)
+            }
+
+        }
+
+    }
+
+    Component {
+        id: appsStack
+
+        Row {
+            spacing: -12
+
+            Repeater {
+                model: [Theme.tertiaryContainer, Theme.accent, Theme.secondaryContainer, Theme.accentContainer]
+
+                Rectangle {
+                    required property color modelData
+
+                    width: 26
+                    height: 26
+                    radius: 13
+                    color: Theme.bgHigh
+                    border.width: 2
+                    border.color: Theme.bgOpaque
+
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 15
+                        height: 15
+                        radius: 4
+                        color: parent.modelData
+                    }
+
+                }
+
             }
 
         }
