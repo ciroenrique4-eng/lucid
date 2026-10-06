@@ -22,3 +22,12 @@ function osLogo(text) {
 function stackSpacing(slot, open, normal) {
     return open ? normal : -Math.round(slot * 0.45);
 }
+
+// the chip in three pieces, so only the app's name is cut when it doesn't fit
+// and the "+N" that says more apps are at it always shows
+function chipParts(noun, apps) {
+    const list = apps || [];
+    if (list.length === 0)
+        return { "head": noun, "app": "", "more": "" };
+    return { "head": noun + " · ", "app": list[0], "more": list.length > 1 ? "+" + (list.length - 1) : "" };
+}
