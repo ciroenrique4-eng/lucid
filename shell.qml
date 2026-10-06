@@ -554,6 +554,7 @@ ShellRoot {
 
     ToastEvents {
         toast: toastMod
+        osd: osdMod
     }
 
     Lock {
