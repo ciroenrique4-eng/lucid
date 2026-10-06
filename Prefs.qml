@@ -468,6 +468,14 @@ Singleton {
             "key": "icon",
             "name": I18n.tr("Icon"),
             "blurb": I18n.tr("A small empty screen")
+        }, {
+            "key": "windows",
+            "name": I18n.tr("Windows"),
+            "blurb": I18n.tr("Two small windows that drop out of sight with yours and come back with them")
+        }, {
+            "key": "label",
+            "name": I18n.tr("Label"),
+            "blurb": I18n.tr("The screen and the word Desktop")
         }]
     }]
     readonly property bool anyBarModuleEnabled: root.barModules.some((m) => {
