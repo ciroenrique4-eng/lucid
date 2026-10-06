@@ -10,6 +10,7 @@ import Quickshell.Services.UPower
 import Quickshell.Widgets
 import qs
 import "../lucidprefs"
+import "SystemLooks.js" as Looks
 
 BarPill {
     id: root
@@ -167,7 +168,16 @@ BarPill {
     ]
 
     // the face's looks and the indicators it shows, from its card on the Bar page
-    readonly property bool showValues: Prefs.systemStyle !== "icons"
+    readonly property string face: Looks.face(Prefs.systemStyle, root.batteryPresent && root.indicatorOn("battery"))
+    readonly property bool showValues: root.face === "values" || root.face === "accent"
+    readonly property bool ringFace: root.face === "rings"
+    readonly property bool accentFace: root.face === "accent"
+    readonly property bool batteryFace: root.face === "battery"
+    readonly property int ringSize: Math.max(18, Math.min(22, Prefs.barHeight - 14))
+    // what the face is drawn in: on the accent chip everything takes its foreground
+    readonly property color ink: root.accentFace ? Theme.fgAccent : Theme.text
+    readonly property color inkDim: root.accentFace ? Theme.alpha(Theme.fgAccent, 0.65) : Theme.subtext
+    readonly property color hot: root.accentFace ? Theme.fgAccent : Theme.accent
     readonly property var indicators: String(Prefs.systemIndicators).split(",")
 
     function indicatorOn(key) {
@@ -1001,6 +1011,14 @@ BarPill {
     }
 
     compactContent: [
+        Rectangle {
+            visible: root.accentFace
+            anchors.centerIn: content
+            width: content.width + 16
+            height: Math.min(24, parent.height - 6)
+            radius: Theme.pill(height)
+            color: Theme.accent
+        },
         Row {
             id: content
 
@@ -1024,7 +1042,7 @@ BarPill {
 
                     anchors.centerIn: parent
                     text: root.kbLayout
-                    color: Theme.text
+                    color: root.ink
                     font.family: Theme.fontFamily
                     font.bold: true
                     font.pixelSize: Theme.fs(11)
@@ -1045,9 +1063,18 @@ BarPill {
                 id: wifiIcon
 
                 visible: root.indicatorOn("wifi")
-                width: 16
-                height: 16
+                width: root.ringFace ? root.ringSize : 16
+                height: root.ringFace ? root.ringSize : 16
                 anchors.verticalCenter: parent.verticalCenter
+
+                LevelRing {
+                    visible: root.ringFace
+                    size: root.ringSize
+                    value: Looks.level("wifi", {
+                        "connected": wifiPanel.wifiConnected,
+                        "strength": wifiPanel.signalStrength
+                    })
+                }
 
                 Text {
                     anchors.centerIn: parent
@@ -1060,9 +1087,9 @@ BarPill {
                         const s = wifiPanel.signalStrength;
                         return wifiPanel.wifiConnected ? glyphs[Math.max(0, Math.min(4, Math.floor(s / 20)))] : glyphs[0];
                     }
-                    color: wifiPanel.wifiConnected ? Theme.accent : Theme.subtext
+                    color: wifiPanel.wifiConnected ? root.hot : root.inkDim
                     font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fs(15)
+                    font.pixelSize: Theme.fs(root.ringFace ? 12 : 15)
                 }
 
                 Item {
@@ -1077,7 +1104,7 @@ BarPill {
                         radius: 2
                         anchors.centerIn: parent
                         anchors.verticalCenterOffset: 2
-                        color: Theme.accent
+                        color: root.hot
                     }
 
                     Row {
@@ -1088,13 +1115,13 @@ BarPill {
                         Rectangle {
                             width: 2
                             height: 5
-                            color: Theme.accent
+                            color: root.hot
                         }
 
                         Rectangle {
                             width: 2
                             height: 5
-                            color: Theme.accent
+                            color: root.hot
                         }
 
                     }
@@ -1109,7 +1136,7 @@ BarPill {
                 visible: root.btEnabled && root.indicatorOn("bluetooth")
                 anchors.verticalCenter: parent.verticalCenter
                 path: root.btIconPath
-                tint: btPanel.connectedDevices.length > 0 ? Theme.accent : Theme.subtext
+                tint: btPanel.connectedDevices.length > 0 ? root.hot : root.inkDim
                 iconSize: 15
             }
 
@@ -1121,6 +1148,13 @@ BarPill {
                 svgPath: root.volumeIconFor(root.volumePercent)
                 labelText: root.volMuted ? I18n.tr("Muted") : root.volumePercent
                 isMuted: root.volMuted
+                ink: root.ink
+                ringed: root.ringFace
+                ringSize: root.ringSize
+                level: Looks.level("volume", {
+                    "muted": root.volMuted,
+                    "percent": root.volumePercent
+                })
             }
 
             StatusIndicator {
@@ -1131,22 +1165,53 @@ BarPill {
                 svgPath: root.micIconPath
                 labelText: root.micMuted ? I18n.tr("Off") : I18n.tr("On")
                 isMuted: root.micMuted
+                ink: root.ink
+                ringed: root.ringFace
+                ringSize: root.ringSize
+                level: Looks.level("mic", {
+                    "muted": root.micMuted
+                })
             }
 
             Row {
                 id: batteryRow
 
-                readonly property color battColor: root.batteryCharging ? Theme.accent : (root.batteryPercent <= 20 ? Theme.error : Theme.subtext)
+                readonly property color battColor: root.batteryCharging ? root.hot : (root.batteryPercent <= 20 ? Theme.error : root.inkDim)
 
                 spacing: 6
                 anchors.verticalCenter: parent.verticalCenter
                 visible: root.batteryPresent && root.indicatorOn("battery")
 
+                // Rings: the level round a small battery (or bolt) glyph
+                Item {
+                    visible: root.ringFace
+                    width: root.ringSize
+                    height: root.ringSize
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    LevelRing {
+                        size: root.ringSize
+                        value: Looks.level("battery", {
+                            "percent": root.batteryPercent
+                        })
+                        ringColor: !root.batteryCharging && root.batteryPercent <= 20 ? Theme.error : Theme.accent
+                    }
+
+                    SvgIcon {
+                        anchors.centerIn: parent
+                        path: root.batteryCharging ? "M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z" : "M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"
+                        tint: root.ink
+                        iconSize: 12
+                    }
+
+                }
+
                 Item {
                     id: batteryIcon
 
-                    width: 24
-                    height: 15
+                    visible: !root.ringFace
+                    width: root.batteryFace ? 36 : 24
+                    height: root.batteryFace ? 18 : 15
                     anchors.verticalCenter: parent.verticalCenter
 
                     Rectangle {
@@ -1154,9 +1219,9 @@ BarPill {
 
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        width: 20
-                        height: 15
-                        radius: 5
+                        width: root.batteryFace ? 32 : 20
+                        height: root.batteryFace ? 18 : 15
+                        radius: root.batteryFace ? Theme.rad(6) : 5
                         color: "transparent"
                         border.width: 1.5
                         border.color: batteryRow.battColor
@@ -1167,8 +1232,8 @@ BarPill {
                             anchors.bottom: parent.bottom
                             anchors.margins: 1
                             width: Math.max(0, (parent.width - 2) * (root.batteryPercent / 100))
-                            radius: 2
-                            color: batteryRow.battColor
+                            radius: root.batteryFace ? Theme.rad(4) : 2
+                            color: root.batteryFace ? Theme.alpha(batteryRow.battColor, 0.4) : batteryRow.battColor
 
                             Behavior on width {
                                 NumberAnimation {
@@ -1186,8 +1251,33 @@ BarPill {
 
                         }
 
+                        // Battery look: the percentage inside, the bolt before it while charging
+                        Row {
+                            visible: root.batteryFace
+                            anchors.centerIn: parent
+                            spacing: 1
+
+                            SvgIcon {
+                                visible: root.batteryCharging
+                                anchors.verticalCenter: parent.verticalCenter
+                                path: "M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"
+                                tint: root.ink
+                                iconSize: 10
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: root.batteryPercent
+                                color: root.ink
+                                font.family: Theme.fontFamily
+                                font.bold: true
+                                font.pixelSize: Theme.fs(10)
+                            }
+
+                        }
+
                         Shape {
-                            visible: root.batteryCharging
+                            visible: root.batteryCharging && !root.batteryFace
                             anchors.centerIn: parent
                             width: 24
                             height: 25
@@ -1239,7 +1329,7 @@ BarPill {
                     visible: root.showValues
                     anchors.verticalCenter: parent.verticalCenter
                     text: root.batteryPercent + "%"
-                    color: Theme.text
+                    color: root.ink
                     font.family: Theme.fontFamily
                     font.bold: true
                     font.pixelSize: Theme.fontLabelLg
@@ -3759,24 +3849,35 @@ BarPill {
         property string labelText: ""
         property bool isMuted: false
         property bool showLabel: true
+        property color ink: Theme.text
+        // Rings look: the icon smaller inside a ring filled to level
+        property bool ringed: false
+        property real level: 0
+        property int ringSize: 22
 
         spacing: 4
         anchors.verticalCenter: parent.verticalCenter
 
         Item {
-            width: 14
-            height: 14
+            width: ringed ? ringSize : 14
+            height: ringed ? ringSize : 14
             anchors.verticalCenter: parent.verticalCenter
+
+            LevelRing {
+                visible: ringed
+                size: ringSize
+                value: level
+            }
 
             Shape {
                 width: 24
                 height: 24
-                scale: 14 / 24
+                scale: (ringed ? 12 : 14) / 24
                 anchors.centerIn: parent
                 preferredRendererType: Shape.CurveRenderer
 
                 ShapePath {
-                    fillColor: isMuted ? Theme.outlineStrong : Theme.text
+                    fillColor: isMuted ? Theme.outlineStrong : ink
                     strokeWidth: 0
 
                     PathSvg {
@@ -3802,12 +3903,24 @@ BarPill {
             visible: showLabel
             anchors.verticalCenter: parent.verticalCenter
             text: labelText
-            color: Theme.text
+            color: ink
             font.family: Theme.fontFamily
             font.bold: true
             font.pixelSize: Theme.fontLabelLg
         }
 
+    }
+
+    component LevelRing: ProgressRing {
+        property int size: 22
+
+        anchors.centerIn: parent
+        width: size
+        height: size
+        thickness: 2
+        trackColor: Theme.alpha(Theme.text, 0.15)
+        ringColor: Theme.accent
+        duration: Theme.barMs(300)
     }
 
     component SvgIcon: Item {
