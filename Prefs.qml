@@ -163,7 +163,7 @@ Singleton {
         "desc": I18n.tr("Time, date and the calendar panel"),
         "more": I18n.tr("The time format, whether the date shows and the time zone are on the Date & Time page."),
         "page": "datetime",
-        "options": ["clockSeconds", "clockBlink", "clockDateFormat", "clockWeather"],
+        "options": ["clockSeconds", "clockBlink", "clockAnalogTime", "clockDateFormat", "clockWeather"],
         "style": "clockStyle",
         "styles": [{
             "key": "inline",
@@ -177,6 +177,18 @@ Singleton {
             "key": "accent",
             "name": I18n.tr("Accent"),
             "blurb": I18n.tr("The time on a chip in the accent colour")
+        }, {
+            "key": "analog",
+            "name": I18n.tr("Analog"),
+            "blurb": I18n.tr("A small dial, the time beside it if you like")
+        }, {
+            "key": "words",
+            "name": I18n.tr("Words"),
+            "blurb": I18n.tr("The time in words, to five minutes")
+        }, {
+            "key": "split",
+            "name": I18n.tr("Split"),
+            "blurb": I18n.tr("The time and the date on two chips")
         }],
         "panelStyle": "clockPanelStyle",
         "panelStyles": [{
@@ -752,6 +764,7 @@ Singleton {
     property alias clockPanelStyle: s.clockPanelStyle
     property alias clockSeconds: s.clockSeconds
     property alias clockBlink: s.clockBlink
+    property alias clockAnalogTime: s.clockAnalogTime
     property alias clockDateFormat: s.clockDateFormat
     property alias clockWeather: s.clockWeather
     property alias gpsEnabled: s.gpsEnabled
@@ -1122,6 +1135,7 @@ Singleton {
         "clockPanelStyle": "full",
         "clockSeconds": false,
         "clockBlink": true,
+        "clockAnalogTime": true,
         "clockDateFormat": "short",
         "clockWeather": false,
         "gpsEnabled": false,
@@ -1760,6 +1774,7 @@ Singleton {
             property string clockPanelStyle: "full"
             property bool clockSeconds: false
             property bool clockBlink: true
+            property bool clockAnalogTime: true
             property string clockDateFormat: "short"
             property bool clockWeather: false
             property bool gpsEnabled: false

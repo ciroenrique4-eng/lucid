@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Hyprland._FocusGrab
 import Quickshell.Io
 import "../lucidwidgets"
+import "ClockWords.js" as Words
 import qs
 
 BarPill {
@@ -14,6 +15,16 @@ BarPill {
     // the face's looks, from its card on the Bar page
     readonly property bool stacked: Prefs.clockStyle === "stacked"
     readonly property bool accentFace: Prefs.clockStyle === "accent"
+    readonly property bool analogFace: Prefs.clockStyle === "analog"
+    readonly property bool wordsFace: Prefs.clockStyle === "words"
+    readonly property bool splitFace: Prefs.clockStyle === "split"
+    // the time in words, first letter up ("Quarter past ten", "Casi las cinco")
+    readonly property string wordsText: {
+        root.clockTick;
+        const now = Loc.now();
+        const w = Words.words(now.getHours(), now.getMinutes(), I18n.locale.name);
+        return w.charAt(0).toUpperCase() + w.slice(1);
+    }
     readonly property bool calendarOnly: Prefs.clockPanelStyle === "calendar"
     readonly property string dateFormat: Prefs.clockDateFormat === "long" ? I18n.tr("ddd d MMM") : (Prefs.clockDateFormat === "numeric" ? I18n.locale.dateFormat(Locale.ShortFormat) : I18n.tr("ddd d"))
     readonly property string fullTimeFormat: Prefs.clock24h ? "H:mm:ss" : "h:mm:ss AP"
@@ -417,21 +428,66 @@ BarPill {
             radius: Theme.pill(height)
             color: Theme.accent
         },
+        // Split: the time and the date each on a chip of its own
+        Rectangle {
+            visible: root.splitFace && timeRow.visible
+            x: compactRow.x + timeRow.x - 8
+            y: compactRow.y + timeRow.y + (timeRow.height - height) / 2
+            width: timeRow.width + 16
+            height: Math.min(24, parent.height - 6)
+            radius: Theme.pill(height)
+            color: Theme.bgHigh
+        },
+        Rectangle {
+            visible: root.splitFace && dateText.visible
+            x: compactRow.x + dateText.x - 8
+            y: compactRow.y + dateText.y + (dateText.height - height) / 2
+            width: dateText.width + 16
+            height: Math.min(24, parent.height - 6)
+            radius: Theme.pill(height)
+            color: Theme.bgActive
+        },
         // one line, or the time over the date
         Grid {
             id: compactRow
 
             anchors.centerIn: parent
-            columns: root.stacked ? 1 : 5
-            // the chip reaches 8 px past the time, so the date keeps clear of it
-            columnSpacing: root.accentFace ? 14 : 8
+            columns: root.stacked ? 1 : 7
+            // a chip reaches 8 px past what it holds, so the next item keeps clear of it
+            columnSpacing: root.splitFace ? 20 : (root.accentFace ? 14 : 8)
             rowSpacing: -2
             horizontalItemAlignment: Grid.AlignHCenter
             verticalItemAlignment: Grid.AlignVCenter
 
+            // Analog: a small dial, the time beside it if clockAnalogTime
+            AnalogDial {
+                visible: root.analogFace
+                width: Math.max(16, Math.min(22, Prefs.barHeight - 16))
+                height: width
+                date: {
+                    root.clockTick;
+                    return Loc.now();
+                }
+                seconds: Prefs.clockSeconds
+                faceColor: Theme.accentContainer
+                handColor: Theme.fgAccentContainer
+                tickColor: Theme.alpha(Theme.fgAccentContainer, 0.6)
+                secondColor: Theme.accent
+            }
+
+            Text {
+                visible: root.wordsFace
+                text: root.wordsText
+                color: Theme.text
+                font.family: Theme.fontFamily
+                font.bold: true
+                font.pixelSize: Theme.fs(13)
+            }
+
             Row {
                 id: timeRow
 
+                visible: !root.wordsFace && (!root.analogFace || Prefs.clockAnalogTime)
                 spacing: 1
 
                 Text {
@@ -490,7 +546,7 @@ BarPill {
 
             // the dot between time and date; the accent chip sets the time apart already
             Rectangle {
-                visible: Prefs.clockShowDate && !root.stacked && !root.accentFace
+                visible: Prefs.clockShowDate && !root.stacked && !root.accentFace && !root.splitFace
                 width: 3
                 height: 3
                 radius: 1.5
@@ -504,7 +560,7 @@ BarPill {
                 visible: Prefs.clockShowDate
                 // under the time there is no room for the bell: the date
                 // takes the accent instead while a reminder is coming up
-                color: root.stacked && root.hasUpcomingReminder ? Theme.accent : Theme.subtextDim
+                color: root.stacked && root.hasUpcomingReminder ? Theme.accent : (root.splitFace ? Theme.subtext : Theme.subtextDim)
                 font.family: Theme.fontFamily
                 font.bold: true
                 font.pixelSize: Theme.fs(root.stacked ? 10 : 13)
