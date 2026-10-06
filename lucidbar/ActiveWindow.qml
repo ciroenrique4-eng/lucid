@@ -1,7 +1,9 @@
 import QtQuick
+import QtQuick.Shapes
 import Quickshell
 import Quickshell.Hyprland
 import qs
+import "WindowLooks.js" as Looks
 
 // the window in focus, by its app's icon and its title; open, what can be done
 // to it and the other windows on the same workspace
@@ -46,6 +48,16 @@ BarPill {
     // the looks, from its card on the Bar page
     readonly property bool chipFace: Prefs.windowModuleStyle === "chip"
     readonly property bool iconOnly: Prefs.windowModuleText === "icon"
+    readonly property bool statusFace: Prefs.windowModuleStyle === "status"
+    // with only the icon there is nothing to stack
+    readonly property bool stackedFace: Prefs.windowModuleStyle === "stacked" && !root.iconOnly
+    readonly property var marks: Looks.marks(root.info)
+    readonly property var stackedLines: Looks.stackedLines(root.title, root.appLabel)
+    readonly property var markPaths: ({
+        "floating": "M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z",
+        "pinned": "M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z",
+        "fullscreen": "M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+    })
     // every window on the workspace in view, in Hyprland's order
     readonly property var here: root.active && root.active.workspace && root.active.workspace.toplevels ? root.active.workspace.toplevels.values.filter((t) => {
         return !!t;
@@ -157,7 +169,22 @@ BarPill {
 
         }
 
+        // the Status look shows float, pin and fullscreen: a key that flips one
+        // of them only tells Hyprland's event stream, so read the windows again
+        function onRawEvent(event) {
+            if (root.statusFace && (event.name === "changefloatingmode" || event.name === "pin" || event.name === "fullscreen"))
+                refresh.restart();
+
+        }
+
         target: Hyprland
+    }
+
+    // picked while a window was already floating or pinned: read it fresh
+    onStatusFaceChanged: {
+        if (root.statusFace)
+            refresh.restart();
+
     }
 
     // after quickshell's own first read, not racing it
@@ -283,8 +310,49 @@ BarPill {
                 smooth: true
             }
 
+            // Status: a mark for each of float, pin and fullscreen that is on,
+            // before the title so a long one never pushes them out
+            Row {
+                visible: root.statusFace && root.marks.length > 0
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 3
+
+                Repeater {
+                    model: root.statusFace ? root.marks.length : 0
+
+                    Item {
+                        required property int index
+
+                        width: 14
+                        height: 14
+
+                        Shape {
+                            width: 24
+                            height: 24
+                            scale: 13 / 24
+                            anchors.centerIn: parent
+                            preferredRendererType: Shape.CurveRenderer
+
+                            ShapePath {
+                                fillColor: Theme.accent
+                                strokeWidth: 0
+
+                                PathSvg {
+                                    path: root.markPaths[root.marks[index]] || ""
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
             Text {
-                visible: !root.iconOnly
+                visible: !root.iconOnly && !root.stackedFace
                 anchors.verticalCenter: parent.verticalCenter
                 width: Math.min(implicitWidth, Prefs.windowModuleWidth)
                 text: root.faceText
@@ -293,6 +361,35 @@ BarPill {
                 font.pixelSize: Theme.fontLabelLg
                 font.weight: Font.Medium
                 elide: Text.ElideRight
+            }
+
+            // Stacked: the title over the app's name
+            Column {
+                visible: root.stackedFace
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: -2
+
+                Text {
+                    width: Math.min(implicitWidth, Prefs.windowModuleWidth)
+                    text: root.stackedLines[0]
+                    color: Theme.text
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fs(12)
+                    font.weight: Font.Medium
+                    elide: Text.ElideRight
+                }
+
+                Text {
+                    visible: text !== ""
+                    width: Math.min(implicitWidth, Prefs.windowModuleWidth)
+                    text: root.stackedLines[1]
+                    color: Theme.subtextDim
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fs(10)
+                    font.bold: true
+                    elide: Text.ElideRight
+                }
+
             }
 
         },
