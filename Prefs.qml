@@ -343,6 +343,14 @@ Singleton {
             "key": "chip",
             "name": I18n.tr("Chip"),
             "blurb": I18n.tr("The same on a chip tinted with the accent")
+        }, {
+            "key": "status",
+            "name": I18n.tr("Status"),
+            "blurb": I18n.tr("Marks when the window floats, is pinned or fullscreen")
+        }, {
+            "key": "stacked",
+            "name": I18n.tr("Stacked"),
+            "blurb": I18n.tr("The title, and the app small under it")
         }]
     }, {
         "id": "apps",
