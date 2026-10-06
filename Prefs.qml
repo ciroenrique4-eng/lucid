@@ -187,7 +187,7 @@ Singleton {
             "blurb": I18n.tr("The time in words, to five minutes")
         }, {
             "key": "split",
-            "name": I18n.tr("Split"),
+            "name": I18n.trc("clock look", "Split"),
             "blurb": I18n.tr("The time and the date on two chips")
         }],
         "panelStyle": "clockPanelStyle",

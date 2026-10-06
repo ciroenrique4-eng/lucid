@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Shapes
 import qs
 import "../lucidbar" as Bar
+import "../lucidbar/ClockWords.js" as Words
 
 // a small stand-in for a bar module in one of its styles, drawn with the
 // bar's own fonts and colours, for the style tiles on the module's card.
@@ -18,6 +19,11 @@ Item {
         "clock/inline": clockInline,
         "clock/stacked": clockStacked,
         "clock/accent": clockAccent,
+        "clock/analog": clockAnalog,
+        "clock/words": clockWords,
+        "clock/split": clockSplit,
+        "clock/panel/dial": clockPanelDial,
+        "clock/panel/world": clockPanelWorld,
         "clock/panel/full": clockPanelFull,
         "clock/panel/calendar": clockPanelCalendar,
         "media/playing": mediaPlaying,
@@ -105,6 +111,176 @@ Item {
                 visible: Prefs.clockShowDate
                 text: sample.dateText
                 color: Theme.subtextDim
+            }
+
+        }
+
+    }
+
+    Component {
+        id: clockAnalog
+
+        Row {
+            spacing: 8
+
+            Bar.AnalogDial {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20
+                height: 20
+                date: Loc.now()
+                faceColor: Theme.accentContainer
+                handColor: Theme.fgAccentContainer
+                tickColor: Theme.alpha(Theme.fgAccentContainer, 0.6)
+            }
+
+            BarText {
+                visible: Prefs.clockAnalogTime
+                anchors.verticalCenter: parent.verticalCenter
+                text: sample.timeText
+            }
+
+        }
+
+    }
+
+    Component {
+        id: clockWords
+
+        BarText {
+            text: {
+                const now = Loc.now();
+                const w = Words.words(now.getHours(), now.getMinutes(), I18n.locale.name);
+                return w.charAt(0).toUpperCase() + w.slice(1);
+            }
+        }
+
+    }
+
+    Component {
+        id: clockSplit
+
+        Row {
+            spacing: 4
+
+            Rectangle {
+                width: splitTime.implicitWidth + 16
+                height: 24
+                radius: Theme.pill(height)
+                color: Theme.bgHigh
+
+                BarText {
+                    id: splitTime
+
+                    anchors.centerIn: parent
+                    text: sample.timeText
+                }
+
+            }
+
+            Rectangle {
+                visible: Prefs.clockShowDate
+                width: splitDate.implicitWidth + 16
+                height: 24
+                radius: Theme.pill(height)
+                color: Theme.bgActive
+
+                BarText {
+                    id: splitDate
+
+                    anchors.centerIn: parent
+                    text: sample.dateText
+                    color: Theme.subtext
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: clockPanelDial
+
+        MiniPanel {
+            width: 96
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 6
+
+                Bar.AnalogDial {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: 26
+                    height: 26
+                    detail: true
+                    date: Loc.now()
+                    faceColor: Theme.alpha(Theme.text, 0.08)
+                    handColor: Theme.text
+                    tickColor: Theme.subtext
+                }
+
+                MiniCalendar {
+                    width: parent.width
+                    height: parent.height - 32
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: clockPanelWorld
+
+        MiniPanel {
+            width: 110
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 4
+
+                BarText {
+                    text: sample.timeText
+                    font.pixelSize: Theme.fs(14)
+                }
+
+                Repeater {
+                    model: 3
+
+                    Rectangle {
+                        required property int index
+
+                        width: parent.width
+                        height: 14
+                        radius: Theme.rad(4)
+                        color: Theme.bgHigh
+
+                        Rectangle {
+                            x: 5
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 5
+                            height: 5
+                            radius: 2.5
+                            color: index === 0 ? Theme.subtext : Theme.accent
+                        }
+
+                        Rectangle {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 5
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 22
+                            height: 4
+                            radius: 2
+                            color: Theme.text
+                        }
+
+                    }
+
+                }
+
             }
 
         }
