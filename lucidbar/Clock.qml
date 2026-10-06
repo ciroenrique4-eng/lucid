@@ -477,8 +477,12 @@ BarPill {
                 secondColor: Theme.accent
             }
 
+            // capped like the media title: a long phrase ("las doce menos
+            // veinticinco") elides instead of pushing the next module away
             Text {
                 visible: root.wordsFace
+                width: Math.min(implicitWidth, 220)
+                elide: Text.ElideRight
                 text: root.wordsText
                 color: Theme.text
                 font.family: Theme.fontFamily
