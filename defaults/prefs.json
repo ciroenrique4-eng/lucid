@@ -105,6 +105,7 @@
     "windowModuleWidth": 260,
     "windowModuleScroll": true,
     "windowModuleMiddleClose": false,
+    "windowModulePanelStyle": "list",
     "windowModuleStyle": "plain",
     "showApps": false,
     "appsModuleStyle": "icons",
