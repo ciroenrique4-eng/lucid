@@ -219,6 +219,22 @@ SettingCard {
     }
 
     SettingRow {
+        visible: card.moduleId === "clock" && Prefs.clockStyle === "analog"
+        title: I18n.tr("Time beside the dial")
+        resetKey: "clockAnalogTime"
+        description: I18n.tr("The hours and minutes written next to the small dial. Off, the dial is the whole clock.")
+        showDivider: false
+
+        M3Switch {
+            checked: Prefs.clockAnalogTime
+            onToggled: (v) => {
+                return Prefs.clockAnalogTime = v;
+            }
+        }
+
+    }
+
+    SettingRow {
         id: clockDate
 
         visible: card.moduleId === "clock"
