@@ -22,4 +22,18 @@ TestCase {
         compare(Looks.stackedLines("", "Thunderbird"), ["Thunderbird", ""]);
         compare(Looks.stackedLines("Thunderbird", "Thunderbird"), ["Thunderbird", ""]);
     }
+
+    function test_refresh_on_state_events_and_new_windows() {
+        compare(Looks.refreshOn("changefloatingmode"), true);
+        compare(Looks.refreshOn("pin"), true);
+        compare(Looks.refreshOn("fullscreen"), true);
+        compare(Looks.refreshOn("openwindow"), true);
+        compare(Looks.refreshOn("activewindowv2"), true);
+        compare(Looks.refreshOn("workspace"), false);
+    }
+
+    function test_tile_caption() {
+        compare(Looks.tileCaption("Inbox — Mail", "Thunderbird"), "Inbox — Mail");
+        compare(Looks.tileCaption("", "Thunderbird"), "Thunderbird");
+    }
 }

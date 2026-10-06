@@ -173,9 +173,10 @@ BarPill {
         }
 
         // the Status look shows float, pin and fullscreen: a key that flips one
-        // of them only tells Hyprland's event stream, so read the windows again
+        // of them, or a window opening already floating, only tells Hyprland's
+        // event stream, so read the windows again
         function onRawEvent(event) {
-            if (root.statusFace && (event.name === "changefloatingmode" || event.name === "pin" || event.name === "fullscreen"))
+            if (root.statusFace && Looks.refreshOn(event.name))
                 refresh.restart();
 
         }
@@ -716,7 +717,7 @@ BarPill {
                 text: I18n.tr("Also on this workspace")
             }
 
-            // Grid: the other windows as icons, the title on hover
+            // Grid: the other windows as icons, each with its title under it
             Flow {
                 visible: root.gridPanel && root.others.length > 0
                 width: parent.width
@@ -731,15 +732,16 @@ BarPill {
                         required property int index
                         readonly property var win: root.others[otherTile.index]
 
-                        width: 44
-                        height: 44
+                        width: 82
+                        height: 64
                         radius: Theme.rad(12)
                         color: otherTileArea.containsMouse ? Theme.bgHover : Theme.bgTile
 
                         Image {
                             id: otherTileIcon
 
-                            anchors.centerIn: parent
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            y: 9
                             width: 26
                             height: 26
                             sourceSize.width: 52
@@ -752,12 +754,25 @@ BarPill {
                         // no icon to show: the app's initial, so the tile still says whose it is
                         Text {
                             visible: otherTileIcon.status !== Image.Ready
-                            anchors.centerIn: parent
+                            anchors.centerIn: otherTileIcon
                             text: otherTile.win ? root.appName(otherTile.win).charAt(0).toUpperCase() : ""
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.bold: true
                             font.pixelSize: Theme.fs(16)
+                        }
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: 7
+                            width: parent.width - 10
+                            horizontalAlignment: Text.AlignHCenter
+                            text: otherTile.win ? Looks.tileCaption(otherTile.win.title, root.appName(otherTile.win)) : ""
+                            color: Theme.subtext
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontLabelSm
+                            elide: Text.ElideRight
                         }
 
                         MouseArea {
