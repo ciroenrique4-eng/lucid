@@ -163,7 +163,7 @@ Singleton {
         "desc": I18n.tr("Time, date and the calendar panel"),
         "more": I18n.tr("The time format, whether the date shows and the time zone are on the Date & Time page."),
         "page": "datetime",
-        "options": ["clockSeconds", "clockBlink", "clockAnalogTime", "clockDateFormat", "clockWeather"],
+        "options": ["clockSeconds", "clockBlink", "clockAnalogTime", "clockDateFormat", "clockWeather", "clockPanelZones"],
         "style": "clockStyle",
         "styles": [{
             "key": "inline",
@@ -199,6 +199,14 @@ Singleton {
             "key": "calendar",
             "name": I18n.tr("Calendar"),
             "blurb": I18n.tr("Only the calendar, in a narrow panel")
+        }, {
+            "key": "dial",
+            "name": I18n.tr("Dial"),
+            "blurb": I18n.tr("A large dial above the calendar")
+        }, {
+            "key": "world",
+            "name": I18n.tr("World"),
+            "blurb": I18n.tr("Your time and three cities")
         }]
     }, {
         "id": "notifications",
@@ -762,6 +770,7 @@ Singleton {
     property alias clockShowDate: s.clockShowDate
     property alias clockStyle: s.clockStyle
     property alias clockPanelStyle: s.clockPanelStyle
+    property alias clockPanelZones: s.clockPanelZones
     property alias clockSeconds: s.clockSeconds
     property alias clockBlink: s.clockBlink
     property alias clockAnalogTime: s.clockAnalogTime
@@ -1133,6 +1142,7 @@ Singleton {
         "clockShowDate": true,
         "clockStyle": "inline",
         "clockPanelStyle": "full",
+        "clockPanelZones": "eu",
         "clockSeconds": false,
         "clockBlink": true,
         "clockAnalogTime": true,
@@ -1772,6 +1782,7 @@ Singleton {
             property bool clockShowDate: true
             property string clockStyle: "inline"
             property string clockPanelStyle: "full"
+            property string clockPanelZones: "eu"
             property bool clockSeconds: false
             property bool clockBlink: true
             property bool clockAnalogTime: true
