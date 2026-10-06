@@ -12,38 +12,7 @@ WidgetBody {
     readonly property bool seconds: w.opt("seconds") === true
     readonly property bool showDate: w.opt("showDate") !== false
     readonly property color timeColor: w.opt("accentTime") === true ? Theme.accent : Theme.text
-    readonly property var zoneSets: ({
-        "eu": [{
-            "city": I18n.tr("London"),
-            "tz": "Europe/London"
-        }, {
-            "city": I18n.tr("Paris"),
-            "tz": "Europe/Paris"
-        }, {
-            "city": I18n.tr("Moscow"),
-            "tz": "Europe/Moscow"
-        }],
-        "us": [{
-            "city": I18n.tr("New York"),
-            "tz": "America/New_York"
-        }, {
-            "city": I18n.tr("Chicago"),
-            "tz": "America/Chicago"
-        }, {
-            "city": I18n.tr("Los Angeles"),
-            "tz": "America/Los_Angeles"
-        }],
-        "asia": [{
-            "city": I18n.tr("Dubai"),
-            "tz": "Asia/Dubai"
-        }, {
-            "city": I18n.tr("Tokyo"),
-            "tz": "Asia/Tokyo"
-        }, {
-            "city": I18n.tr("Sydney"),
-            "tz": "Australia/Sydney"
-        }]
-    })
+    readonly property var zoneSets: Loc.zoneSets
     readonly property var zones: w.zoneSets[w.opt("zones")] !== undefined ? w.zoneSets[w.opt("zones")] : w.zoneSets["eu"]
     // minutes east of UTC, one per city, filled in by the offset probe
     property var offsets: [0, 0, 0]
@@ -64,8 +33,7 @@ WidgetBody {
     }
 
     function timeAt(minutesEast) {
-        var real = new Date(w.now.getTime() - Loc.shiftMs);
-        return new Date(real.getTime() + real.getTimezoneOffset() * 60000 + minutesEast * 60000);
+        return Loc.timeAt(w.now, minutesEast);
     }
 
     function shortTime(d) {
@@ -75,16 +43,7 @@ WidgetBody {
     }
 
     function offsetLabel(minutesEast) {
-        var here = Loc.trueOffsetMin;
-        var diff = (minutesEast - here) / 60;
-        if (Math.abs(diff) < 0.01)
-            return I18n.tr("same as here");
-
-        var sign = diff > 0 ? "+" : "−";
-        var abs = Math.abs(diff);
-        var whole = Math.floor(abs);
-        var frac = Math.round((abs - whole) * 60);
-        return sign + whole + (frac ? ":" + w.twoOf(frac) : "") + "h";
+        return Loc.offsetLabel(minutesEast);
     }
 
     bare: w.variant === "minimal"
