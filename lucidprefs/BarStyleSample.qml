@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Shapes
 import qs
+import "../lucidbar" as Bar
 
 // a small stand-in for a bar module in one of its styles, drawn with the
 // bar's own fonts and colours, for the style tiles on the module's card.
@@ -33,6 +34,9 @@ Item {
         "notifications/chip": notificationsChip,
         "system/values": systemValues,
         "system/icons": systemIcons,
+        "system/rings": systemRings,
+        "system/accent": systemAccent,
+        "system/battery": systemBattery,
         "tray/collapsed": trayCollapsed,
         "tray/icons": trayIcons,
         "privacy/marks": privacyMarks,
@@ -666,7 +670,7 @@ Item {
         id: systemValues
 
         MiniSystem {
-            values: true
+            look: "values"
         }
 
     }
@@ -675,85 +679,191 @@ Item {
         id: systemIcons
 
         MiniSystem {
-            values: false
+            look: "icons"
         }
 
     }
 
-    // the system module's face: volume, microphone and battery, as picked
-    component MiniSystem: Row {
-        property bool values: true
+    Component {
+        id: systemRings
+
+        MiniSystem {
+            look: "rings"
+        }
+
+    }
+
+    Component {
+        id: systemAccent
+
+        MiniSystem {
+            look: "accent"
+        }
+
+    }
+
+    Component {
+        id: systemBattery
+
+        MiniSystem {
+            look: "battery"
+        }
+
+    }
+
+    // the system module's face: volume, microphone and battery, as picked,
+    // in one of its looks (values, icons, rings, accent, battery)
+    component MiniSystem: Item {
+        id: mini
+
+        property bool values: look === "values" || look === "accent"
+        property string look: "values"
         readonly property var on: String(Prefs.systemIndicators).split(",")
+        readonly property bool ringed: look === "rings"
+        readonly property color ink: look === "accent" ? Theme.fgAccent : Theme.text
+        readonly property color dim: look === "accent" ? Theme.alpha(Theme.fgAccent, 0.65) : Theme.subtext
 
-        spacing: 10
+        implicitWidth: row.implicitWidth + (look === "accent" ? 16 : 0)
+        implicitHeight: 24
 
-        Row {
-            visible: parent.on.indexOf("volume") !== -1
-            spacing: 4
-            anchors.verticalCenter: parent.verticalCenter
-
-            MiniGlyph {
-                path: "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            BarText {
-                visible: values
-                text: "75"
-                font.pixelSize: Theme.fontLabelLg
-            }
-
+        Rectangle {
+            visible: mini.look === "accent"
+            anchors.fill: parent
+            radius: Theme.pill(height)
+            color: Theme.accent
         }
 
         Row {
-            visible: parent.on.indexOf("mic") !== -1
-            spacing: 4
-            anchors.verticalCenter: parent.verticalCenter
+            id: row
 
-            MiniGlyph {
-                path: "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
-                anchors.verticalCenter: parent.verticalCenter
-            }
+            anchors.centerIn: parent
+            spacing: 10
 
-            BarText {
-                visible: values
-                text: I18n.tr("On")
-                font.pixelSize: Theme.fontLabelLg
-            }
-
-        }
-
-        Row {
-            visible: parent.on.indexOf("battery") !== -1
-            spacing: 6
-            anchors.verticalCenter: parent.verticalCenter
-
-            Rectangle {
-                width: 22
-                height: 12
-                radius: 3
-                color: "transparent"
-                border.width: 1.5
-                border.color: Theme.subtext
+            Row {
+                visible: mini.on.indexOf("volume") !== -1
+                spacing: 4
                 anchors.verticalCenter: parent.verticalCenter
 
-                Rectangle {
-                    x: 2.5
-                    y: 2.5
-                    width: (parent.width - 5) * 0.8
-                    height: parent.height - 5
-                    radius: 1
-                    color: Theme.subtext
+                MiniLevel {
+                    ringed: mini.ringed
+                    ink: mini.ink
+                    level: 0.75
+                    path: "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"
+                }
+
+                BarText {
+                    visible: mini.values
+                    text: "75"
+                    color: mini.ink
+                    font.pixelSize: Theme.fontLabelLg
                 }
 
             }
 
-            BarText {
-                visible: values
-                text: "80%"
-                font.pixelSize: Theme.fontLabelLg
+            Row {
+                visible: mini.on.indexOf("mic") !== -1
+                spacing: 4
+                anchors.verticalCenter: parent.verticalCenter
+
+                MiniLevel {
+                    ringed: mini.ringed
+                    ink: mini.ink
+                    level: 1
+                    path: sample.micPath
+                }
+
+                BarText {
+                    visible: mini.values
+                    text: I18n.tr("On")
+                    color: mini.ink
+                    font.pixelSize: Theme.fontLabelLg
+                }
+
             }
 
+            Row {
+                visible: mini.on.indexOf("battery") !== -1
+                spacing: 6
+                anchors.verticalCenter: parent.verticalCenter
+
+                MiniLevel {
+                    visible: mini.ringed
+                    ringed: mini.ringed
+                    ink: mini.ink
+                    level: 0.8
+                    path: "M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"
+                }
+
+                Rectangle {
+                    visible: !mini.ringed
+                    width: mini.look === "battery" ? 30 : 22
+                    height: mini.look === "battery" ? 16 : 12
+                    radius: mini.look === "battery" ? Theme.rad(5) : 3
+                    color: "transparent"
+                    border.width: 1.5
+                    border.color: mini.dim
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Rectangle {
+                        x: 2.5
+                        y: 2.5
+                        width: (parent.width - 5) * 0.8
+                        height: parent.height - 5
+                        radius: mini.look === "battery" ? Theme.rad(3) : 1
+                        color: mini.look === "battery" ? Theme.alpha(mini.dim, 0.4) : mini.dim
+                    }
+
+                    BarText {
+                        visible: mini.look === "battery"
+                        anchors.centerIn: parent
+                        text: "80"
+                        font.pixelSize: Theme.fs(9)
+                    }
+
+                }
+
+                BarText {
+                    visible: mini.values
+                    text: "80%"
+                    color: mini.ink
+                    font.pixelSize: Theme.fontLabelLg
+                }
+
+            }
+
+        }
+
+    }
+
+    // a glyph, or in the Rings look the glyph inside a ring at its level
+    component MiniLevel: Item {
+        id: lvl
+
+        property string path: ""
+        property real level: 0
+        property bool ringed: false
+        property color ink: Theme.text
+
+        implicitWidth: lvl.ringed ? 20 : 14
+        implicitHeight: lvl.ringed ? 20 : 14
+        anchors.verticalCenter: parent.verticalCenter
+
+        Bar.ProgressRing {
+            visible: lvl.ringed
+            anchors.fill: parent
+            value: lvl.level
+            thickness: 2
+            trackColor: Theme.alpha(Theme.text, 0.15)
+            ringColor: Theme.accent
+            duration: 0
+        }
+
+        MiniGlyph {
+            anchors.centerIn: parent
+            width: lvl.ringed ? 11 : 14
+            height: width
+            path: lvl.path
+            ink: lvl.ink
         }
 
     }
