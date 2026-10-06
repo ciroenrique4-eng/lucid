@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import Quickshell.Widgets
 import qs
 import "../luciddocks"
+import "QuietLooks.js" as Looks
 
 // the dock's pinned apps and every open one, an icon each, for a bar that does
 // the dock's job: a click switches to the app, a middle click opens another
@@ -21,6 +22,10 @@ BarPill {
     readonly property int currentWs: Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : -1
     // the looks and options, from its card on the Bar page
     readonly property bool namesFace: Prefs.appsModuleStyle === "names"
+    // Stack: the icons overlap until the pointer comes, then open out to the
+    // usual spacing (and stay open a moment after it leaves, or while dragging)
+    readonly property bool stackFace: Prefs.appsModuleStyle === "stack"
+    readonly property bool stackOpen: faceArea.containsMouse || stackHold.running || faceArea.dragIndex >= 0 || root.previewShown
     readonly property bool thisWorkspaceOnly: Prefs.appsModuleScope === "workspace"
     readonly property int iconSize: Math.max(16, Math.min(Prefs.appsModuleIconSize, root.compactHeight - 6))
     readonly property int slotWidth: root.iconSize + 14
@@ -489,12 +494,26 @@ BarPill {
 
     }
 
+    Timer {
+        id: stackHold
+
+        interval: 500
+    }
+
     compactContent: [
         Row {
             id: appRow
 
             anchors.centerIn: parent
-            spacing: Prefs.appsModuleSpacing
+            spacing: root.stackFace ? Looks.stackSpacing(root.slotWidth, root.stackOpen, Prefs.appsModuleSpacing) : Prefs.appsModuleSpacing
+
+            Behavior on spacing {
+                NumberAnimation {
+                    duration: Theme.barMs(220)
+                    easing.type: Easing.OutCubic
+                }
+
+            }
 
             // by count, not by the list: the list is rebuilt whenever a window
             // changes title, and a list model would rebuild every icon with it
@@ -605,9 +624,26 @@ BarPill {
 
                     }
 
+                    // Stack: a disc behind each icon, ringed in the bar's colour so
+                    // the overlapped ones stay apart
+                    Rectangle {
+                        visible: root.stackFace
+                        anchors.centerIn: tileIcon
+                        width: root.iconSize + 8
+                        height: width
+                        radius: width / 2
+                        color: Theme.bgHigh
+                        border.width: 2
+                        border.color: Theme.bgOpaque
+                        scale: 1 + tile.swell
+                        transform: Translate {
+                            y: root.atBottom ? -tile.lift : tile.lift
+                        }
+                    }
+
                     // the dock's tile behind the icon
                     Rectangle {
-                        visible: Prefs.appsModuleIconTiles
+                        visible: Prefs.appsModuleIconTiles && !root.stackFace
                         x: tileIcon.x - 4
                         anchors.verticalCenter: parent.verticalCenter
                         width: tileIcon.width + 8
@@ -845,6 +881,11 @@ BarPill {
                     }
                 }
                 return faceArea.hoverAt(mouse.x, mouse.y);
+            }
+            onContainsMouseChanged: {
+                if (!faceArea.containsMouse)
+                    stackHold.restart();
+
             }
             onExited: {
                 faceArea.hoverIndex = -1;

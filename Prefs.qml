@@ -421,6 +421,10 @@ Singleton {
             "key": "names",
             "name": I18n.tr("Names"),
             "blurb": I18n.tr("The icon and the app's name beside it")
+        }, {
+            "key": "stack",
+            "name": I18n.tr("Stack"),
+            "blurb": I18n.tr("The icons overlapped like a pile; they fan out under the pointer")
         }]
     }, {
         "id": "start",
