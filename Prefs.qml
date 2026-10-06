@@ -36,8 +36,89 @@ Singleton {
     readonly property int barPillRadius: Math.round(Math.min(18, Math.round(root.barHeight / 2)) * root.radiusScale)
     readonly property int effectiveBarTopMargin: root.barFlush ? 0 : root.barTopMargin
     readonly property int effectiveDockBottomMargin: root.dockNotch ? 0 : root.dockBottomMargin
-    readonly property bool anyBarModuleEnabled: root.showWorkspaces || root.showMedia || root.showTray || root.showClock || root.showNotifications || root.showSystem
-    readonly property var barModuleKeys: ["showWorkspaces", "showMedia", "showTray", "showClock", "showNotifications", "showSystem"]
+    // every bar module, in one place: the id barLayout arranges it by, the
+    // show* pref that switches it on, the group it starts in, how Settings
+    // names it, the prefs its card on the Bar page sets (options), and where
+    // any settings it has elsewhere live (more, page), and, for one that leaves
+    // the bar while it has nothing to show, when it is there (when). a new module is an entry
+    // here, a pill in shell.qml and its rows in BarModuleCard
+    readonly property var barModules: [{
+        "id": "workspaces",
+        "key": "showWorkspaces",
+        "home": "left",
+        "name": "Workspaces",
+        "desc": "Workspace pills and the expanded overview",
+        "more": "Special workspaces, which it shows as well, have a page of their own.",
+        "page": "workspaces"
+    }, {
+        "id": "media",
+        "key": "showMedia",
+        "home": "left",
+        "name": "Media",
+        "desc": "Now-playing pill and player controls"
+    }, {
+        "id": "tray",
+        "key": "showTray",
+        "home": "left",
+        "name": "Tray",
+        "desc": "Status icons from running applications",
+        "when": "while an app has an icon in the tray"
+    }, {
+        "id": "clock",
+        "key": "showClock",
+        "home": "center",
+        "name": "Clock",
+        "desc": "Time, date and the calendar panel",
+        "more": "The time format and the time zone are on the Date & Time page.",
+        "page": "datetime"
+    }, {
+        "id": "notifications",
+        "key": "showNotifications",
+        "home": "right",
+        "name": "Notifications",
+        "desc": "Toasts and the notification list",
+        "more": "Do not disturb is just below; popups, sounds and quiet hours are on the Notifications page.",
+        "page": "notifications"
+    }, {
+        "id": "system",
+        "key": "showSystem",
+        "home": "right",
+        "name": "System",
+        "desc": "Battery, volume, brightness and quick settings",
+        "more": "Its tiles and the keyboard layout sign are in System module, further down this page.",
+        "page": ""
+    }]
+    readonly property bool anyBarModuleEnabled: root.barModules.some((m) => {
+        return root[m.key] === true;
+    })
+    readonly property var barModuleKeys: root.barModules.map((m) => {
+        return m.key;
+    })
+    readonly property var barModuleHome: {
+        const out = {};
+        for (const m of root.barModules)
+            out[m.id] = m.home;
+        return out;
+    }
+    // the module the Bar page opens on, set by a right click on its pill
+    property string barModuleFocus: ""
+    // the ids of the modules switched on that the bar leaves out right now,
+    // having nothing to show (an empty tray); the bar keeps it up to date, and
+    // a module's "when" in barModules says when it comes back
+    property var barModulesAway: []
+
+    function openBarModule(id) {
+        root.barModuleFocus = id;
+        root.settingsRequested("bar");
+    }
+
+    readonly property var barModuleById: {
+        const out = {};
+        for (const m of root.barModules)
+            out[m.id] = m;
+        return out;
+    }
+    readonly property var barLayoutGroups: root.parseBarLayout(root.barLayout)
     readonly property var widgetKeys: ["widgetsEnabled", "widgetSnap", "widgetLockAll", "widgetHideFullscreen", "widgetOnTop"]
     readonly property var idleKeys: ["idleDim", "idleDimAfter", "idleDimLevel", "idleDimKeyboard", "idleLock", "idleLockAfter", "idleScreenOff", "idleScreenOffAfter", "idleSuspend", "idleSuspendAfter", "idleSuspendOnAc", "idleLockBeforeSleep", "idleWakeAfterSleep", "idleRespectInhibitors", "idleWhileMedia"]
     readonly property var envKeys: ["envCursorTheme", "envCursorSize", "envCursorShadow", "envIconTheme", "envGtkTheme", "envQtStyle", "envQtPlatformTheme", "envColorScheme", "envFontSync", "envAppFont", "envAppFontSize", "envDocumentFont", "envDocumentFontSize", "envMonoFont", "envMonoFontSize", "envApplyGtk", "envApplyQt", "envApplyHypr", "envAdopted"]
@@ -98,6 +179,7 @@ Singleton {
     property alias barSideMargin: s.barSideMargin
     property alias barSpacing: s.barSpacing
     property alias barHoverGrow: s.barHoverGrow
+    property alias barLayout: s.barLayout
     property alias showWorkspaces: s.showWorkspaces
     property alias showMedia: s.showMedia
     property alias showTray: s.showTray
@@ -348,6 +430,7 @@ Singleton {
         "barSideMargin": 17,
         "barSpacing": 8,
         "barHoverGrow": 3,
+        "barLayout": "{\"left\":[\"workspaces\",\"media\",\"tray\"],\"center\":[\"clock\"],\"right\":[\"notifications\",\"system\"]}",
         "showWorkspaces": true,
         "showMedia": true,
         "showTray": true,
@@ -555,13 +638,52 @@ Singleton {
 
     }
 
+    // barLayout is JSON: {"left": [...], "center": [...], "right": [...]}, each
+    // list in order from the screen's left edge. a module it leaves out (a hand
+    // edit, a module added later) goes back to the end of its home group and an
+    // unknown or repeated id is skipped, so every module always has a place
+    function parseBarLayout(text) {
+        let parsed = null;
+        try {
+            parsed = JSON.parse(text);
+        } catch (e) {
+        }
+        const out = {
+            "left": [],
+            "center": [],
+            "right": []
+        };
+        const seen = {};
+        for (const side of ["left", "center", "right"]) {
+            const ids = parsed && Array.isArray(parsed[side]) ? parsed[side] : [];
+            for (const id of ids) {
+                if (root.barModuleHome[id] === undefined || seen[id])
+                    continue;
+
+                seen[id] = true;
+                out[side].push(id);
+            }
+        }
+        for (const id in root.barModuleHome) {
+            if (!seen[id])
+                out[root.barModuleHome[id]].push(id);
+
+        }
+        return out;
+    }
+
+    function setBarLayout(groups) {
+        root.barLayout = JSON.stringify({
+            "left": groups.left,
+            "center": groups.center,
+            "right": groups.right
+        });
+    }
+
+    // on means the modules that ship switched on; one that ships off stays off
     function setAllBarModules(v) {
-        root.showWorkspaces = v;
-        root.showMedia = v;
-        root.showTray = v;
-        root.showClock = v;
-        root.showNotifications = v;
-        root.showSystem = v;
+        for (const m of root.barModules)
+            root[m.key] = v && root.defaults[m.key] === true;
     }
 
     function setSurface(key, v) {
@@ -817,6 +939,7 @@ Singleton {
             property int barSideMargin: 17
             property int barSpacing: 8
             property int barHoverGrow: 3
+            property string barLayout: "{\"left\":[\"workspaces\",\"media\",\"tray\"],\"center\":[\"clock\"],\"right\":[\"notifications\",\"system\"]}"
             property bool showWorkspaces: true
             property bool showMedia: true
             property bool showTray: true
