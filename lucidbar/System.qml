@@ -1210,7 +1210,7 @@ BarPill {
                     id: batteryIcon
 
                     visible: !root.ringFace
-                    width: root.batteryFace ? 36 : 24
+                    width: body.width + 4
                     height: root.batteryFace ? 18 : 15
                     anchors.verticalCenter: parent.verticalCenter
 
@@ -1219,7 +1219,8 @@ BarPill {
 
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        width: root.batteryFace ? 32 : 20
+                        // Battery look: as wide as what it holds, with room to breathe to the border
+                        width: root.batteryFace ? Math.max(32, battFace.implicitWidth + 14) : 20
                         height: root.batteryFace ? 18 : 15
                         radius: root.batteryFace ? Theme.rad(6) : 5
                         color: "transparent"
@@ -1253,9 +1254,11 @@ BarPill {
 
                         // Battery look: the percentage inside, the bolt before it while charging
                         Row {
+                            id: battFace
+
                             visible: root.batteryFace
                             anchors.centerIn: parent
-                            spacing: 1
+                            spacing: 2
 
                             SvgIcon {
                                 visible: root.batteryCharging
