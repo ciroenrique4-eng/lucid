@@ -890,7 +890,7 @@ BarPill {
                 MediaVinyl {
                     visible: root.vinylPanel
                     width: root.contentWidth
-                    height: 190
+                    height: 220
                     source: root.vinylPanel ? root.artUrl : ""
                     spinning: Looks.spinning(root.expanded && root.vinylPanel, root.isPlaying)
                     playing: root.isPlaying
