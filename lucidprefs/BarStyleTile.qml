@@ -60,7 +60,7 @@ Item {
             Rectangle {
                 visible: !tile.panel
                 anchors.centerIn: parent
-                width: Math.min(parent.width, sample.implicitWidth + 24)
+                width: Math.min(parent.width, sample.implicitWidth * sample.scale + 24)
                 height: Math.min(34, Prefs.barHeight)
                 radius: Theme.pill(height)
                 color: Theme.bg
@@ -70,6 +70,8 @@ Item {
                 id: sample
 
                 anchors.centerIn: parent
+                // a wide sample (many indicators, a long translation) shrinks to fit
+                scale: tile.panel ? 1 : Math.min(1, (parent.width - 24) / Math.max(1, sample.implicitWidth))
                 moduleId: tile.moduleId
                 styleKey: tile.key
                 panel: tile.panel
