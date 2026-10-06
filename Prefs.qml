@@ -334,6 +334,16 @@ Singleton {
         "desc": I18n.tr("The focused window's icon and title; open it to float, pin, fullscreen, move or close it, or switch to another window on the workspace"),
         "when": I18n.tr("while a window on this workspace has the focus"),
         "options": ["windowModuleText", "windowModuleWidth", "windowModuleScroll", "windowModuleMiddleClose"],
+        "panelStyle": "windowModulePanelStyle",
+        "panelStyles": [{
+            "key": "list",
+            "name": I18n.tr("List"),
+            "blurb": I18n.tr("The actions as a row of buttons, the other windows as a list")
+        }, {
+            "key": "grid",
+            "name": I18n.tr("Grid"),
+            "blurb": I18n.tr("The actions as square buttons, the other windows as icons")
+        }],
         "style": "windowModuleStyle",
         "styles": [{
             "key": "plain",
@@ -753,6 +763,7 @@ Singleton {
     property alias windowModuleWidth: s.windowModuleWidth
     property alias windowModuleScroll: s.windowModuleScroll
     property alias windowModuleMiddleClose: s.windowModuleMiddleClose
+    property alias windowModulePanelStyle: s.windowModulePanelStyle
     property alias windowModuleStyle: s.windowModuleStyle
     property alias showApps: s.showApps
     property alias appsModuleStyle: s.appsModuleStyle
@@ -1125,6 +1136,7 @@ Singleton {
         "windowModuleWidth": 260,
         "windowModuleScroll": true,
         "windowModuleMiddleClose": false,
+        "windowModulePanelStyle": "list",
         "windowModuleStyle": "plain",
         "showApps": false,
         "appsModuleStyle": "icons",
@@ -1765,6 +1777,7 @@ Singleton {
             property int windowModuleWidth: 260
             property bool windowModuleScroll: true
             property bool windowModuleMiddleClose: false
+            property string windowModulePanelStyle: "list"
             property string windowModuleStyle: "plain"
             property bool showApps: false
             property string appsModuleStyle: "icons"
