@@ -126,6 +126,18 @@ Singleton {
             "key": "compact",
             "name": I18n.tr("Compact"),
             "blurb": I18n.tr("Only the bars and the play button")
+        }, {
+            "key": "progress",
+            "name": I18n.tr("Progress"),
+            "blurb": I18n.tr("The pill fills as the song goes")
+        }, {
+            "key": "ring",
+            "name": I18n.tr("Ring"),
+            "blurb": I18n.tr("A round cover with the song's progress around it")
+        }, {
+            "key": "controls",
+            "name": I18n.tr("Controls"),
+            "blurb": I18n.tr("Previous, play and next, then the track")
         }],
         "panelStyle": "mediaPanelStyle",
         "panelStyles": [{
