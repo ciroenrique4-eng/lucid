@@ -330,6 +330,14 @@ Singleton {
             "key": "dot",
             "name": I18n.tr("Dot"),
             "blurb": I18n.tr("One small dot, red while the screen is shared")
+        }, {
+            "key": "chip",
+            "name": I18n.tr("Chip"),
+            "blurb": I18n.tr("A chip saying what is in use and by which app")
+        }, {
+            "key": "pulse",
+            "name": I18n.tr("Pulse"),
+            "blurb": I18n.tr("The symbol with a ring that spreads out, like a radar")
         }]
     }, {
         "id": "power",
