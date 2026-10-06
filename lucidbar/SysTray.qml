@@ -19,6 +19,14 @@ BarPill {
     })
     // the face's looks, from its card on the Bar page
     readonly property bool iconFace: Prefs.trayStyle === "icons"
+    // Drawer and Dots fold the icons away until the pointer comes, and keep
+    // them out a moment after it leaves, so a pill that grows under it holds
+    readonly property bool drawerFace: Prefs.trayStyle === "drawer"
+    readonly property bool dotsFace: Prefs.trayStyle === "dots"
+    readonly property bool foldFace: root.drawerFace || root.dotsFace
+    property bool pointerIn: false
+    readonly property bool unfolded: root.foldFace && (root.pointerIn || foldHold.running)
+    readonly property bool showIcons: root.iconFace || root.unfolded
     readonly property var trayItems: {
         const raw = SystemTray.items ? SystemTray.items.values : [];
         const visible = raw.filter((i) => {
@@ -85,16 +93,98 @@ BarPill {
 
     }
 
+    Timer {
+        id: foldHold
+
+        interval: 600
+    }
+
     compactContent: [
+        // under everything: the pointer over the pill, for Drawer and Dots
+        Item {
+            anchors.fill: parent
+
+            HoverHandler {
+                enabled: root.foldFace
+                onHoveredChanged: {
+                    root.pointerIn = hovered;
+                    if (!hovered)
+                        foldHold.restart();
+
+                }
+            }
+
+        },
         Row {
             id: compactRow
 
             anchors.centerIn: parent
-            spacing: root.iconFace ? 6 : 4
+            spacing: root.showIcons ? 6 : 4
 
-            // the icons style: each item in the bar, clicked as in the panel
+            // Drawer: the arrow, turned when the drawer is out
+            Item {
+                visible: root.drawerFace
+                width: 14
+                height: 16
+                anchors.verticalCenter: parent.verticalCenter
+
+                Shape {
+                    width: 24
+                    height: 24
+                    scale: 16 / 24
+                    anchors.centerIn: parent
+                    rotation: root.unfolded ? 180 : 0
+                    preferredRendererType: Shape.CurveRenderer
+
+                    ShapePath {
+                        fillColor: Theme.text
+                        strokeWidth: 0
+
+                        PathSvg {
+                            path: "M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+                        }
+
+                    }
+
+                    Behavior on rotation {
+                        NumberAnimation {
+                            duration: Theme.barDurShort
+                            easing.type: Easing.OutCubic
+                        }
+
+                    }
+
+                }
+
+            }
+
+            // Dots: one for each app, the accent for one asking for attention
+            Row {
+                visible: root.dotsFace && !root.unfolded
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 4
+
+                Repeater {
+                    model: root.dotsFace ? root.trayCount : 0
+
+                    Rectangle {
+                        required property int index
+                        readonly property var item: root.trayItems[index]
+
+                        width: 6
+                        height: 6
+                        radius: 3
+                        color: item && item.status === Status.NeedsAttention ? Theme.accent : Theme.subtext
+                    }
+
+                }
+
+            }
+
+            // the icons style, or a drawer pulled out: each item in the bar,
+            // clicked as in the panel
             Repeater {
-                model: root.iconFace ? root.trayItems : []
+                model: root.showIcons ? root.trayItems : []
 
                 Item {
                     id: inline
@@ -170,7 +260,7 @@ BarPill {
             }
 
             Item {
-                visible: !root.iconFace
+                visible: !root.iconFace && !root.foldFace
                 width: 16
                 height: 16
                 anchors.verticalCenter: parent.verticalCenter
@@ -201,7 +291,7 @@ BarPill {
 
                 anchors.verticalCenter: parent.verticalCenter
                 height: 16
-                visible: !root.iconFace
+                visible: !root.iconFace && !root.dotsFace && !root.unfolded
                 width: root.trayCount > 0 ? Math.max(16, countText.implicitWidth + 8) : 0
                 radius: Theme.pill(height)
                 color: Theme.accent

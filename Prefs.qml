@@ -178,6 +178,14 @@ Singleton {
             "key": "icons",
             "name": I18n.tr("Icons"),
             "blurb": I18n.tr("Each app's icon in the bar")
+        }, {
+            "key": "drawer",
+            "name": I18n.tr("Drawer"),
+            "blurb": I18n.tr("An arrow and how many; the icons slide out under the pointer")
+        }, {
+            "key": "dots",
+            "name": I18n.tr("Dots"),
+            "blurb": I18n.tr("A dot for each app; the icons slide out under the pointer")
         }]
     }, {
         "id": "clock",
