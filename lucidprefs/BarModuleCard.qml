@@ -235,6 +235,34 @@ SettingCard {
     }
 
     SettingRow {
+        visible: card.moduleId === "clock" && Prefs.clockPanelStyle === "world"
+        title: I18n.tr("Cities")
+        resetKey: "clockPanelZones"
+        description: I18n.tr("The three cities the World panel shows next to your time.")
+        stacked: true
+        showDivider: false
+
+        M3Segmented {
+            width: Math.min(parent.width, 480)
+            current: Prefs.clockPanelZones
+            options: [{
+                "key": "eu",
+                "label": I18n.tr("Europe")
+            }, {
+                "key": "us",
+                "label": I18n.tr("Americas")
+            }, {
+                "key": "asia",
+                "label": I18n.tr("Asia")
+            }]
+            onChosen: (key) => {
+                return Prefs.clockPanelZones = key;
+            }
+        }
+
+    }
+
+    SettingRow {
         id: clockDate
 
         visible: card.moduleId === "clock"

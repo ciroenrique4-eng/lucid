@@ -24,6 +24,7 @@
     "clockShowDate": true,
     "clockStyle": "inline",
     "clockPanelStyle": "full",
+    "clockPanelZones": "eu",
     "clockSeconds": false,
     "clockBlink": true,
     "clockAnalogTime": true,

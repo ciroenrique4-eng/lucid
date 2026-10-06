@@ -26,6 +26,8 @@ BarPill {
         return w.charAt(0).toUpperCase() + w.slice(1);
     }
     readonly property bool calendarOnly: Prefs.clockPanelStyle === "calendar"
+    readonly property bool dialPanel: Prefs.clockPanelStyle === "dial"
+    readonly property bool worldPanel: Prefs.clockPanelStyle === "world"
     readonly property string dateFormat: Prefs.clockDateFormat === "long" ? I18n.tr("ddd d MMM") : (Prefs.clockDateFormat === "numeric" ? I18n.locale.dateFormat(Locale.ShortFormat) : I18n.tr("ddd d"))
     readonly property string fullTimeFormat: Prefs.clock24h ? "H:mm:ss" : "h:mm:ss AP"
     readonly property int horizontalPadding: 17
@@ -360,7 +362,7 @@ BarPill {
 
     shown: Prefs.showClock
     compactWidth: compactRow.implicitWidth + root.horizontalPadding * 2
-    panelWidth: Math.min(root.calendarOnly ? 360 : 620, root.screenW - 34)
+    panelWidth: Math.min(root.calendarOnly || root.dialPanel ? 360 : (root.worldPanel ? 380 : 620), root.screenW - 34)
     panelHeight: Math.min(root.maxPanelHeight, expandedRow.implicitHeight + 32)
     // reminder toast, on BarPill's alt surface
     altOpen: root.showingNotify
@@ -867,7 +869,7 @@ BarPill {
                 Column {
                     id: leftRail
 
-                    visible: !root.calendarOnly
+                    visible: !root.calendarOnly && !root.dialPanel && !root.worldPanel
                     width: 250
                     spacing: 14
 
@@ -1092,9 +1094,32 @@ BarPill {
 
                 }
 
+                // World: the time here and three cities, instead of the calendar
+                ClockWorldPanel {
+                    visible: root.worldPanel
+                    width: parent.width
+                    live: root.worldPanel && root.expanded
+                    now: {
+                        root.clockTick;
+                        return Loc.now();
+                    }
+                }
+
                 Column {
+                    visible: !root.worldPanel
                     width: parent.width - (leftRail.visible ? leftRail.width + parent.spacing : 0)
                     spacing: 10
+
+                    // Dial: a large face over the calendar
+                    ClockDialPanel {
+                        visible: root.dialPanel
+                        width: parent.width
+                        seconds: Prefs.clockSeconds
+                        now: {
+                            root.clockTick;
+                            return Loc.now();
+                        }
+                    }
 
                     Column {
                         width: parent.width
