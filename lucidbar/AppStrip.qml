@@ -574,7 +574,9 @@ BarPill {
 
                     width: root.namesFace ? nameText.width + root.iconSize + 26 : root.slotWidth
                     height: root.compactHeight
-                    z: tile.lifted ? 10 : 0
+                    // stacked, an app with a count comes forward so the next icon
+                    // doesn't cover its badge
+                    z: tile.lifted ? 10 : (root.stackFace && tile.badge > 0 ? 5 : 0)
                     transform: Translate {
                         x: tile.shift
 
