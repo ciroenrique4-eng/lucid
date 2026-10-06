@@ -66,6 +66,11 @@ BarPill {
     readonly property bool ringFace: root.face === "ring"
     readonly property bool controlsFace: root.face === "controls"
     readonly property bool coverPanel: Prefs.mediaPanelStyle === "cover"
+    readonly property bool vinylPanel: Prefs.mediaPanelStyle === "vinyl"
+    readonly property bool backdropPanel: Prefs.mediaPanelStyle === "backdrop"
+    readonly property bool miniPanel: Prefs.mediaPanelStyle === "mini"
+    // the track on its own line, full width, under whatever is above it
+    readonly property bool trackBelow: root.coverPanel || root.vinylPanel || root.miniPanel
     readonly property string sourceName: root.player ? (root.player.identity || I18n.tr("Media")) : ""
     readonly property string metaLine: {
         if (!root.player)
@@ -423,7 +428,7 @@ BarPill {
 
     shown: Prefs.showMedia && !(Prefs.mediaHideIdle && root.player === null)
     compactWidth: compactRow.implicitWidth + 20
-    panelWidth: Math.min(400, root.screenW - 34)
+    panelWidth: Math.min(root.miniPanel ? 320 : 400, root.screenW - 34)
     panelHeight: 28 + (root.page === "player" ? playerColumn.implicitHeight : shazamColumn.implicitHeight)
     expandedRadius: Theme.radiusXl
     compactCollapseScale: 0.94
@@ -859,6 +864,15 @@ BarPill {
 
         }
 
+        // Backdrop: the cover, blurred, behind everything on the page
+        MediaBackdrop {
+            visible: root.backdropPanel
+            anchors.fill: parent
+            anchors.margins: -14
+            radius: root.expandedRadius
+            source: root.backdropPanel ? root.artUrl : ""
+        }
+
         Column {
             id: playerColumn
 
@@ -868,13 +882,24 @@ BarPill {
             // the cover beside the track, or large above it
             Grid {
                 width: root.contentWidth
-                columns: root.coverPanel ? 1 : 2
+                columns: root.trackBelow ? 1 : 2
                 columnSpacing: 14
                 rowSpacing: 12
+
+                // Vinyl: the cover as a record
+                MediaVinyl {
+                    visible: root.vinylPanel
+                    width: root.contentWidth
+                    height: 190
+                    source: root.vinylPanel ? root.artUrl : ""
+                    spinning: Looks.spinning(root.expanded && root.vinylPanel, root.isPlaying)
+                    onClicked: root.togglePlay()
+                }
 
                 Item {
                     id: artwork
 
+                    visible: !root.vinylPanel && !root.miniPanel
                     width: root.coverPanel ? root.contentWidth : 96
                     height: root.coverPanel ? Math.round(root.contentWidth * 0.62) : 96
 
@@ -930,8 +955,8 @@ BarPill {
                 }
 
                 Item {
-                    width: root.coverPanel ? root.contentWidth : root.contentWidth - 96 - 14
-                    height: root.coverPanel ? 78 : 96
+                    width: root.trackBelow ? root.contentWidth : root.contentWidth - 96 - 14
+                    height: root.trackBelow ? 78 : 96
 
                     Column {
                         anchors.top: parent.top
@@ -1095,6 +1120,7 @@ BarPill {
             Item {
                 id: vizStrip
 
+                visible: !root.miniPanel
                 width: root.contentWidth
                 height: 28
                 opacity: root.isPlaying ? 1 : 0.75
