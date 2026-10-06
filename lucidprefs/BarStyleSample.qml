@@ -625,6 +625,29 @@ Item {
                         color: Theme.accentContainer
                     }
 
+                    // the tonearm, needle down
+                    Rectangle {
+                        x: 46
+                        y: 2
+                        width: 2
+                        height: 30
+                        radius: 1
+                        rotation: 20
+                        transformOrigin: Item.Top
+                        color: Theme.text
+                    }
+
+                    Rectangle {
+                        x: 42
+                        y: -1
+                        width: 7
+                        height: 7
+                        radius: 3.5
+                        color: Theme.bgHigh
+                        border.width: 1
+                        border.color: Theme.subtext
+                    }
+
                 }
 
                 MiniLines {

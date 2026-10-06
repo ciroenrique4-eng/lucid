@@ -893,6 +893,7 @@ BarPill {
                     height: 190
                     source: root.vinylPanel ? root.artUrl : ""
                     spinning: Looks.spinning(root.expanded && root.vinylPanel, root.isPlaying)
+                    playing: root.isPlaying
                     onClicked: root.togglePlay()
                 }
 
