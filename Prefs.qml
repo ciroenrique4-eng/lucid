@@ -148,6 +148,18 @@ Singleton {
             "key": "cover",
             "name": I18n.tr("Large cover"),
             "blurb": I18n.tr("The cover across the panel, the track under it")
+        }, {
+            "key": "vinyl",
+            "name": I18n.tr("Vinyl"),
+            "blurb": I18n.tr("The cover as a record that spins while it plays")
+        }, {
+            "key": "backdrop",
+            "name": I18n.tr("Backdrop"),
+            "blurb": I18n.tr("The cover blurred behind the whole panel")
+        }, {
+            "key": "mini",
+            "name": I18n.tr("Mini"),
+            "blurb": I18n.tr("No cover: the track, its progress and the controls")
         }]
     }, {
         "id": "tray",
