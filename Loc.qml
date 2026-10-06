@@ -45,6 +45,59 @@ Singleton {
     readonly property bool stale: root.shiftMs !== 0
     readonly property string offsetText: root.utcText(root.trueOffsetMin)
 
+    // the cities the world clocks offer, three to a set (the clock widget and the
+    // clock's World panel)
+    readonly property var zoneSets: ({
+        "eu": [{
+            "city": I18n.tr("London"),
+            "tz": "Europe/London"
+        }, {
+            "city": I18n.tr("Paris"),
+            "tz": "Europe/Paris"
+        }, {
+            "city": I18n.tr("Moscow"),
+            "tz": "Europe/Moscow"
+        }],
+        "us": [{
+            "city": I18n.tr("New York"),
+            "tz": "America/New_York"
+        }, {
+            "city": I18n.tr("Chicago"),
+            "tz": "America/Chicago"
+        }, {
+            "city": I18n.tr("Los Angeles"),
+            "tz": "America/Los_Angeles"
+        }],
+        "asia": [{
+            "city": I18n.tr("Dubai"),
+            "tz": "Asia/Dubai"
+        }, {
+            "city": I18n.tr("Tokyo"),
+            "tz": "Asia/Tokyo"
+        }, {
+            "city": I18n.tr("Sydney"),
+            "tz": "Australia/Sydney"
+        }]
+    })
+    // a clock reading at minutesEast of UTC, from now as the shell reads it
+    function timeAt(now, minutesEast) {
+        const real = new Date(now.getTime() - root.shiftMs);
+        return new Date(real.getTime() + real.getTimezoneOffset() * 60000 + minutesEast * 60000);
+    }
+
+    // how far a zone is from here: "+3h", "−5:30h", "same as here"
+    function offsetLabel(minutesEast) {
+        const diff = (minutesEast - root.trueOffsetMin) / 60;
+        if (Math.abs(diff) < 0.01)
+            return I18n.tr("same as here");
+
+        const sign = diff > 0 ? "+" : "−";
+        const abs = Math.abs(diff);
+        const whole = Math.floor(abs);
+        const frac = Math.round((abs - whole) * 60);
+        return sign + whole + (frac ? ":" + String(frac).padStart(2, "0") : "") + "h";
+    }
+
     function now() {
         return new Date(Date.now() + root.shiftMs);
     }
