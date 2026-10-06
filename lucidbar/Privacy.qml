@@ -280,22 +280,38 @@ BarPill {
 
             }
 
-            // Chip: the use and the app, on a chip of its colour
+            // Chip: the use and the app, on a chip of its colour. only the app's
+            // name gives way when it doesn't fit, measured apart (an eliding
+            // Text's implicitWidth follows its own width), so "+N" stays
             Rectangle {
+                id: chip
+
+                readonly property var parts: root.topRow ? Looks.chipParts(root.topRow.title, root.topRow.apps) : ({
+                    "head": "",
+                    "app": "",
+                    "more": ""
+                })
+                readonly property int textRoom: 180 - 18 - 19
+
                 visible: root.chipFace && root.topRow !== null
                 anchors.verticalCenter: parent.verticalCenter
-                width: Math.min(chipRow.implicitWidth + 18, 180)
+                width: chipRow.implicitWidth + 18
                 height: 22
                 radius: Theme.pill(height)
                 color: Theme.alpha(root.colourOf(root.topKind), 0.2)
-                clip: true
+
+                TextMetrics {
+                    id: chipAppMetrics
+
+                    font: chipHead.font
+                    text: chip.parts.app
+                }
 
                 Row {
                     id: chipRow
 
                     anchors.verticalCenter: parent.verticalCenter
                     x: 9
-                    spacing: 5
 
                     NotifIcon {
                         anchors.verticalCenter: parent.verticalCenter
@@ -304,15 +320,40 @@ BarPill {
                         color: root.colourOf(root.topKind)
                     }
 
+                    Item {
+                        width: 5
+                        height: 1
+                    }
+
                     Text {
+                        id: chipHead
+
                         anchors.verticalCenter: parent.verticalCenter
-                        width: Math.min(implicitWidth, 180 - 18 - 19)
-                        text: root.topRow ? Looks.chipText(root.topRow.title, root.topRow.apps) : ""
+                        text: chip.parts.head
                         color: root.colourOf(root.topKind)
                         font.family: Theme.fontFamily
                         font.bold: true
                         font.pixelSize: Theme.fs(11)
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: Math.max(0, Math.min(chipAppMetrics.advanceWidth + 1, chip.textRoom - chipHead.implicitWidth - chipMore.implicitWidth))
+                        text: chip.parts.app
+                        color: root.colourOf(root.topKind)
+                        font: chipHead.font
                         elide: Text.ElideRight
+                    }
+
+                    Text {
+                        id: chipMore
+
+                        visible: text !== ""
+                        anchors.verticalCenter: parent.verticalCenter
+                        leftPadding: 4
+                        text: chip.parts.more
+                        color: root.colourOf(root.topKind)
+                        font: chipHead.font
                     }
 
                 }

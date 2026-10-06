@@ -11,6 +11,9 @@ BarPill {
 
     // its items take the right click for their own menus
     headerOpensSettings: false
+    // Drawer and Dots open under the pointer themselves; the panel opening on
+    // hover too would cover the icons they just pulled out
+    opensOnHover: !root.foldFace
 
     readonly property var hiddenKeywords: ["blueman"]
     // the ones picked away on the module's card, by their id
@@ -173,7 +176,7 @@ BarPill {
 
                         width: 6
                         height: 6
-                        radius: 3
+                        radius: Theme.pill(height)
                         color: item && item.status === Status.NeedsAttention ? Theme.accent : Theme.subtext
                     }
 
