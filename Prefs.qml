@@ -230,6 +230,18 @@ Singleton {
             "key": "icons",
             "name": I18n.tr("Icons"),
             "blurb": I18n.tr("Only the icons, narrower")
+        }, {
+            "key": "rings",
+            "name": I18n.tr("Rings"),
+            "blurb": I18n.tr("Each indicator inside a ring that shows its level")
+        }, {
+            "key": "accent",
+            "name": I18n.tr("Accent"),
+            "blurb": I18n.tr("All the indicators on one chip in the accent")
+        }, {
+            "key": "battery",
+            "name": I18n.tr("Battery"),
+            "blurb": I18n.tr("The battery large with its percentage inside, the rest as small icons")
         }],
         "panelStyle": "systemPanelStyle",
         "panelStyles": [{
