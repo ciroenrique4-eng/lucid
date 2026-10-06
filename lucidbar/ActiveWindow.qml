@@ -49,6 +49,9 @@ BarPill {
     readonly property bool chipFace: Prefs.windowModuleStyle === "chip"
     readonly property bool iconOnly: Prefs.windowModuleText === "icon"
     readonly property bool statusFace: Prefs.windowModuleStyle === "status"
+    readonly property bool gridPanel: Prefs.windowModulePanelStyle === "grid"
+    readonly property string centerPath: "M5 15H3v4c0 1.1.9 2 2 2h4v-2H5v-4zM5 5h4V3H5c-1.1 0-2 .9-2 2v4h2V5zm14-2h-4v2h4v4h2V5c0-1.1-.9-2-2-2zm0 16h-4v2h4c1.1 0 2-.9 2-2v-4h-2v4zM12 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+    readonly property string closePath: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
     // with only the icon there is nothing to stack
     readonly property bool stackedFace: Prefs.windowModuleStyle === "stacked" && !root.iconOnly
     readonly property var marks: Looks.marks(root.info)
@@ -222,6 +225,96 @@ BarPill {
 
         interval: 150
         onTriggered: Hyprland.refreshToplevels()
+    }
+
+    // the Grid panel's action: a square with a symbol over its name
+    component ActionTile: Rectangle {
+        id: tile
+
+        property string label: ""
+        property string glyph: ""
+        property bool on: false
+        property bool danger: false
+        readonly property color ink: tile.danger ? (tileArea.containsMouse ? Theme.fgError : Theme.fgErrorContainer) : (tile.on ? Theme.fgAccent : Theme.fgSecondaryContainer)
+
+        signal clicked()
+
+        width: 66
+        height: 70
+        radius: Theme.rad(16)
+        color: {
+            if (tile.danger)
+                return tileArea.containsMouse ? Theme.error : Theme.errorContainer;
+
+            if (tile.on)
+                return tileArea.containsMouse ? Theme.accentHover : Theme.accent;
+
+            return tileArea.containsMouse ? Theme.alpha(Theme.secondaryContainer, 0.8) : Theme.secondaryContainer;
+        }
+
+        Column {
+            anchors.centerIn: parent
+            width: parent.width - 8
+            spacing: 4
+
+            Item {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 20
+                height: 20
+
+                Shape {
+                    anchors.centerIn: parent
+                    width: 24
+                    height: 24
+                    scale: 20 / 24
+                    preferredRendererType: Shape.CurveRenderer
+
+                    ShapePath {
+                        fillColor: tile.ink
+                        strokeWidth: 0
+
+                        PathSvg {
+                            path: tile.glyph
+                        }
+
+                    }
+
+                }
+
+            }
+
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                text: tile.label
+                color: tile.ink
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontLabelSm
+                font.weight: Font.Medium
+                lineHeight: 0.9
+                wrapMode: Text.Wrap
+                maximumLineCount: 2
+                elide: Text.ElideRight
+            }
+
+        }
+
+        MouseArea {
+            id: tileArea
+
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: tile.clicked()
+        }
+
+        Behavior on color {
+            ColorAnimation {
+                duration: Theme.durShort
+            }
+
+        }
+
     }
 
     component ActionButton: Rectangle {
@@ -468,7 +561,58 @@ BarPill {
 
             }
 
+            // Grid: the same actions as square buttons, a symbol over each name
             Flow {
+                visible: root.gridPanel
+                width: parent.width
+                spacing: 8
+
+                ActionTile {
+                    label: root.info.floating ? I18n.tr("Floating") : I18n.tr("Float")
+                    glyph: root.markPaths.floating
+                    on: root.info.floating === true
+                    onClicked: root.act(root.active, "hl.dsp.window.float", ["action = \"toggle\""])
+                }
+
+                ActionTile {
+                    visible: root.info.floating === true
+                    label: I18n.tr("Center")
+                    glyph: root.centerPath
+                    onClicked: root.act(root.active, "hl.dsp.window.center", [])
+                }
+
+                ActionTile {
+                    visible: root.info.floating === true
+                    label: root.info.pinned ? I18n.tr("Pinned") : I18n.tr("Pin")
+                    glyph: root.markPaths.pinned
+                    on: root.info.pinned === true
+                    onClicked: root.act(root.active, "hl.dsp.window.pin", [])
+                }
+
+                ActionTile {
+                    label: I18n.tr("Fullscreen")
+                    glyph: root.markPaths.fullscreen
+                    on: (root.info.fullscreen || 0) > 0
+                    onClicked: {
+                        root.expanded = false;
+                        root.act(root.active, "hl.dsp.window.fullscreen", ["mode = \"fullscreen\""]);
+                    }
+                }
+
+                ActionTile {
+                    label: I18n.tr("Close")
+                    glyph: root.closePath
+                    danger: true
+                    onClicked: {
+                        root.expanded = false;
+                        root.act(root.active, "hl.dsp.window.close", []);
+                    }
+                }
+
+            }
+
+            Flow {
+                visible: !root.gridPanel
                 width: parent.width
                 spacing: 6
 
@@ -572,8 +716,71 @@ BarPill {
                 text: I18n.tr("Also on this workspace")
             }
 
+            // Grid: the other windows as icons, the title on hover
+            Flow {
+                visible: root.gridPanel && root.others.length > 0
+                width: parent.width
+                spacing: 8
+
+                Repeater {
+                    model: root.gridPanel ? root.others.length : 0
+
+                    Rectangle {
+                        id: otherTile
+
+                        required property int index
+                        readonly property var win: root.others[otherTile.index]
+
+                        width: 44
+                        height: 44
+                        radius: Theme.rad(12)
+                        color: otherTileArea.containsMouse ? Theme.bgHover : Theme.bgTile
+
+                        Image {
+                            id: otherTileIcon
+
+                            anchors.centerIn: parent
+                            width: 26
+                            height: 26
+                            sourceSize.width: 52
+                            sourceSize.height: 52
+                            source: otherTile.win ? root.iconOf(otherTile.win) : ""
+                            asynchronous: true
+                            smooth: true
+                        }
+
+                        // no icon to show: the app's initial, so the tile still says whose it is
+                        Text {
+                            visible: otherTileIcon.status !== Image.Ready
+                            anchors.centerIn: parent
+                            text: otherTile.win ? root.appName(otherTile.win).charAt(0).toUpperCase() : ""
+                            color: Theme.text
+                            font.family: Theme.fontFamily
+                            font.bold: true
+                            font.pixelSize: Theme.fs(16)
+                        }
+
+                        MouseArea {
+                            id: otherTileArea
+
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                const t = otherTile.win;
+                                root.expanded = false;
+                                root.focusWindow(t);
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
             Repeater {
-                model: root.others
+                model: root.gridPanel ? [] : root.others
 
                 Rectangle {
                     id: otherRow
