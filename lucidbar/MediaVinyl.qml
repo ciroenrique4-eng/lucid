@@ -6,9 +6,9 @@ import qs
 // the Vinyl panel's turntable: a plinth with the record on the left and the
 // tonearm on the right. the record (the cover as its label) turns while the
 // music plays and stops where it is on pause; the arm lowers its needle to play
-// and lifts it. the record gets its depth from light (gradients on the plinth,
-// the vinyl and the platter, a sheen that stays put while it turns under it, a
-// shadow under the label); the arm is flat, in the palette's tones
+// and lifts it. the record gets its depth from light (gradients on the vinyl
+// and the platter, a sheen that stays put while it turns under it, a shadow
+// under the label); the plinth and the arm are flat, in the palette's tones
 Item {
     id: vinyl
 
@@ -33,37 +33,13 @@ Item {
 
     signal clicked()
 
-    // ── the plinth ──
+    // ── the plinth: one flat tone of the palette ──
     Rectangle {
         x: vinyl.plinthX
         width: vinyl.plinthW
         height: vinyl.height
         radius: Theme.rad(18)
-        border.width: 1
-        border.color: Theme.alpha("white", 0.07)
-
-        gradient: Gradient {
-            GradientStop {
-                position: 0
-                color: Qt.lighter(Theme.bgHigh, 1.18)
-            }
-
-            GradientStop {
-                position: 1
-                color: Theme.bgActive
-            }
-
-        }
-
-        // a lit top edge
-        Rectangle {
-            x: parent.radius
-            y: 1
-            width: parent.width - parent.radius * 2
-            height: 1
-            color: Theme.alpha("white", 0.12)
-        }
-
+        color: Theme.bgHigh
     }
 
     // power light, glowing while it plays
