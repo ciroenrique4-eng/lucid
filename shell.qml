@@ -26,8 +26,9 @@ ShellRoot {
     // the displays, which own lucid-monitors.lua, the Hyprland options,
     // which own lucid-settings.lua and follow the palette in border colours,
     // the update check, which runs whether or not the settings app is
-    // ever opened, and the clipboard, which owns the wl-paste watchers and so
-    // has to be up long before the launcher is first opened
+    // ever opened, the clipboard, which owns the wl-paste watchers and so
+    // has to be up long before the launcher is first opened, and night
+    // light, whose schedule runs whether or not the System pill is shown
     Component.onCompleted: {
         void KdeConnect.installed;
         void Bt.present;
@@ -43,6 +44,7 @@ ShellRoot {
         void Clip.probed;
         void Users.probed;
         void Polkit.registered;
+        void NightLight.active;
     }
 
     // one bar, or one on every display when Settings > Displays asks for it
