@@ -26,3 +26,19 @@ function stackedLines(title, app) {
         return [a, ""];
     return [t, a];
 }
+
+// Hyprland events after which the Status look reads the windows again: the
+// three states, and a window opening (a rule can make it float or pin from the
+// start) or taking the focus
+var refreshEvents = ["changefloatingmode", "pin", "fullscreen", "openwindow", "activewindowv2"];
+
+function refreshOn(name) {
+    return refreshEvents.indexOf(name) !== -1;
+}
+
+// what the Grid panel writes under another window's icon: its title, or the
+// app's name when it has none
+function tileCaption(title, app) {
+    const t = String(title || "").trim();
+    return t !== "" ? t : String(app || "");
+}
