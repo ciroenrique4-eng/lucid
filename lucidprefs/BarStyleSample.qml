@@ -53,6 +53,10 @@ Item {
         "power/panel/grid": powerPanelGrid,
         "window/plain": windowPlain,
         "window/chip": windowChip,
+        "window/status": windowStatus,
+        "window/stacked": windowStacked,
+        "window/panel/list": windowPanelList,
+        "window/panel/grid": windowPanelGrid,
         "apps/icons": appsIcons,
         "apps/names": appsNames,
         "system/panel/stacked": systemPanelStacked,
@@ -1780,6 +1784,219 @@ Item {
                     font.pixelSize: Theme.fontLabelLg
                     font.weight: Font.Medium
                     font.bold: false
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: windowStatus
+
+        Row {
+            spacing: 8
+
+            Rectangle {
+                width: 17
+                height: 17
+                radius: 4
+                color: Theme.accent
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            MiniGlyph {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 13
+                height: 13
+                ink: Theme.accent
+                path: "M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"
+            }
+
+            BarText {
+                text: I18n.tr("Window title")
+                font.pixelSize: Theme.fontLabelLg
+                font.weight: Font.Medium
+                font.bold: false
+            }
+
+        }
+
+    }
+
+    Component {
+        id: windowStacked
+
+        Row {
+            spacing: 8
+
+            Rectangle {
+                width: 17
+                height: 17
+                radius: 4
+                color: Theme.accent
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Column {
+                spacing: -2
+                anchors.verticalCenter: parent.verticalCenter
+
+                BarText {
+                    text: I18n.tr("Window title")
+                    font.pixelSize: Theme.fs(12)
+                    font.weight: Font.Medium
+                    font.bold: false
+                }
+
+                BarText {
+                    text: I18n.tr("App")
+                    color: Theme.subtextDim
+                    font.pixelSize: Theme.fs(10)
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: windowPanelList
+
+        MiniPanel {
+            width: 130
+            height: 80
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 9
+                spacing: 7
+
+                Row {
+                    spacing: 6
+
+                    Rectangle {
+                        width: 16
+                        height: 16
+                        radius: 4
+                        color: Theme.accentContainer
+                    }
+
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 50
+                        height: 5
+                        radius: 2.5
+                        color: Theme.text
+                    }
+
+                }
+
+                Row {
+                    spacing: 4
+
+                    Repeater {
+                        model: 3
+
+                        Rectangle {
+                            required property int index
+
+                            width: 30
+                            height: 12
+                            radius: Theme.pill(height)
+                            color: index === 0 ? Theme.accent : Theme.secondaryContainer
+                        }
+
+                    }
+
+                }
+
+                Repeater {
+                    model: 2
+
+                    Rectangle {
+                        width: parent.width
+                        height: 10
+                        radius: Theme.rad(4)
+                        color: Theme.bgHigh
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    Component {
+        id: windowPanelGrid
+
+        MiniPanel {
+            width: 130
+            height: 80
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 9
+                spacing: 7
+
+                Row {
+                    spacing: 6
+
+                    Rectangle {
+                        width: 16
+                        height: 16
+                        radius: 4
+                        color: Theme.accentContainer
+                    }
+
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 50
+                        height: 5
+                        radius: 2.5
+                        color: Theme.text
+                    }
+
+                }
+
+                Row {
+                    spacing: 5
+
+                    Repeater {
+                        model: 5
+
+                        Rectangle {
+                            required property int index
+
+                            width: 18
+                            height: 18
+                            radius: Theme.rad(5)
+                            color: index === 0 ? Theme.accent : (index === 4 ? Theme.errorContainer : Theme.secondaryContainer)
+                        }
+
+                    }
+
+                }
+
+                Row {
+                    spacing: 5
+
+                    Repeater {
+                        model: 3
+
+                        Rectangle {
+                            width: 14
+                            height: 14
+                            radius: Theme.rad(4)
+                            color: Theme.bgHigh
+                        }
+
+                    }
+
                 }
 
             }
