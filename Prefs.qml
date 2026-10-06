@@ -439,6 +439,18 @@ Singleton {
             "key": "grid",
             "name": I18n.tr("Grid"),
             "blurb": I18n.tr("Nine dots, the middle one in the accent")
+        }, {
+            "key": "distro",
+            "name": I18n.tr("Distro"),
+            "blurb": I18n.tr("Your distribution's logo, in the accent")
+        }, {
+            "key": "avatar",
+            "name": I18n.tr("Avatar"),
+            "blurb": I18n.tr("Your profile picture")
+        }, {
+            "key": "label",
+            "name": I18n.tr("Label"),
+            "blurb": I18n.tr("The word Start on a chip in the accent")
         }]
     }, {
         "id": "desktop",
