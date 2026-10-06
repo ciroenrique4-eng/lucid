@@ -4,6 +4,7 @@ import Quickshell.Io
 import Quickshell.Services.Pipewire
 import qs
 import "../lucidnotif"
+import "QuietLooks.js" as Looks
 
 // what is listening or watching right now: the microphone, the camera and the
 // screen, each with the apps behind it. nothing in use, no pill at all
@@ -130,6 +131,13 @@ BarPill {
 
     // the dot face: one mark, in the colour of the most telling use
     readonly property bool dotFace: Prefs.privacyStyle === "dot"
+    // Chip and Pulse speak for the most telling use, as the dot does
+    readonly property bool chipFace: Prefs.privacyStyle === "chip"
+    readonly property bool pulseFace: Prefs.privacyStyle === "pulse"
+    readonly property bool singleFace: root.dotFace || root.chipFace || root.pulseFace
+    readonly property var topRow: root.rows.find((r) => {
+        return r.kind === root.topKind;
+    }) || null
     readonly property string topKind: {
         const kinds = root.rows.map((r) => {
             return r.kind;
@@ -272,8 +280,109 @@ BarPill {
 
             }
 
+            // Chip: the use and the app, on a chip of its colour
+            Rectangle {
+                visible: root.chipFace && root.topRow !== null
+                anchors.verticalCenter: parent.verticalCenter
+                width: Math.min(chipRow.implicitWidth + 18, 180)
+                height: 22
+                radius: Theme.pill(height)
+                color: Theme.alpha(root.colourOf(root.topKind), 0.2)
+                clip: true
+
+                Row {
+                    id: chipRow
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: 9
+                    spacing: 5
+
+                    NotifIcon {
+                        anchors.verticalCenter: parent.verticalCenter
+                        size: 14
+                        path: root.icons[root.topKind] || ""
+                        color: root.colourOf(root.topKind)
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: Math.min(implicitWidth, 180 - 18 - 19)
+                        text: root.topRow ? Looks.chipText(root.topRow.title, root.topRow.apps) : ""
+                        color: root.colourOf(root.topKind)
+                        font.family: Theme.fontFamily
+                        font.bold: true
+                        font.pixelSize: Theme.fs(11)
+                        elide: Text.ElideRight
+                    }
+
+                }
+
+            }
+
+            // Pulse: the symbol, a ring spreading from it and fading, over and over
+            Item {
+                visible: root.pulseFace && root.topRow !== null
+                anchors.verticalCenter: parent.verticalCenter
+                width: 22
+                height: 22
+
+                Rectangle {
+                    id: wave
+
+                    anchors.centerIn: parent
+                    width: 10
+                    height: width
+                    radius: width / 2
+                    color: "transparent"
+                    border.width: 2
+                    border.color: root.colourOf(root.topKind)
+
+                    ParallelAnimation {
+                        loops: Animation.Infinite
+                        running: wave.visible && root.pulseFace
+
+                        NumberAnimation {
+                            target: wave
+                            property: "width"
+                            from: 10
+                            to: 22
+                            duration: 1400
+                            easing.type: Easing.OutCubic
+                        }
+
+                        NumberAnimation {
+                            target: wave
+                            property: "opacity"
+                            from: 0.9
+                            to: 0
+                            duration: 1400
+                            easing.type: Easing.OutCubic
+                        }
+
+                    }
+
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 16
+                    height: 16
+                    radius: 8
+                    color: Theme.alpha(root.colourOf(root.topKind), 0.25)
+
+                    NotifIcon {
+                        anchors.centerIn: parent
+                        size: 11
+                        path: root.icons[root.topKind] || ""
+                        color: root.colourOf(root.topKind)
+                    }
+
+                }
+
+            }
+
             Repeater {
-                model: root.dotFace ? [] : root.rows
+                model: root.singleFace ? [] : root.rows
 
                 Rectangle {
                     id: mark
