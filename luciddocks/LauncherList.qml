@@ -598,7 +598,7 @@ Item {
                 Rectangle {
                     width: 24
                     height: 24
-                    radius: 12
+                    radius: Theme.rad(12)
                     anchors.verticalCenter: parent.verticalCenter
                     visible: rowItem.swatchBg !== ""
                     color: rowItem.swatchBg !== "" ? rowItem.swatchBg : "transparent"
@@ -685,7 +685,7 @@ Item {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: width / 2
+                    radius: Theme.pill(width)
                     color: dropHover.hovered ? Theme.error : Theme.text
                     opacity: dropTap.pressed ? Theme.statePressed : (dropHover.hovered ? Theme.stateHover : 0)
 
