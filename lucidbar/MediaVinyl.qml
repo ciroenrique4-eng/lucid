@@ -6,9 +6,9 @@ import qs
 // the Vinyl panel's turntable: a plinth with the record on the left and the
 // tonearm on the right. the record (the cover as its label) turns while the
 // music plays and stops where it is on pause; the arm lowers its needle to play
-// and lifts it, its shadow drifting off as it rises. depth comes from light:
-// gradients on the plinth, the vinyl, the metal and the arm, a sheen that
-// stays put while the record turns under it, and shadows under what sits up
+// and lifts it. the record gets its depth from light (gradients on the plinth,
+// the vinyl and the platter, a sheen that stays put while it turns under it, a
+// shadow under the label); the arm is flat, in the palette's tones
 Item {
     id: vinyl
 
@@ -30,7 +30,6 @@ Item {
     readonly property real armLength: vinyl.r * 1.62
     // where it hangs: on the grooves to play, beside the record at rest
     readonly property real armAngle: vinyl.playing ? 58 : 22
-    readonly property color metal: "#9a9a9a"
 
     signal clicked()
 
@@ -469,41 +468,7 @@ Item {
 
     }
 
-    // ── the tonearm: its shadow first, falling further off as it lifts ──
-    Arm {
-        x: vinyl.px + (vinyl.playing ? 4 : 9)
-        y: vinyl.py + (vinyl.playing ? 6 : 13)
-        rotation: vinyl.armAngle
-        r: vinyl.r
-        length: vinyl.armLength
-        shadow: true
-
-        Behavior on x {
-            NumberAnimation {
-                duration: 700
-                easing.type: Easing.InOutCubic
-            }
-
-        }
-
-        Behavior on y {
-            NumberAnimation {
-                duration: 700
-                easing.type: Easing.InOutCubic
-            }
-
-        }
-
-        Behavior on rotation {
-            NumberAnimation {
-                duration: 700
-                easing.type: Easing.InOutCubic
-            }
-
-        }
-
-    }
-
+    // ── the tonearm: flat, in the palette's tones, no shadow ──
     Arm {
         x: vinyl.px
         y: vinyl.py
@@ -521,68 +486,23 @@ Item {
 
     }
 
-    // the arm rest, where the arm lies when it's lifted
-    Rectangle {
-        x: vinyl.px - vinyl.armLength * Math.sin(22 * Math.PI / 180) * 0.62 - width / 2
-        y: vinyl.py + vinyl.armLength * Math.cos(22 * Math.PI / 180) * 0.62 - height / 2 + 6
-        width: 10
-        height: 6
-        radius: 2
-        color: Theme.alpha("black", 0.35)
-        z: -1
-    }
-
-    // the pivot: a metal turret with a ring and a cap
-    Rectangle {
-        x: vinyl.px - width / 2 + 2
-        y: vinyl.py - height / 2 + 3
-        width: vinyl.r * 0.34
-        height: width
-        radius: width / 2
-        color: Theme.alpha("black", 0.4)
-    }
-
+    // the pivot: a tonal disc with a cap
     Rectangle {
         x: vinyl.px - width / 2
         y: vinyl.py - height / 2
         width: vinyl.r * 0.34
         height: width
         radius: width / 2
-        border.width: 1
-        border.color: Theme.alpha("white", 0.2)
-
-        gradient: Gradient {
-            GradientStop {
-                position: 0
-                color: "#5a5a5a"
-            }
-
-            GradientStop {
-                position: 1
-                color: "#262626"
-            }
-
-        }
+        color: Theme.bgActive
+        border.width: 2
+        border.color: Theme.alpha(Theme.text, 0.18)
 
         Rectangle {
             anchors.centerIn: parent
-            width: parent.width * 0.5
+            width: parent.width * 0.45
             height: width
             radius: width / 2
-
-            gradient: Gradient {
-                GradientStop {
-                    position: 0
-                    color: "#e6e6e6"
-                }
-
-                GradientStop {
-                    position: 1
-                    color: "#6c6c6c"
-                }
-
-            }
-
+            color: Theme.subtext
         }
 
     }
@@ -603,17 +523,15 @@ Item {
         onClicked: vinyl.clicked()
     }
 
-    // the arm hangs from (0, 0), its pivot: a counterweight behind, a tube
-    // lit down one side, a headshell turned in, the needle in the accent.
-    // shadow: the same shape, flat and dark, to drop on what's below
+    // the arm hangs from (0, 0), its pivot: a counterweight behind, the tube,
+    // a headshell turned in and the needle in the accent. flat, in the
+    // palette's tones, like the rest of the shell's controls
     component Arm: Item {
         id: armShape
 
-        property bool shadow: false
         property real r: 80
         property real length: 120
         readonly property real tube: Math.max(3.5, armShape.r * 0.045)
-        readonly property color shade: Theme.alpha("black", 0.35)
 
         // counterweight
         Rectangle {
@@ -622,27 +540,7 @@ Item {
             width: Math.max(12, armShape.r * 0.17)
             height: armShape.r * 0.22
             radius: Theme.rad(4)
-            color: armShape.shadow ? armShape.shade : "transparent"
-
-            gradient: armShape.shadow ? null : weightGradient
-
-            Gradient {
-                id: weightGradient
-
-                orientation: Gradient.Horizontal
-
-                GradientStop {
-                    position: 0
-                    color: "#d8d8d8"
-                }
-
-                GradientStop {
-                    position: 1
-                    color: "#5e5e5e"
-                }
-
-            }
-
+            color: Theme.subtextDim
         }
 
         // the tube
@@ -652,32 +550,7 @@ Item {
             width: armShape.tube
             height: armShape.length - headshell.height + 3
             radius: width / 2
-            color: armShape.shadow ? armShape.shade : "transparent"
-
-            gradient: armShape.shadow ? null : tubeGradient
-
-            Gradient {
-                id: tubeGradient
-
-                orientation: Gradient.Horizontal
-
-                GradientStop {
-                    position: 0
-                    color: "#f4f4f4"
-                }
-
-                GradientStop {
-                    position: 0.45
-                    color: "#bdbdbd"
-                }
-
-                GradientStop {
-                    position: 1
-                    color: "#6a6a6a"
-                }
-
-            }
-
+            color: Theme.subtext
         }
 
         // headshell and needle
@@ -690,29 +563,9 @@ Item {
             height: Math.max(16, armShape.r * 0.21)
             radius: Theme.rad(3)
             rotation: 24
-            color: armShape.shadow ? armShape.shade : "transparent"
-
-            gradient: armShape.shadow ? null : headGradient
-
-            Gradient {
-                id: headGradient
-
-                orientation: Gradient.Horizontal
-
-                GradientStop {
-                    position: 0
-                    color: "#e9e9e9"
-                }
-
-                GradientStop {
-                    position: 1
-                    color: "#7d7d7d"
-                }
-
-            }
+            color: Theme.text
 
             Rectangle {
-                visible: !armShape.shadow
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.bottom
                 anchors.topMargin: -2
