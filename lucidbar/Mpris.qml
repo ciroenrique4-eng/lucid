@@ -6,6 +6,7 @@ import Quickshell.Io
 import Quickshell.Services.Mpris
 import Quickshell.Widgets
 import qs
+import "MediaLooks.js" as Looks
 
 
 BarPill {
@@ -58,8 +59,12 @@ BarPill {
     readonly property string artUrl: root.player ? root.player.trackArtUrl : ""
     readonly property string displayTitle: (root.player && root.artist && Prefs.mediaArtist) ? root.artist + "  -  " + root.title : root.title
     // the face's looks, from its card on the Bar page
-    readonly property bool coverFace: Prefs.mediaStyle === "cover"
-    readonly property bool compactFace: Prefs.mediaStyle === "compact"
+    readonly property string face: Looks.face(Prefs.mediaStyle)
+    readonly property bool coverFace: root.face === "cover"
+    readonly property bool compactFace: root.face === "compact"
+    readonly property bool progressFace: root.face === "progress"
+    readonly property bool ringFace: root.face === "ring"
+    readonly property bool controlsFace: root.face === "controls"
     readonly property bool coverPanel: Prefs.mediaPanelStyle === "cover"
     readonly property string sourceName: root.player ? (root.player.identity || I18n.tr("Media")) : ""
     readonly property string metaLine: {
@@ -619,13 +624,87 @@ BarPill {
             }
         },
 
+        // Progress: the pill fills, as a capsule, as the song goes
+        Rectangle {
+            readonly property real track: parent.width - 8
+
+            visible: root.progressFace && root.player !== null
+            x: 4
+            anchors.verticalCenter: parent.verticalCenter
+            height: parent.height - 8
+            width: Looks.fillWidth(track, root.progress, height)
+            radius: Theme.pill(height)
+            color: Theme.alpha(Theme.accent, 0.28)
+        },
         Row {
             id: compactRow
 
             anchors.centerIn: parent
             spacing: 8
 
+            // Controls: previous, play and next before the track
+            Row {
+                visible: root.controlsFace && root.player !== null
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 2
+
+                IconBtn {
+                    anchors.verticalCenter: parent.verticalCenter
+                    diameter: 22
+                    glyphSize: 12
+                    ghost: true
+                    path: root.prevGlyph
+                    enabledAction: root.player !== null && root.player.canGoPrevious
+                    onActivated: root.skip(-1)
+                }
+
+                IconBtn {
+                    anchors.verticalCenter: parent.verticalCenter
+                    diameter: 22
+                    glyphSize: 13
+                    filled: true
+                    path: root.isPlaying ? root.pauseGlyph : root.playGlyph
+                    tint: Theme.fgAccent
+                    enabledAction: root.player !== null && root.player.canTogglePlaying
+                    onActivated: root.togglePlay()
+                }
+
+                IconBtn {
+                    anchors.verticalCenter: parent.verticalCenter
+                    diameter: 22
+                    glyphSize: 12
+                    ghost: true
+                    path: root.nextGlyph
+                    enabledAction: root.player !== null && root.player.canGoNext
+                    onActivated: root.skip(1)
+                }
+
+            }
+
+            // Ring: the cover, round, with the song's progress round it
+            ProgressRing {
+                visible: root.ringFace && root.player !== null
+                anchors.verticalCenter: parent.verticalCenter
+                width: 26
+                height: 26
+                thickness: 2
+                value: root.hasDuration ? root.progress : 0
+                trackColor: Theme.alpha(Theme.text, 0.15)
+                ringColor: Theme.accent
+                duration: 0
+
+                RoundedArt {
+                    width: 20
+                    height: 20
+                    source: root.artUrl
+                    shapeRadius: 10
+                    fallbackGlyph: 11
+                }
+
+            }
+
             Item {
+                visible: !(root.controlsFace && root.player !== null) && !(root.ringFace && root.player !== null)
                 width: root.coverFace ? 22 : 14
                 height: root.coverFace ? 22 : 18
                 anchors.verticalCenter: parent.verticalCenter
@@ -743,7 +822,7 @@ BarPill {
             }
 
             IconBtn {
-                visible: Prefs.mediaPlayButton
+                visible: Prefs.mediaPlayButton && !root.controlsFace
                 anchors.verticalCenter: parent.verticalCenter
                 diameter: 22
                 glyphSize: 13
