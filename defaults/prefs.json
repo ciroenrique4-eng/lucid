@@ -26,6 +26,7 @@
     "clockPanelStyle": "full",
     "clockSeconds": false,
     "clockBlink": true,
+    "clockAnalogTime": true,
     "clockDateFormat": "short",
     "clockWeather": false,
     "dockAutoHide": false,
