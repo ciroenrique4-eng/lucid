@@ -95,6 +95,7 @@ Item {
     signal backRequested()
     signal deleteRequested(int index)
     signal clearRequested()
+    signal favToggleRequested(int index)
     signal powerChipTapped(string id)
 
     function rowHeightFor(kind, subtitle) {
@@ -226,6 +227,7 @@ Item {
             }
             onActivated: (index) => face.activated(index)
             onDeleteRequested: (index) => face.deleteRequested(index)
+            onFavToggleRequested: (index) => face.favToggleRequested(index)
         }
 
         ClipPreview {
