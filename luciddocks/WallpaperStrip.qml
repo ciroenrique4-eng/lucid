@@ -93,6 +93,8 @@ Item {
         if (strip.pendingPreviewPath === "")
             return;
 
+        // the transition can grow from the card being previewed
+        strip.noteOrigin(view.currentItem);
         strip.previewed(strip.pendingPreviewPath);
         strip.pendingPreviewPath = "";
     }
