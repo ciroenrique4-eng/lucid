@@ -522,9 +522,13 @@ PanelWindow {
     readonly property bool wallIsTiles: Prefs.wallpaperPickerStyle === "tiles"
     readonly property int wallTilesRows: Math.max(2, Math.min(5, Math.round(Prefs.wallpaperTilesRows) || 2))
     readonly property int wallTilesBase: Math.round(dockWindow.wallHeroH * 0.5)
-    readonly property int wallTilesCellW: Prefs.wallpaperTilesAspect === "wide" ? Math.round(dockWindow.wallTilesBase * 16 / 9) : dockWindow.wallTilesBase
     // what the grid leaves around itself: a margin above, the caption and one below
     readonly property int wallTilesChrome: 56
+    // a grid may stand taller than the other panels (it grows with its rows) but not
+    // past this; only then do the tiles shrink, and the width follows the real size
+    readonly property real wallTilesContentMax: Math.max(dockWindow.menuContentMax, Math.round((dockWindow.screen ? dockWindow.screen.height : 1080) * 0.62))
+    readonly property int wallTilesTile: Math.max(40, Math.min(dockWindow.wallTilesBase, Math.floor((dockWindow.wallTilesContentMax - dockWindow.wallTilesChrome) / dockWindow.wallTilesRows)))
+    readonly property int wallTilesCellW: Prefs.wallpaperTilesAspect === "wide" ? Math.round(dockWindow.wallTilesTile * 16 / 9) : dockWindow.wallTilesTile
     readonly property int wallTilesWidth: Math.ceil(wallpapersModel.count / dockWindow.wallTilesRows) * dockWindow.wallTilesCellW + 24
 
     readonly property real menuWidth: {
@@ -550,7 +554,7 @@ PanelWindow {
     readonly property real menuHeight: {
         var content;
         if (dockWindow.mode === "wallpaper")
-            content = dockWindow.wallIsTiles ? Math.min(dockWindow.menuContentMax, dockWindow.wallTilesRows * dockWindow.wallTilesBase + dockWindow.wallTilesChrome) : dockWindow.wallHeroH + 70;
+            content = dockWindow.wallIsTiles ? dockWindow.wallTilesRows * dockWindow.wallTilesTile + dockWindow.wallTilesChrome : dockWindow.wallHeroH + 70;
         else if (dockWindow.mode === "power")
             content = 140;
         // fixed, so deleting entries doesn't shrink the preview under the cursor
