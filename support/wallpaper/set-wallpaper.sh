@@ -119,6 +119,18 @@ set_output() {
         || { [[ -n "$out" ]] && echo "warning: could not set the wallpaper on $out" >&2; }
 }
 
+# WALL_DEMO=1 is Settings -> Theme -> Try transition. The picture is already on
+# screen, so a transition to it would show nothing: put a flat colour taken from
+# the picture up first, then run the real transition. Only the background moves;
+# the colours and the saved wallpaper stay as they are.
+if [[ -n "${WALL_DEMO:-}" ]]; then
+    DEMO_HEX=""
+    command -v magick &>/dev/null && DEMO_HEX=$(magick "$WALLPAPER" -resize '1x1!' -modulate 55 -format '%[hex:u.p{0,0}]' info: 2>/dev/null | tr -dc '0-9A-Fa-f' | head -c 6 | tr a-f A-F)
+    [[ ${#DEMO_HEX} -eq 6 ]] || DEMO_HEX=101018
+    "$WP_CLI" img "0x$DEMO_HEX" --transition-type none &>/dev/null || true
+    sleep 0.3
+fi
+
 # per-output overrides, one rule a line:  <output>  <extra args for img>
 # any argument that is a file becomes that output's image, the rest are passed
 # through, so a portrait screen can letterbox instead of crop, or show its own
@@ -156,6 +168,8 @@ else
         set_output "$OUT_IMG" "$OUT" ${OUT_ARGS[@]+"${OUT_ARGS[@]}"}
     done
 fi
+
+[[ -n "${WALL_DEMO:-}" ]] && exit 0
 
 mkdir -p "$CACHE_DIR"
 printf '%s' "$WALLPAPER" > "$CURRENT_WALL_FILE"

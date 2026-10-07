@@ -841,8 +841,18 @@ Column {
                 }
 
                 WallpaperStyleThumb {
-                    styleId: "card"
-                    label: I18n.tr("Card")
+                    styleId: "accordion"
+                    label: I18n.tr("Accordion")
+                }
+
+                WallpaperStyleThumb {
+                    styleId: "wave"
+                    label: I18n.tr("Wave")
+                }
+
+                WallpaperStyleThumb {
+                    styleId: "bento"
+                    label: I18n.tr("Bento")
                 }
 
             }
@@ -1068,13 +1078,16 @@ Column {
 
         SettingRow {
             title: I18n.tr("Try it")
-            description: I18n.tr("Sets the current wallpaper again with this transition.")
+            description: I18n.tr("Plays the transition from a flat colour taken from your wallpaper into it.")
             showDivider: false
 
             M3Button {
                 text: I18n.tr("Try transition")
                 variant: "tonal"
-                onClicked: page.applyWallpaper(page.appliedWallpaper)
+                onClicked: {
+                    if (page.appliedWallpaper !== "")
+                        Quickshell.execDetached(["env", "WALL_DEMO=1", page.home + "/.config/hypr/scripts/wallpaper/set-wallpaper.sh", page.appliedWallpaper]);
+                }
             }
 
         }

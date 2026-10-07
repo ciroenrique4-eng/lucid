@@ -13,7 +13,9 @@ Item {
         "strip": "WallpaperStrip.qml",
         "pills": "WallpaperPills.qml",
         "tiles": "WallpaperTiles.qml",
-        "card": "WallpaperCard.qml"
+        "accordion": "WallpaperAccordion.qml",
+        "wave": "WallpaperWave.qml",
+        "bento": "WallpaperBento.qml"
     })
     property int pickerIndex: -1
     property bool pickerSettling: false

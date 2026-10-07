@@ -71,5 +71,30 @@ check "awww rejecting bezier -> retried without it" '[[ $(grep -c "^img" <<<"$AL
 run 'TYPE=grow\nORIGIN=cursor\n' -
 check "cursor origin -> fractions from hyprctl" '[[ $LAST =~ --transition-pos\ [01](\.[0-9]+)?,[01](\.[0-9]+)?$ ]]'
 
+# WALL_DEMO: the same picture again would show nothing, so the transition runs
+# from a flat colour taken from the picture, and nothing else is touched
+run_demo() {
+    local h; h=$(mktemp -d)
+    mkdir -p "$h/bin" "$h/.config/lucid" "$h/.cache"
+    printf 'static' > "$h/.cache/current_theme"
+    magick -size 8x8 xc:'#ff0000' "$h/pic.png"
+    printf 'TYPE=grow\nDURATION=2\n' > "$h/.config/lucid/wallpaper-transition.conf"
+    cat > "$h/bin/awww" <<FAKE
+#!/bin/bash
+[ "\$1" = query ] && exit 0
+echo "\$*" >> "$h/awww.log"
+FAKE
+    chmod +x "$h/bin/awww"
+    env HOME="$h" PATH="$h/bin:$PATH" WALL_DEMO=1 bash "$script" "$h/pic.png" dark >/dev/null 2>&1
+    DEMO_RC=$?
+    ALL=$(cat "$h/awww.log" 2>/dev/null)
+    FIRST=$(sed -n 1p <<<"$ALL"); LAST=$(sed -n 2p <<<"$ALL")
+    HOMEDIR=$h
+}
+run_demo
+check "demo: flat colour from the picture first, with no transition" '[[ $FIRST =~ ^img\ 0x[0-9A-F]{6}\ --transition-type\ none ]] && [[ $FIRST != "img 0x000000"* ]]'
+check "demo: then the picture with the chosen transition" '[[ $LAST == "img "*pic.png*"--transition-type grow --transition-duration 2"* ]]'
+check "demo: leaves the saved wallpaper and mode alone" '[[ ! -e $HOMEDIR/.cache/current_wallpaper && ! -e $HOMEDIR/.cache/current_mode && $DEMO_RC == 0 ]]'
+
 echo "wallpaper tests: $pass passed"
 exit $fail
