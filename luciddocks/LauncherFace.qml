@@ -16,6 +16,9 @@ Item {
         "card": "WallpaperCard.qml"
     })
     property int pickerIndex: -1
+    property bool pickerSettling: false
+    // set by hand, never bound: see the Connections on Prefs below for why
+    property string pickerStyle: "strip"
     readonly property var wallStrip: pickerLoader.item
     property string appliedWallpaper: ""
     property int wallHeroW: 340
@@ -112,6 +115,8 @@ Item {
     function rowHeightFor(kind, subtitle) {
         return resultList.heightFor(kind, subtitle);
     }
+
+    Component.onCompleted: face.pickerStyle = Prefs.wallpaperPickerStyle
 
     function setWallpaperIndex(i) {
         face.pickerIndex = i;
@@ -267,8 +272,42 @@ Item {
 
             anchors.fill: parent
             visible: face.displayMode === "wallpaper"
-            source: face.pickerFiles[Prefs.wallpaperPickerStyle] || face.pickerFiles.strip
-            onLoaded: Qt.callLater(face.restorePickerIndex)
+            source: face.pickerFiles[face.pickerStyle] || face.pickerFiles.strip
+            onLoaded: pickerRestore.restart()
+        }
+
+        // A style change is taken in this order on purpose: the old picker reports
+        // index 0 as it is torn down, and the new one does the same while its model
+        // arrives, neither of which is the user moving. So the index is read first,
+        // moves in the middle are ignored, and the new picker is put back where it was.
+        Connections {
+            function onWallpaperPickerStyleChanged() {
+                if (wallStrip)
+                    face.pickerIndex = wallStrip.currentIndex;
+
+                face.pickerSettling = true;
+                face.pickerStyle = Prefs.wallpaperPickerStyle;
+                pickerRestore.restart();
+            }
+
+            target: Prefs
+        }
+
+        Timer {
+            id: pickerRestore
+
+            interval: 60
+            onTriggered: {
+                face.restorePickerIndex();
+                pickerSettle.restart();
+            }
+        }
+
+        Timer {
+            id: pickerSettle
+
+            interval: 300
+            onTriggered: face.pickerSettling = false
         }
 
         // the picker styles share one interface; these hand it the panel's numbers
@@ -293,7 +332,7 @@ Item {
             }
 
             function onCurrentIndexChanged() {
-                if (pickerLoader.item && !pickerLoader.item.syncing)
+                if (pickerLoader.item && !face.pickerSettling)
                     face.pickerIndex = pickerLoader.item.currentIndex;
             }
 
