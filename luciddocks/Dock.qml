@@ -159,6 +159,7 @@ PanelWindow {
     readonly property var scannedApps: Apps.list
     readonly property string currentTheme: Prefs.currentTheme
     property string pendingWallpaper: ""
+    property point pendingOrigin: Qt.point(-1, -1)
     property string appliedWallpaper: ""
     property bool wallpaperArmed: false
     readonly property bool dragging: pinnedRow.dragging || runningRow.dragging
@@ -1215,16 +1216,41 @@ PanelWindow {
             return;
 
         dockWindow.pendingWallpaper = path;
+        // where the card being previewed sits, for transitions that grow from it
+        var picker = launcherFace.wallStrip;
+        dockWindow.pendingOrigin = picker ? Qt.point(picker.originX, picker.originY) : Qt.point(-1, -1);
         wallpaperDebounce.restart();
     }
 
-    function applyWallpaper(path) {
+    // a point given as fractions of this window, as fractions of the screen it is on:
+    // the window is as wide as the panel, centred, and sits on the bottom edge
+    function screenFraction(o) {
+        if (!o || o.x < 0 || o.x > 1 || o.y < 0 || o.y > 1 || !dockWindow.screen || dockWindow.screen.width <= 0 || dockWindow.screen.height <= 0)
+            return null;
+
+        var sx = ((dockWindow.screen.width - dockWindow.width) / 2 + o.x * dockWindow.width) / dockWindow.screen.width;
+        var sy = (dockWindow.screen.height - dockWindow.height + o.y * dockWindow.height) / dockWindow.screen.height;
+        if (sx < 0 || sx > 1 || sy < 0 || sy > 1)
+            return null;
+
+        return Qt.point(sx, sy);
+    }
+
+    // origin: where the picked card sits, as fractions of the window (or nothing);
+    // with Settings -> Theme -> Origin on "chosen card" the transition grows from there.
+    // WALL_POS counts y from the bottom, set-wallpaper.sh ignores it for other types
+    function applyWallpaper(path, origin) {
         if (path === "")
             return;
 
         dockWindow.appliedWallpaper = path;
         wallpaperState.current = path;
-        Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/wallpaper/set-wallpaper.sh", path]);
+        var cmd = [Quickshell.env("HOME") + "/.config/hypr/scripts/wallpaper/set-wallpaper.sh", path];
+        var pos = dockWindow.screenFraction(origin);
+        if (Prefs.wallTransOrigin === "card" && pos)
+            cmd = ["env", "WALL_POS=" + pos.x.toFixed(3) + "," + (1 - pos.y).toFixed(3)].concat(cmd);
+
+        Quickshell.execDetached(cmd);
     }
 
     function syncStripToCurrent() {
@@ -1905,7 +1931,7 @@ PanelWindow {
         id: wallpaperDebounce
 
         interval: 250
-        onTriggered: dockWindow.applyWallpaper(dockWindow.pendingWallpaper)
+        onTriggered: dockWindow.applyWallpaper(dockWindow.pendingWallpaper, dockWindow.pendingOrigin)
     }
 
     Timer {
@@ -2410,7 +2436,8 @@ PanelWindow {
             }
             onWallpaperPreviewed: (path) => dockWindow.requestWallpaper(path)
             onWallpaperChosen: (path) => {
-                dockWindow.applyWallpaper(path);
+                var picker = launcherFace.wallStrip;
+                dockWindow.applyWallpaper(path, picker ? Qt.point(picker.originX, picker.originY) : Qt.point(-1, -1));
                 dockWindow.menuOpen = false;
             }
             onPowerActionChosen: (id) => dockWindow.runPowerAction(id)
