@@ -8,6 +8,15 @@ Item {
     property string mode: "apps"
     property var model: null
     property var wallpaperModel: null
+    // Settings -> Theme picks the style; unknown names fall back to the strip
+    readonly property var pickerFiles: ({
+        "strip": "WallpaperStrip.qml",
+        "pills": "WallpaperPills.qml",
+        "tiles": "WallpaperTiles.qml",
+        "card": "WallpaperCard.qml"
+    })
+    property int pickerIndex: -1
+    readonly property var wallStrip: pickerLoader.item
     property string appliedWallpaper: ""
     property int wallHeroW: 340
     property int wallHeroH: 211
@@ -105,7 +114,15 @@ Item {
     }
 
     function setWallpaperIndex(i) {
-        wallStrip.setIndexImmediate(i);
+        face.pickerIndex = i;
+        if (wallStrip)
+            wallStrip.setIndexImmediate(i);
+    }
+
+    // a picker that was just swapped in (the style changed) starts where the last one was
+    function restorePickerIndex() {
+        if (wallStrip && face.pickerIndex >= 0)
+            wallStrip.setIndexImmediate(face.pickerIndex);
     }
 
     function resetSelection() {
@@ -245,23 +262,43 @@ Item {
             clearArmed: face.clearArmed
         }
 
-        WallpaperStrip {
-            id: wallStrip
+        Loader {
+            id: pickerLoader
 
             anchors.fill: parent
             visible: face.displayMode === "wallpaper"
-            model: face.wallpaperModel
-            heroW: face.wallHeroW
-            heroH: face.wallHeroH
-            midW: face.wallMidW
-            midH: face.wallMidH
-            smallW: face.wallSmallW
-            smallH: face.wallSmallH
-            itemGap: face.wallCardGap
-            appliedPath: face.appliedWallpaper
-            stableHeight: face.stableContentHeight
-            onChosen: (path) => face.wallpaperChosen(path)
-            onPreviewed: (path) => face.wallpaperPreviewed(path)
+            source: face.pickerFiles[Prefs.wallpaperPickerStyle] || face.pickerFiles.strip
+            onLoaded: Qt.callLater(face.restorePickerIndex)
+        }
+
+        // the picker styles share one interface; these hand it the panel's numbers
+        Binding { target: pickerLoader.item; property: "model"; value: face.wallpaperModel; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "heroW"; value: face.wallHeroW; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "heroH"; value: face.wallHeroH; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "midW"; value: face.wallMidW; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "midH"; value: face.wallMidH; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "smallW"; value: face.wallSmallW; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "smallH"; value: face.wallSmallH; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "itemGap"; value: face.wallCardGap; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "appliedPath"; value: face.appliedWallpaper; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "stableHeight"; value: face.stableContentHeight; when: pickerLoader.item !== null }
+
+        Connections {
+            function onChosen(path) {
+                face.wallpaperChosen(path);
+            }
+
+            function onPreviewed(path) {
+                face.wallpaperPreviewed(path);
+            }
+
+            function onCurrentIndexChanged() {
+                if (pickerLoader.item && !pickerLoader.item.syncing)
+                    face.pickerIndex = pickerLoader.item.currentIndex;
+            }
+
+            target: pickerLoader.item
+            ignoreUnknownSignals: true
         }
 
         PowerRow {
@@ -356,16 +393,21 @@ Item {
             Keys.onUpPressed: {
                 if (face.listVisible)
                     resultList.step(-1);
+                else if (face.displayMode === "wallpaper" && wallStrip)
+                    wallStrip.stepVertical(-1);
 
             }
             Keys.onDownPressed: {
                 if (face.listVisible)
                     resultList.step(1);
+                else if (face.displayMode === "wallpaper" && wallStrip)
+                    wallStrip.stepVertical(1);
 
             }
             Keys.onLeftPressed: (event) => {
                 if (face.displayMode === "wallpaper") {
-                    wallStrip.currentIndex = Math.max(0, wallStrip.currentIndex - 1);
+                    if (wallStrip)
+                        wallStrip.step(-1);
                     event.accepted = true;
                 } else if (face.displayMode === "power") {
                     powerRow.step(-1);
@@ -376,7 +418,8 @@ Item {
             }
             Keys.onRightPressed: (event) => {
                 if (face.displayMode === "wallpaper" && face.wallpaperModel) {
-                    wallStrip.currentIndex = Math.min(face.wallpaperModel.count - 1, wallStrip.currentIndex + 1);
+                    if (wallStrip)
+                        wallStrip.step(1);
                     event.accepted = true;
                 } else if (face.displayMode === "power") {
                     powerRow.step(1);
@@ -616,8 +659,10 @@ Item {
     }
 
     function submit() {
-        if (face.displayMode === "wallpaper")
-            wallStrip.activateCurrent();
+        if (face.displayMode === "wallpaper") {
+            if (wallStrip)
+                wallStrip.activateCurrent();
+        }
         else if (face.displayMode === "power")
             powerRow.activateCurrent();
         else
