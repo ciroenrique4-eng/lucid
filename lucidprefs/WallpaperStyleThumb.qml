@@ -9,6 +9,8 @@ Rectangle {
     property string label: ""
     readonly property bool selected: Prefs.wallpaperPickerStyle === tile.styleId
     readonly property color ink: Theme.alpha(Theme.text, 0.28)
+    // pills is drawn in the shape it is set to
+    readonly property string pills: Prefs.wallpaperPillsShape === "full" || Prefs.wallpaperPillsShape === "wave" ? Prefs.wallpaperPillsShape : "uniform"
 
     width: 150
     height: screenBox.height + caption.implicitHeight + 28
@@ -64,7 +66,7 @@ Rectangle {
         Row {
             anchors.centerIn: parent
             spacing: 4
-            visible: tile.styleId === "pills"
+            visible: tile.styleId === "pills" && tile.pills === "uniform"
 
             Repeater {
                 model: 7
@@ -111,7 +113,7 @@ Rectangle {
         Row {
             anchors.centerIn: parent
             spacing: 3
-            visible: tile.styleId === "accordion"
+            visible: tile.styleId === "pills" && tile.pills === "full"
 
             Repeater {
                 model: 11
@@ -134,7 +136,7 @@ Rectangle {
         Row {
             anchors.centerIn: parent
             spacing: 3
-            visible: tile.styleId === "wave"
+            visible: tile.styleId === "pills" && tile.pills === "wave"
 
             Repeater {
                 model: 11

@@ -818,7 +818,6 @@ Column {
         SettingRow {
             title: I18n.tr("Picker style")
             description: I18n.tr("How the wallpapers are laid out when you open the picker from the launcher.")
-            showDivider: false
             stacked: true
 
             Flow {
@@ -841,20 +840,34 @@ Column {
                 }
 
                 WallpaperStyleThumb {
-                    styleId: "accordion"
-                    label: I18n.tr("Accordion")
-                }
-
-                WallpaperStyleThumb {
-                    styleId: "wave"
-                    label: I18n.tr("Wave")
-                }
-
-                WallpaperStyleThumb {
                     styleId: "bento"
                     label: I18n.tr("Bento")
                 }
 
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Pill shape")
+            description: I18n.tr("How tall the pills are around the open one: all alike, the full height of the panel, or rising to a peak.")
+            visible: Prefs.wallpaperPickerStyle === "pills"
+            showDivider: false
+
+            M3Segmented {
+                width: 340
+                current: Prefs.wallpaperPillsShape
+                options: [{
+                    "key": "uniform",
+                    "label": I18n.tr("Uniform")
+                }, {
+                    "key": "full",
+                    "label": I18n.tr("Full height")
+                }, {
+                    "key": "wave",
+                    "label": I18n.tr("Wave")
+                }]
+                onChosen: (key) => Prefs.wallpaperPillsShape = key
             }
 
         }

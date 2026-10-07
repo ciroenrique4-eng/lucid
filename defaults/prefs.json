@@ -171,6 +171,7 @@
     "toastTimeout": 5,
     "wallpaperFolder": "",
     "wallpaperPickerStyle": "strip",
+    "wallpaperPillsShape": "uniform",
     "wallTransType": "fade",
     "wallTransDuration": 1,
     "wallTransAngle": 45,
