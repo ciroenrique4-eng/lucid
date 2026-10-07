@@ -35,6 +35,7 @@ Rectangle {
         color: Theme.bgSunken
         clip: true
 
+        // every miniature is drawn from the shell's own radii, so it squares off with them
         // strip: the picked card big, its neighbours stepping down
         Row {
             anchors.centerIn: parent
@@ -51,7 +52,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     width: modelData.w
                     height: modelData.h
-                    radius: index === 2 ? 6 : 4
+                    radius: Theme.rad(index === 2 ? 6 : 4)
                     color: index === 2 ? Theme.accent : tile.ink
                 }
 
@@ -74,7 +75,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     width: index === 3 ? 34 : 7
                     height: index === 3 ? 38 : 22
-                    radius: index === 3 ? 6 : 3.5
+                    radius: index === 3 ? Theme.rad(6) : Theme.pill(7)
                     color: index === 3 ? Theme.accent : tile.ink
                 }
 
@@ -82,7 +83,7 @@ Rectangle {
 
         }
 
-        // tiles: two rows of circles, the picked one squared off
+        // tiles: two rows of rounded squares, the picked one rounder
         Grid {
             anchors.centerIn: parent
             rows: 2
@@ -98,7 +99,7 @@ Rectangle {
 
                     width: 18
                     height: 18
-                    radius: index === 5 ? 5 : 9
+                    radius: Theme.rad(index === 5 ? 5 : 3)
                     color: index === 5 ? Theme.accent : tile.ink
                 }
 
@@ -106,35 +107,128 @@ Rectangle {
 
         }
 
-        // card: one card and its pills
-        Rectangle {
-            visible: tile.styleId === "card"
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 7
-            width: 62
-            height: 32
-            radius: 9
-            color: Theme.accent
-        }
-
+        // accordion: slices of the whole height, one opened
         Row {
-            visible: tile.styleId === "card"
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 46
-            spacing: 4
+            anchors.centerIn: parent
+            spacing: 3
+            visible: tile.styleId === "accordion"
 
             Repeater {
-                model: 6
+                model: 11
 
                 Rectangle {
                     required property int index
 
-                    width: index === 2 ? 12 : 4
-                    height: 4
-                    radius: 2
-                    color: index === 2 ? Theme.accent : tile.ink
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: index === 5 ? 30 : 6
+                    height: 50
+                    radius: index === 5 ? Theme.rad(8) : Theme.pill(6)
+                    color: index === 5 ? Theme.accent : tile.ink
                 }
 
+            }
+
+        }
+
+        // wave: pills as tall as a bell around the picked one
+        Row {
+            anchors.centerIn: parent
+            spacing: 3
+            visible: tile.styleId === "wave"
+
+            Repeater {
+                model: 11
+
+                Rectangle {
+                    required property int index
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: index === 5 ? 26 : 7
+                    height: index === 5 ? 50 : Math.round(12 + 26 * Math.exp(-Math.pow(index - 5, 2) / 10))
+                    radius: index === 5 ? Theme.rad(8) : Theme.pill(7)
+                    color: index === 5 ? Theme.accent : tile.ink
+                }
+
+            }
+
+        }
+
+        // bento: the picked one large, the others in tiles of different sizes
+        Item {
+            anchors.fill: parent
+            anchors.margins: 5
+            visible: tile.styleId === "bento"
+
+            Rectangle {
+                x: 0
+                y: 0
+                width: 10
+                height: 21
+                radius: Theme.rad(3)
+                color: tile.ink
+            }
+
+            Rectangle {
+                x: 0
+                y: 25
+                width: 10
+                height: 21
+                radius: Theme.rad(3)
+                color: tile.ink
+            }
+
+            Rectangle {
+                x: 14
+                y: 0
+                width: 36
+                height: 46
+                radius: Theme.rad(8)
+                color: Theme.accent
+            }
+
+            Rectangle {
+                x: 54
+                y: 0
+                width: 24
+                height: 46
+                radius: Theme.rad(5)
+                color: tile.ink
+            }
+
+            Rectangle {
+                x: 82
+                y: 0
+                width: 18
+                height: 27
+                radius: Theme.rad(4)
+                color: tile.ink
+            }
+
+            Rectangle {
+                x: 82
+                y: 31
+                width: 18
+                height: 15
+                radius: Theme.rad(4)
+                color: tile.ink
+            }
+
+            Rectangle {
+                x: 104
+                y: 0
+                width: 16
+                height: 15
+                radius: Theme.rad(4)
+                color: tile.ink
+            }
+
+            Rectangle {
+                x: 104
+                y: 19
+                width: 16
+                height: 27
+                radius: Theme.rad(4)
+                color: tile.ink
             }
 
         }

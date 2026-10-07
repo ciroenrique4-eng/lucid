@@ -205,13 +205,23 @@ Item {
                 anchors.centerIn: parent
                 width: parent.width
                 height: slot.isCurrent ? strip.heroH : (slot.hovered ? strip.pillH + 12 : strip.pillH)
-                // a full stadium while narrow, the launcher's card radius once opened
-                radius: slot.isCurrent ? Theme.radiusXl : card.width / 2
+                // a full stadium while narrow (by the shell's own roundness, so it squares
+                // off with the rest), the launcher's card radius once opened
+                radius: slot.isCurrent ? Theme.radiusXl : Theme.pill(card.width)
                 color: Theme.bgTile
                 opacity: (slot.isCurrent || slot.hovered) ? 1 : 0.55
                 scale: slot.pressed ? 0.97 : 1
 
                 Behavior on height {
+                    NumberAnimation {
+                        duration: Theme.ms(300)
+                        easing.type: Easing.Bezier
+                        easing.bezierCurve: Theme.easeEmphasizedDecel
+                    }
+
+                }
+
+                Behavior on radius {
                     NumberAnimation {
                         duration: Theme.ms(300)
                         easing.type: Easing.Bezier
@@ -294,7 +304,7 @@ Item {
                 anchors.topMargin: 6
                 width: 8
                 height: 8
-                radius: 4
+                radius: Theme.pill(8)
                 color: Theme.accent
                 opacity: slot.isApplied && !slot.isCurrent ? 1 : 0
                 visible: opacity > 0.01

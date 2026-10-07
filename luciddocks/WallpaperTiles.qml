@@ -2,8 +2,8 @@ import QtQuick
 import Quickshell.Widgets
 import qs
 
-// The wallpaper picker as a grid of round tiles: two rows that scroll sideways,
-// every wallpaper a circle that squares off under the pointer. Same interface as
+// The wallpaper picker as a grid of rounded tiles: two rows that scroll sideways,
+// every wallpaper a rounded square whose corners open up under the pointer. Same interface as
 // WallpaperStrip, so the launcher can load either.
 Item {
     id: strip
@@ -200,8 +200,8 @@ Item {
                 anchors.centerIn: parent
                 width: slot.width - strip.itemGap
                 height: width
-                // a circle until something asks for it: the pointer, or being the pick
-                radius: (slot.hovered || slot.isCurrent) ? Theme.radiusLg : width / 2
+                // the shell's rounding, which opens up under the pointer or on the pick
+                radius: (slot.hovered || slot.isCurrent) ? Theme.radiusXl : Theme.radiusMd
                 color: Theme.bgTile
                 scale: slot.pressed ? 1 - 4 / card.width : ((slot.hovered || slot.isCurrent) ? 1 + 6 / card.width : 1)
                 opacity: (slot.isCurrent || slot.hovered) ? 1 : 0.78
@@ -256,7 +256,7 @@ Item {
                 anchors.top: card.top
                 width: 22
                 height: 22
-                radius: Theme.rad(11)
+                radius: Theme.pill(22)
                 color: Theme.accent
                 opacity: slot.isApplied ? 1 : 0
                 visible: opacity > 0.01
