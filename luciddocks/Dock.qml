@@ -532,11 +532,12 @@ PanelWindow {
     readonly property int wallTilesWidth: Math.ceil(wallpapersModel.count / dockWindow.wallTilesRows) * dockWindow.wallTilesCellW + 24
 
     readonly property real menuWidth: {
-        if (dockWindow.mode === "wallpaper")
+        if (dockWindow.mode === "wallpaper") {
             if (dockWindow.wallIsTiles)
                 return Math.min(Math.max(dockWindow.launcherWidth, dockWindow.wallTilesWidth + dockWindow.panelPadding + dockWindow.wallHoverRoom), dockWindow.maxDockWidth - 48);
 
             return Math.min((Prefs.wallpaperPickerStyle === "strip" ? dockWindow.wallStripWidth : dockWindow.wallBaseWidth) + dockWindow.panelPadding + dockWindow.wallHoverRoom, dockWindow.maxDockWidth - 48);
+        }
 
         if (dockWindow.mode === "power")
             return 660;
