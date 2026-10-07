@@ -26,17 +26,43 @@ Item {
     property bool syncing: false
     property int pendingCenterIndex: -1
 
+    // where the card the user picked sits, as fractions of the window (-1 when
+    // it is not known); the "from the chosen card" transition grows from there
+    property real originX: -1
+    property real originY: -1
+
     signal chosen(string path)
     signal previewed(string path)
+
+    function noteOrigin(card) {
+        if (!card || strip.Window.width <= 0 || strip.Window.height <= 0) {
+            strip.originX = -1;
+            strip.originY = -1;
+            return;
+        }
+        var p = card.mapToItem(null, card.width / 2, card.height / 2);
+        strip.originX = p.x / strip.Window.width;
+        strip.originY = p.y / strip.Window.height;
+    }
+
+    // arrow keys: one card along, and (for the styles laid out in rows) one row over
+    function step(d) {
+        if (strip.model)
+            view.currentIndex = Math.max(0, Math.min(strip.model.count - 1, view.currentIndex + d));
+    }
+
+    function stepVertical(d) {
+    }
 
     function activateCurrent() {
         if (view.currentIndex < 0 || !strip.model)
             return;
 
         var item = strip.model.get(view.currentIndex);
-        if (item)
+        if (item) {
+            strip.noteOrigin(view.currentItem);
             strip.chosen(item.path);
-
+        }
     }
 
     function setIndexImmediate(i) {
@@ -313,9 +339,10 @@ Item {
                 id: cardTap
 
                 onTapped: {
-                    if (slot.isCurrent)
+                    if (slot.isCurrent) {
+                        strip.noteOrigin(slot);
                         strip.chosen(slot.path);
-                    else
+                    } else
                         view.currentIndex = slot.index;
                 }
             }
