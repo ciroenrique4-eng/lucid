@@ -30,7 +30,7 @@ Rectangle {
         });
     }
     // tiles: rows and shape
-    readonly property int tileRows: Prefs.wallpaperTilesRows === 1 || Prefs.wallpaperTilesRows === 3 ? Prefs.wallpaperTilesRows : 2
+    readonly property int tileRows: Math.max(2, Math.min(5, Math.round(Prefs.wallpaperTilesRows) || 2))
     readonly property bool tilesWide: Prefs.wallpaperTilesAspect === "wide"
     readonly property real tileH: (screenBox.height - 8 - (tile.tileRows - 1) * 4) / tile.tileRows
     readonly property real tileW: tile.tilesWide ? tile.tileH * 16 / 9 : tile.tileH

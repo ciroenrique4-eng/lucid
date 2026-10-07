@@ -926,17 +926,20 @@ Column {
             stacked: true
 
             M3Segmented {
-                width: Math.min(parent.width, 300)
-                current: Prefs.wallpaperTilesRows
+                width: Math.min(parent.width, 360)
+                current: Math.max(2, Math.min(5, Math.round(Prefs.wallpaperTilesRows) || 2))
                 options: [{
-                    "key": 1,
-                    "label": String(1)
-                }, {
                     "key": 2,
                     "label": String(2)
                 }, {
                     "key": 3,
                     "label": String(3)
+                }, {
+                    "key": 4,
+                    "label": String(4)
+                }, {
+                    "key": 5,
+                    "label": String(5)
                 }]
                 onChosen: (key) => Prefs.wallpaperTilesRows = key
             }
