@@ -724,6 +724,7 @@ Singleton {
     property alias language: s.language
     property alias wallpaperFolder: s.wallpaperFolder
     property alias wallpaperPickerStyle: s.wallpaperPickerStyle
+    property alias wallpaperPillsShape: s.wallpaperPillsShape
     property alias wallTransType: s.wallTransType
     property alias wallTransDuration: s.wallTransDuration
     property alias wallTransAngle: s.wallTransAngle
@@ -1150,6 +1151,7 @@ Singleton {
         "language": "auto",
         "wallpaperFolder": "",
         "wallpaperPickerStyle": "strip",
+        "wallpaperPillsShape": "uniform",
         "wallTransType": "fade",
         "wallTransDuration": 1,
         "wallTransAngle": 45,
@@ -1800,6 +1802,7 @@ Singleton {
             property string language: "auto"
             property string wallpaperFolder: ""
             property string wallpaperPickerStyle: "strip"
+            property string wallpaperPillsShape: "uniform"
             property string wallTransType: "fade"
             property real wallTransDuration: 1
             property int wallTransAngle: 45
