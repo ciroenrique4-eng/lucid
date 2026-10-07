@@ -28,8 +28,8 @@ Item {
     property bool syncing: false
     property real originX: -1
     property real originY: -1
-    // Settings -> Theme -> Tiles: how many rows, and square or 16:9 tiles
-    readonly property int rows: Prefs.wallpaperTilesRows === 1 || Prefs.wallpaperTilesRows === 3 ? Prefs.wallpaperTilesRows : 2
+    // Settings -> Theme -> Tiles: how many rows (two to five), and square or 16:9 tiles
+    readonly property int rows: Math.max(2, Math.min(5, Math.round(Prefs.wallpaperTilesRows) || 2))
     readonly property bool wide: Prefs.wallpaperTilesAspect === "wide"
     readonly property real rowHeight: strip.heroH + 62
     readonly property int tile: Math.floor(view.height / strip.rows)
@@ -205,8 +205,9 @@ Item {
                 anchors.centerIn: parent
                 width: slot.width - strip.itemGap
                 height: slot.height - strip.itemGap
-                // the shell's rounding, which opens up under the pointer or on the pick
-                radius: (slot.hovered || slot.isCurrent) ? Theme.radiusXl : Theme.radiusMd
+                // the shell's rounding, which opens up under the pointer or on the pick, kept
+                // in proportion on the small tiles of a many-row grid
+                radius: Math.min((slot.hovered || slot.isCurrent) ? Theme.radiusXl : Theme.radiusMd, Math.round(Math.min(card.width, card.height) * ((slot.hovered || slot.isCurrent) ? 0.34 : 0.26)))
                 color: Theme.bgTile
                 scale: slot.pressed ? 1 - 4 / card.width : ((slot.hovered || slot.isCurrent) ? 1 + 6 / card.width : 1)
                 opacity: (slot.isCurrent || slot.hovered) ? 1 : 0.78
