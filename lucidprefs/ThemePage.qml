@@ -853,9 +853,10 @@ Column {
             description: I18n.tr("How tall the pills are around the open one: all alike, the full height of the panel, or rising to a peak.")
             visible: Prefs.wallpaperPickerStyle === "pills"
             showDivider: false
+            stacked: true
 
             M3Segmented {
-                width: 340
+                width: Math.min(parent.width, 560)
                 current: Prefs.wallpaperPillsShape
                 options: [{
                     "key": "uniform",
@@ -1013,9 +1014,10 @@ Column {
             title: I18n.tr("Starts from")
             description: I18n.tr("Where the circle opens. \"Chosen card\" grows it from the wallpaper you are previewing in the picker.")
             visible: transCard.type === "grow" || transCard.type === "outer"
+            stacked: true
 
             M3Segmented {
-                width: 300
+                width: Math.min(parent.width, 560)
                 current: Prefs.wallTransOrigin
                 options: [{
                     "key": "center",
@@ -1036,9 +1038,10 @@ Column {
             title: I18n.tr("Curve")
             description: I18n.tr("How the change speeds up and slows down.")
             visible: !transCard.fades
+            stacked: true
 
             M3Segmented {
-                width: 340
+                width: Math.min(parent.width, 560)
                 current: Prefs.wallTransBezier
                 options: [{
                     "key": ".54,0,.34,.99",
