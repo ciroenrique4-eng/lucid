@@ -812,4 +812,273 @@ Column {
 
     }
 
+    SettingCard {
+        title: I18n.tr("WALLPAPER PICKER")
+
+        SettingRow {
+            title: I18n.tr("Picker style")
+            description: I18n.tr("How the wallpapers are laid out when you open the picker from the launcher.")
+            showDivider: false
+            stacked: true
+
+            Flow {
+                width: parent.width
+                spacing: 10
+
+                WallpaperStyleThumb {
+                    styleId: "strip"
+                    label: I18n.tr("Strip")
+                }
+
+                WallpaperStyleThumb {
+                    styleId: "pills"
+                    label: I18n.tr("Pills")
+                }
+
+                WallpaperStyleThumb {
+                    styleId: "tiles"
+                    label: I18n.tr("Tiles")
+                }
+
+                WallpaperStyleThumb {
+                    styleId: "card"
+                    label: I18n.tr("Card")
+                }
+
+            }
+
+        }
+
+    }
+
+    SettingCard {
+        id: transCard
+
+        readonly property string type: Prefs.wallTransType
+        readonly property bool fades: transCard.type === "none" || transCard.type === "simple"
+
+        title: I18n.tr("WALLPAPER TRANSITION")
+
+        SettingRow {
+            title: I18n.tr("Presets")
+            description: I18n.tr("A starting point; changing anything below makes it your own.")
+            stacked: true
+
+            Flow {
+                width: parent.width
+                spacing: 10
+
+                Repeater {
+                    model: WallTransitions.all
+
+                    WallTransitionTile {
+                        required property var modelData
+
+                        preset: modelData
+                    }
+
+                }
+
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Effect")
+            description: I18n.tr("Fade and Simple blend the two pictures; the others reveal the new one from a side, a line or a circle.")
+            stacked: true
+
+            M3Chips {
+                width: parent.width
+                current: Prefs.wallTransType
+                options: [{
+                    "key": "fade",
+                    "label": I18n.tr("Fade")
+                }, {
+                    "key": "simple",
+                    "label": I18n.tr("Simple")
+                }, {
+                    "key": "none",
+                    "label": I18n.tr("None")
+                }, {
+                    "key": "left",
+                    "label": I18n.tr("From left")
+                }, {
+                    "key": "right",
+                    "label": I18n.tr("From right")
+                }, {
+                    "key": "top",
+                    "label": I18n.tr("From top")
+                }, {
+                    "key": "bottom",
+                    "label": I18n.tr("From bottom")
+                }, {
+                    "key": "wipe",
+                    "label": I18n.tr("Wipe")
+                }, {
+                    "key": "wave",
+                    "label": I18n.tr("Wave")
+                }, {
+                    "key": "grow",
+                    "label": I18n.tr("Grow")
+                }, {
+                    "key": "outer",
+                    "label": I18n.tr("Shrink")
+                }, {
+                    "key": "random",
+                    "label": I18n.tr("Random")
+                }]
+                onChosen: (key) => WallTransitions.set("type", key)
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Duration")
+            visible: !transCard.fades
+            stacked: true
+
+            M3Slider {
+                width: parent.width
+                from: 0.2
+                to: 5
+                stepSize: 0.1
+                decimals: 1
+                suffix: " s"
+                value: Prefs.wallTransDuration
+                onMoved: (v) => WallTransitions.set("duration", Math.round(v * 10) / 10)
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Angle")
+            description: I18n.tr("0° sweeps right to left, 90° top to bottom.")
+            visible: transCard.type === "wipe" || transCard.type === "wave"
+            stacked: true
+
+            M3Slider {
+                width: parent.width
+                from: 0
+                to: 355
+                stepSize: 5
+                suffix: "°"
+                value: Prefs.wallTransAngle
+                onMoved: (v) => WallTransitions.set("angle", Math.round(v))
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Wave size")
+            visible: transCard.type === "wave"
+            stacked: true
+
+            M3Slider {
+                width: parent.width
+                from: 8
+                to: 80
+                stepSize: 2
+                suffix: " px"
+                value: parseInt(Prefs.wallTransWave.split(",")[0]) || 20
+                onMoved: (v) => WallTransitions.set("wave", Math.round(v) + "," + Math.round(v))
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Starts from")
+            description: I18n.tr("Where the circle opens. \"Chosen card\" grows it from the wallpaper you are previewing in the picker.")
+            visible: transCard.type === "grow" || transCard.type === "outer"
+
+            M3Segmented {
+                width: 300
+                current: Prefs.wallTransOrigin
+                options: [{
+                    "key": "center",
+                    "label": I18n.tr("Centre")
+                }, {
+                    "key": "card",
+                    "label": I18n.tr("Chosen card")
+                }, {
+                    "key": "cursor",
+                    "label": I18n.tr("Pointer")
+                }]
+                onChosen: (key) => WallTransitions.set("origin", key)
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Curve")
+            description: I18n.tr("How the change speeds up and slows down.")
+            visible: !transCard.fades
+
+            M3Segmented {
+                width: 340
+                current: Prefs.wallTransBezier
+                options: [{
+                    "key": ".54,0,.34,.99",
+                    "label": I18n.tr("Smooth")
+                }, {
+                    "key": ".05,.7,.1,1",
+                    "label": I18n.tr("Snappy")
+                }, {
+                    "key": ".4,0,.2,1",
+                    "label": I18n.tr("Gentle")
+                }, {
+                    "key": "0,0,1,1",
+                    "label": I18n.tr("Linear")
+                }]
+                onChosen: (key) => WallTransitions.set("bezier", key)
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Save as preset")
+            description: I18n.tr("Keep the settings above under a name of your own.")
+
+            Row {
+                spacing: 10
+
+                M3TextField {
+                    id: presetName
+
+                    width: 200
+                    placeholder: I18n.tr("Preset name")
+                    onAccepted: (v) => {
+                        WallTransitions.saveCurrent(v);
+                        presetName.text = "";
+                    }
+                }
+
+                M3Button {
+                    text: I18n.tr("Save")
+                    variant: "tonal"
+                    onClicked: {
+                        WallTransitions.saveCurrent(presetName.text);
+                        presetName.text = "";
+                    }
+                }
+
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Try it")
+            description: I18n.tr("Sets the current wallpaper again with this transition.")
+            showDivider: false
+
+            M3Button {
+                text: I18n.tr("Try transition")
+                variant: "tonal"
+                onClicked: page.applyWallpaper(page.appliedWallpaper)
+            }
+
+        }
+
+    }
+
 }

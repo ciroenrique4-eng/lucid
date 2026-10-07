@@ -64,7 +64,7 @@ Singleton {
     // a single value edited by hand: the preset only stays selected if the values
     // still match it
     function set(key, value) {
-        Prefs["wallTrans" + key] = value;
+        Prefs["wallTrans" + key.charAt(0).toUpperCase() + key.slice(1)] = value;
         Prefs.wallTransPreset = WT.matchingId(root.values(), Prefs.wallTransCustomPresets);
     }
 
