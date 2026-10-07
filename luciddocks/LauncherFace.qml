@@ -27,6 +27,8 @@ Item {
     property int wallMidH: 148
     property int wallSmallW: 150
     property int wallSmallH: 93
+    property int wallTinyW: 100
+    property int wallTinyH: 62
     property int wallCardGap: 10
     property alias searchText: searchInput.text
     property string highlightQuery: ""
@@ -318,6 +320,8 @@ Item {
         Binding { target: pickerLoader.item; property: "midH"; value: face.wallMidH; when: pickerLoader.item !== null }
         Binding { target: pickerLoader.item; property: "smallW"; value: face.wallSmallW; when: pickerLoader.item !== null }
         Binding { target: pickerLoader.item; property: "smallH"; value: face.wallSmallH; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "tinyW"; value: face.wallTinyW; when: pickerLoader.item !== null }
+        Binding { target: pickerLoader.item; property: "tinyH"; value: face.wallTinyH; when: pickerLoader.item !== null }
         Binding { target: pickerLoader.item; property: "itemGap"; value: face.wallCardGap; when: pickerLoader.item !== null }
         Binding { target: pickerLoader.item; property: "appliedPath"; value: face.appliedWallpaper; when: pickerLoader.item !== null }
         Binding { target: pickerLoader.item; property: "stableHeight"; value: face.stableContentHeight; when: pickerLoader.item !== null }

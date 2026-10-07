@@ -3,7 +3,7 @@ import Quickshell.Widgets
 import qs
 
 // The wallpaper picker as a grid of rounded tiles: two rows that scroll sideways,
-// every wallpaper a rounded square whose corners open up under the pointer. Same interface as
+// every wallpaper a rounded tile whose corners open up under the pointer. Same interface as
 // WallpaperStrip, so the launcher can load either.
 Item {
     id: strip
@@ -16,6 +16,8 @@ Item {
     property int midH: 148
     property int smallW: 150
     property int smallH: 93
+    property int tinyW: 100
+    property int tinyH: 62
     property int itemGap: 10
     property int hoveredIndex: -1
     property alias currentIndex: view.currentIndex
@@ -26,9 +28,12 @@ Item {
     property bool syncing: false
     property real originX: -1
     property real originY: -1
-    readonly property int rows: 2
+    // Settings -> Theme -> Tiles: how many rows, and square or 16:9 tiles
+    readonly property int rows: Prefs.wallpaperTilesRows === 1 || Prefs.wallpaperTilesRows === 3 ? Prefs.wallpaperTilesRows : 2
+    readonly property bool wide: Prefs.wallpaperTilesAspect === "wide"
     readonly property real rowHeight: strip.heroH + 62
     readonly property int tile: Math.floor(view.height / strip.rows)
+    readonly property int cellW: strip.wide ? Math.round(strip.tile * 16 / 9) : strip.tile
 
     signal chosen(string path)
     signal previewed(string path)
@@ -118,17 +123,17 @@ Item {
         anchors.topMargin: Math.max(0, (strip.stableHeight - strip.rowHeight) / 2)
         // as wide as its columns, so a few wallpapers sit in the middle instead of
         // piling up on the left, and no wider than the panel
-        width: Math.min(strip.width - 24, strip.tile * Math.ceil(view.count / strip.rows))
+        width: Math.min(strip.width - 24, strip.cellW * Math.ceil(view.count / strip.rows))
         height: strip.heroH + 24
         flow: GridView.FlowTopToBottom
-        cellWidth: strip.tile
+        cellWidth: strip.cellW
         cellHeight: strip.tile
         clip: true
         boundsBehavior: Flickable.StopAtBounds
         model: strip.model
         visible: count > 0
         highlightFollowsCurrentItem: false
-        cacheBuffer: strip.tile * 8
+        cacheBuffer: strip.cellW * 8
 
         onCurrentIndexChanged: {
             if (view.currentIndex >= 0)
@@ -199,7 +204,7 @@ Item {
 
                 anchors.centerIn: parent
                 width: slot.width - strip.itemGap
-                height: width
+                height: slot.height - strip.itemGap
                 // the shell's rounding, which opens up under the pointer or on the pick
                 radius: (slot.hovered || slot.isCurrent) ? Theme.radiusXl : Theme.radiusMd
                 color: Theme.bgTile
@@ -237,7 +242,7 @@ Item {
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
                     cache: true
-                    sourceSize.width: strip.tile * 2
+                    sourceSize.width: strip.cellW * 2
                 }
 
                 Rectangle {

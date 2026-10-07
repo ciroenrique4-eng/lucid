@@ -498,16 +498,25 @@ PanelWindow {
     readonly property int wallCardGap: 10
     readonly property int wallHeroW: Math.max(280, Math.min(420, Math.round(dockWindow.maxDockWidth * 0.177)))
     readonly property int wallHeroH: Math.round(dockWindow.wallHeroW * 0.62)
-    readonly property int wallMidW: Math.round(dockWindow.wallHeroW * 0.70)
+    // Settings -> Theme -> Strip: how fast the neighbours shrink (mid and small as shares of the hero)
+    readonly property var wallSteps: ({
+        "soft": [0.82, 0.64],
+        "normal": [0.70, 0.44],
+        "steep": [0.56, 0.30]
+    })[Prefs.wallpaperStripSteps] || [0.70, 0.44]
+    readonly property int wallMidW: Math.round(dockWindow.wallHeroW * dockWindow.wallSteps[0])
     readonly property int wallMidH: Math.round(dockWindow.wallMidW * 0.62)
-    readonly property int wallSmallW: Math.round(dockWindow.wallHeroW * 0.44)
+    readonly property int wallSmallW: Math.round(dockWindow.wallHeroW * dockWindow.wallSteps[1])
     readonly property int wallSmallH: Math.round(dockWindow.wallSmallW * 0.62)
-    readonly property int wallStripWidth: dockWindow.wallHeroW + 2 * (dockWindow.wallMidW + dockWindow.wallCardGap) + 2 * (dockWindow.wallSmallW + dockWindow.wallCardGap)
+    // a fourth, tiny tier when the strip shows three neighbours on each side
+    readonly property int wallTinyW: Math.round(dockWindow.wallSmallW * 0.68)
+    readonly property int wallTinyH: Math.round(dockWindow.wallTinyW * 0.62)
+    readonly property int wallStripWidth: dockWindow.wallHeroW + 2 * (dockWindow.wallMidW + dockWindow.wallCardGap) + 2 * (dockWindow.wallSmallW + dockWindow.wallCardGap) + (Prefs.wallpaperStripSides === 3 ? 2 * (dockWindow.wallTinyW + dockWindow.wallCardGap) : 0)
     readonly property int wallHoverRoom: 12
 
     readonly property real menuWidth: {
         if (dockWindow.mode === "wallpaper")
-            return dockWindow.wallStripWidth + dockWindow.panelPadding + dockWindow.wallHoverRoom;
+            return Math.min(dockWindow.wallStripWidth + dockWindow.panelPadding + dockWindow.wallHoverRoom, dockWindow.maxDockWidth - 48);
 
         if (dockWindow.mode === "power")
             return 660;
@@ -2419,6 +2428,8 @@ PanelWindow {
             wallMidH: dockWindow.wallMidH
             wallSmallW: dockWindow.wallSmallW
             wallSmallH: dockWindow.wallSmallH
+            wallTinyW: dockWindow.wallTinyW
+            wallTinyH: dockWindow.wallTinyH
             wallCardGap: dockWindow.wallCardGap
             appliedWallpaper: dockWindow.appliedWallpaper
             highlightQuery: dockWindow.filterQuery

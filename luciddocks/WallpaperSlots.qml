@@ -18,6 +18,8 @@ Item {
     property int midH: 148
     property int smallW: 150
     property int smallH: 93
+    property int tinyW: 100
+    property int tinyH: 62
     property int itemGap: 10
     property int hoveredIndex: -1
     property int currentIndex: -1
