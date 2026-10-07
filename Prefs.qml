@@ -725,6 +725,12 @@ Singleton {
     property alias wallpaperFolder: s.wallpaperFolder
     property alias wallpaperPickerStyle: s.wallpaperPickerStyle
     property alias wallpaperPillsShape: s.wallpaperPillsShape
+    property alias wallpaperStripSteps: s.wallpaperStripSteps
+    property alias wallpaperStripSides: s.wallpaperStripSides
+    property alias wallpaperTilesRows: s.wallpaperTilesRows
+    property alias wallpaperTilesAspect: s.wallpaperTilesAspect
+    property alias wallpaperBentoHero: s.wallpaperBentoHero
+    property alias wallpaperBentoPrev: s.wallpaperBentoPrev
     property alias wallTransType: s.wallTransType
     property alias wallTransDuration: s.wallTransDuration
     property alias wallTransAngle: s.wallTransAngle
@@ -1152,6 +1158,12 @@ Singleton {
         "wallpaperFolder": "",
         "wallpaperPickerStyle": "strip",
         "wallpaperPillsShape": "uniform",
+        "wallpaperStripSteps": "normal",
+        "wallpaperStripSides": 2,
+        "wallpaperTilesRows": 2,
+        "wallpaperTilesAspect": "square",
+        "wallpaperBentoHero": "medium",
+        "wallpaperBentoPrev": true,
         "wallTransType": "fade",
         "wallTransDuration": 1,
         "wallTransAngle": 45,
@@ -1803,6 +1815,12 @@ Singleton {
             property string wallpaperFolder: ""
             property string wallpaperPickerStyle: "strip"
             property string wallpaperPillsShape: "uniform"
+            property string wallpaperStripSteps: "normal"
+            property int wallpaperStripSides: 2
+            property int wallpaperTilesRows: 2
+            property string wallpaperTilesAspect: "square"
+            property string wallpaperBentoHero: "medium"
+            property bool wallpaperBentoPrev: true
             property string wallTransType: "fade"
             property real wallTransDuration: 1
             property int wallTransAngle: 45

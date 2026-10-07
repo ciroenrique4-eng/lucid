@@ -873,6 +873,137 @@ Column {
 
         }
 
+        SettingRow {
+            title: I18n.tr("Step")
+            description: I18n.tr("How quickly the cards shrink away from the middle one.")
+            visible: Prefs.wallpaperPickerStyle === "strip"
+            stacked: true
+
+            M3Segmented {
+                width: Math.min(parent.width, 420)
+                current: Prefs.wallpaperStripSteps
+                options: [{
+                    "key": "soft",
+                    "label": I18n.tr("Soft")
+                }, {
+                    "key": "normal",
+                    "label": I18n.tr("Normal")
+                }, {
+                    "key": "steep",
+                    "label": I18n.tr("Marked")
+                }]
+                onChosen: (key) => Prefs.wallpaperStripSteps = key
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Neighbours")
+            description: I18n.tr("How many cards show on each side of the middle one.")
+            visible: Prefs.wallpaperPickerStyle === "strip"
+            showDivider: false
+            stacked: true
+
+            M3Segmented {
+                width: Math.min(parent.width, 240)
+                current: Prefs.wallpaperStripSides
+                options: [{
+                    "key": 2,
+                    "label": String(2)
+                }, {
+                    "key": 3,
+                    "label": String(3)
+                }]
+                onChosen: (key) => Prefs.wallpaperStripSides = key
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Rows")
+            description: I18n.tr("How many rows of tiles the picker shows.")
+            visible: Prefs.wallpaperPickerStyle === "tiles"
+            stacked: true
+
+            M3Segmented {
+                width: Math.min(parent.width, 300)
+                current: Prefs.wallpaperTilesRows
+                options: [{
+                    "key": 1,
+                    "label": String(1)
+                }, {
+                    "key": 2,
+                    "label": String(2)
+                }, {
+                    "key": 3,
+                    "label": String(3)
+                }]
+                onChosen: (key) => Prefs.wallpaperTilesRows = key
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Tile shape")
+            description: I18n.tr("Square tiles, or wide ones that show more of each picture.")
+            visible: Prefs.wallpaperPickerStyle === "tiles"
+            showDivider: false
+            stacked: true
+
+            M3Segmented {
+                width: Math.min(parent.width, 320)
+                current: Prefs.wallpaperTilesAspect
+                options: [{
+                    "key": "square",
+                    "label": I18n.tr("Square")
+                }, {
+                    "key": "wide",
+                    "label": I18n.tr("Wide")
+                }]
+                onChosen: (key) => Prefs.wallpaperTilesAspect = key
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Main wallpaper")
+            description: I18n.tr("How much of the panel the selected wallpaper takes.")
+            visible: Prefs.wallpaperPickerStyle === "bento"
+            stacked: true
+
+            M3Segmented {
+                width: Math.min(parent.width, 420)
+                current: Prefs.wallpaperBentoHero
+                options: [{
+                    "key": "small",
+                    "label": I18n.tr("Small")
+                }, {
+                    "key": "medium",
+                    "label": I18n.tr("Medium")
+                }, {
+                    "key": "large",
+                    "label": I18n.tr("Large")
+                }]
+                onChosen: (key) => Prefs.wallpaperBentoHero = key
+            }
+
+        }
+
+        SettingRow {
+            title: I18n.tr("Show previous")
+            description: I18n.tr("Keep the two wallpapers before the selected one at the edge, or give their room to the rest.")
+            visible: Prefs.wallpaperPickerStyle === "bento"
+            showDivider: false
+
+            M3Switch {
+                checked: Prefs.wallpaperBentoPrev
+                onToggled: (v) => {
+                    return Prefs.wallpaperBentoPrev = v;
+                }
+            }
+
+        }
+
     }
 
     SettingCard {

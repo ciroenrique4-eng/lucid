@@ -8,14 +8,18 @@ import qs
 WallpaperSlots {
     id: root
 
+    // Settings -> Theme -> Bento: how large the main wallpaper is, and whether the
+    // two before it are shown (without them the main one starts at the edge)
+    readonly property bool showPrev: Prefs.wallpaperBentoPrev !== false
+    readonly property real heroShare: Prefs.wallpaperBentoHero === "small" ? 0.28 : (Prefs.wallpaperBentoHero === "large" ? 0.45 : 0.34)
     readonly property real gap: 8
-    readonly property real prevW: Math.round(root.width * 0.11)
-    readonly property real mainW: Math.round(root.width * 0.34)
-    readonly property real restW: root.width - root.prevW - root.mainW - 4 * root.gap
+    readonly property real prevW: root.showPrev ? Math.round(root.width * 0.11) : 0
+    readonly property real mainW: Math.round(root.width * root.heroShare)
+    readonly property real restW: root.width - root.prevW - root.mainW - (root.showPrev ? 4 : 3) * root.gap
     readonly property real aW: Math.round(root.restW * 0.4)
     readonly property real bW: Math.round(root.restW * 0.3)
     readonly property real cW: root.restW - root.aW - root.bW
-    readonly property real xMain: root.prevW + root.gap
+    readonly property real xMain: root.showPrev ? root.prevW + root.gap : 0
     readonly property real xA: root.xMain + root.mainW + root.gap
     readonly property real xB: root.xA + root.aW + root.gap
     readonly property real xC: root.xB + root.bW + root.gap
@@ -38,12 +42,18 @@ WallpaperSlots {
         case 5:
             return root.cell(root.xC, root.short + root.gap, root.cW, root.tall, Theme.radiusMd, 0.85);
         case -1:
-            return root.cell(0, 0, root.prevW, root.half, Theme.radiusMd, 0.8);
+            if (root.showPrev)
+                return root.cell(0, 0, root.prevW, root.half, Theme.radiusMd, 0.8);
+
+            break;
         case -2:
-            return root.cell(0, root.half + root.gap, root.prevW, root.half, Theme.radiusMd, 0.7);
+            if (root.showPrev)
+                return root.cell(0, root.half + root.gap, root.prevW, root.half, Theme.radiusMd, 0.7);
+
+            break;
         }
         // out of the picture: parked past the edge it left by
-        return root.cell(offset > 0 ? root.width : -root.prevW, 0, root.prevW, root.half, Theme.radiusMd, 0);
+        return root.cell(offset > 0 ? root.width : -root.mainW, 0, root.cW, root.half, Theme.radiusMd, 0);
     }
 
     function cell(x, y, w, h, r, o) {

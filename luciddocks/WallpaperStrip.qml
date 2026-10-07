@@ -12,6 +12,8 @@ Item {
     property int midH: 148
     property int smallW: 150
     property int smallH: 93
+    property int tinyW: 100
+    property int tinyH: 62
     property int itemGap: 10
     property int hoveredIndex: -1
     readonly property int hoverGrow: 6
@@ -20,6 +22,8 @@ Item {
     property string appliedPath: ""
     property real stableHeight: height
     readonly property real rowHeight: strip.heroH + 62
+    // Settings -> Theme -> Strip: neighbours shown on each side
+    readonly property int sides: Prefs.wallpaperStripSides === 3 ? 3 : 2
 
     property int previewInterval: 300
     property string pendingPreviewPath: ""
@@ -188,9 +192,9 @@ Item {
                     strip.hoveredIndex = -1;
 
             }
-            readonly property int tier: Math.min(2, Math.abs(slot.index - view.currentIndex))
-            readonly property int targetW: slot.tier === 0 ? strip.heroW : (slot.tier === 1 ? strip.midW : strip.smallW)
-            readonly property int targetH: slot.tier === 0 ? strip.heroH : (slot.tier === 1 ? strip.midH : strip.smallH)
+            readonly property int tier: Math.min(strip.sides, Math.abs(slot.index - view.currentIndex))
+            readonly property int targetW: slot.tier === 0 ? strip.heroW : (slot.tier === 1 ? strip.midW : (slot.tier === 2 ? strip.smallW : strip.tinyW))
+            readonly property int targetH: slot.tier === 0 ? strip.heroH : (slot.tier === 1 ? strip.midH : (slot.tier === 2 ? strip.smallH : strip.tinyH))
 
             width: slot.targetW
             height: view.height
@@ -230,9 +234,9 @@ Item {
                     }
 
                 }
-                radius: slot.tier === 0 ? Theme.radiusXl : (slot.tier === 1 ? Theme.radiusLg : Theme.radiusMd)
+                radius: slot.tier === 0 ? Theme.radiusXl : (slot.tier === 1 ? Theme.radiusLg : (slot.tier === 2 ? Theme.radiusMd : Theme.radiusSm))
                 color: Theme.bgTile
-                opacity: (slot.tier === 0 || slot.hovered) ? 1 : (slot.tier === 1 ? 0.78 : 0.5)
+                opacity: (slot.tier === 0 || slot.hovered) ? 1 : (slot.tier === 1 ? 0.78 : (slot.tier === 2 ? 0.5 : 0.36))
 
                 Behavior on height {
                     NumberAnimation {

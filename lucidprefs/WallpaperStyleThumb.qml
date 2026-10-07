@@ -9,6 +9,37 @@ Rectangle {
     property string label: ""
     readonly property bool selected: Prefs.wallpaperPickerStyle === tile.styleId
     readonly property color ink: Theme.alpha(Theme.text, 0.28)
+    // strip: how fast the neighbours shrink and how many show, as widths in the miniature
+    readonly property var stripShare: Prefs.wallpaperStripSteps === "soft" ? [0.82, 0.64] : (Prefs.wallpaperStripSteps === "steep" ? [0.56, 0.30] : [0.70, 0.44])
+    readonly property int stripSides: Prefs.wallpaperStripSides === 3 ? 3 : 2
+    readonly property var stripWidths: {
+        var base = 34;
+        var tiers = [base, base * tile.stripShare[0], base * tile.stripShare[1], base * tile.stripShare[1] * 0.68];
+        var total = 0;
+        var out = [];
+        for (var o = -tile.stripSides; o <= tile.stripSides; o++) {
+            out.push(tiers[Math.abs(o)]);
+            total += tiers[Math.abs(o)] + 4;
+        }
+        var k = Math.min(1, (screenBox.width - 8) / total);
+        return out.map(function (w) {
+            return { "w": Math.round(w * k), "h": Math.round(w * k * 1.12), "main": false };
+        }).map(function (c, i) {
+            c.main = i === tile.stripSides;
+            return c;
+        });
+    }
+    // tiles: rows and shape
+    readonly property int tileRows: Prefs.wallpaperTilesRows === 1 || Prefs.wallpaperTilesRows === 3 ? Prefs.wallpaperTilesRows : 2
+    readonly property bool tilesWide: Prefs.wallpaperTilesAspect === "wide"
+    readonly property real tileH: (screenBox.height - 8 - (tile.tileRows - 1) * 4) / tile.tileRows
+    readonly property real tileW: tile.tilesWide ? tile.tileH * 16 / 9 : tile.tileH
+    readonly property int tileCols: Math.max(1, Math.floor((screenBox.width - 4) / (tile.tileW + 4)))
+    // the picked tile: a column in from the middle, in the middle row, whatever fits
+    readonly property int tilePick: Math.min(tile.tileRows * tile.tileCols - 1, tile.tileRows * Math.floor(tile.tileCols / 2) + Math.floor(tile.tileRows / 2))
+    // bento: the main wallpaper's share and whether the two before it show
+    readonly property bool bentoPrev: Prefs.wallpaperBentoPrev !== false
+    readonly property real bentoHero: Prefs.wallpaperBentoHero === "small" ? 30 : (Prefs.wallpaperBentoHero === "large" ? 52 : 38)
     // pills is drawn in the shape it is set to
     readonly property string pills: Prefs.wallpaperPillsShape === "full" || Prefs.wallpaperPillsShape === "wave" ? Prefs.wallpaperPillsShape : "uniform"
 
@@ -45,17 +76,16 @@ Rectangle {
             visible: tile.styleId === "strip"
 
             Repeater {
-                model: [{ "w": 14, "h": 18 }, { "w": 20, "h": 26 }, { "w": 34, "h": 38 }, { "w": 20, "h": 26 }, { "w": 14, "h": 18 }]
+                model: tile.stripWidths
 
                 Rectangle {
                     required property var modelData
-                    required property int index
 
                     anchors.verticalCenter: parent.verticalCenter
                     width: modelData.w
                     height: modelData.h
-                    radius: Theme.rad(index === 2 ? 6 : 4)
-                    color: index === 2 ? Theme.accent : tile.ink
+                    radius: Theme.rad(modelData.main ? 6 : 4)
+                    color: modelData.main ? Theme.accent : tile.ink
                 }
 
             }
@@ -85,24 +115,24 @@ Rectangle {
 
         }
 
-        // tiles: two rows of rounded squares, the picked one rounder
+        // tiles: as many rows as set, square or wide, the picked one rounder
         Grid {
             anchors.centerIn: parent
-            rows: 2
+            rows: tile.tileRows
             flow: Grid.TopToBottom
-            spacing: 5
+            spacing: 4
             visible: tile.styleId === "tiles"
 
             Repeater {
-                model: 12
+                model: tile.tileRows * tile.tileCols
 
                 Rectangle {
                     required property int index
 
-                    width: 18
-                    height: 18
-                    radius: Theme.rad(index === 5 ? 5 : 3)
-                    color: index === 5 ? Theme.accent : tile.ink
+                    width: tile.tileW
+                    height: tile.tileH
+                    radius: Theme.rad(index === tile.tilePick ? 5 : 3)
+                    color: index === tile.tilePick ? Theme.accent : tile.ink
                 }
 
             }
@@ -157,11 +187,18 @@ Rectangle {
 
         // bento: the picked one large, the others in tiles of different sizes
         Item {
+            id: bento
+
+            readonly property real x0: tile.bentoPrev ? 14 : 0
+            readonly property real rest: bento.width - bento.x0 - tile.bentoHero - 4
+            readonly property real xa: bento.x0 + tile.bentoHero + 4
+
             anchors.fill: parent
             anchors.margins: 5
             visible: tile.styleId === "bento"
 
             Rectangle {
+                visible: tile.bentoPrev
                 x: 0
                 y: 0
                 width: 10
@@ -171,6 +208,7 @@ Rectangle {
             }
 
             Rectangle {
+                visible: tile.bentoPrev
                 x: 0
                 y: 25
                 width: 10
@@ -180,54 +218,54 @@ Rectangle {
             }
 
             Rectangle {
-                x: 14
+                x: bento.x0
                 y: 0
-                width: 36
+                width: tile.bentoHero
                 height: 46
                 radius: Theme.rad(8)
                 color: Theme.accent
             }
 
             Rectangle {
-                x: 54
+                x: bento.xa
                 y: 0
-                width: 24
+                width: bento.rest * 0.4 - 2
                 height: 46
                 radius: Theme.rad(5)
                 color: tile.ink
             }
 
             Rectangle {
-                x: 82
+                x: bento.xa + bento.rest * 0.4 + 2
                 y: 0
-                width: 18
+                width: bento.rest * 0.3 - 2
                 height: 27
                 radius: Theme.rad(4)
                 color: tile.ink
             }
 
             Rectangle {
-                x: 82
+                x: bento.xa + bento.rest * 0.4 + 2
                 y: 31
-                width: 18
+                width: bento.rest * 0.3 - 2
                 height: 15
                 radius: Theme.rad(4)
                 color: tile.ink
             }
 
             Rectangle {
-                x: 104
+                x: bento.xa + bento.rest * 0.7 + 2
                 y: 0
-                width: 16
+                width: bento.rest * 0.3 - 2
                 height: 15
                 radius: Theme.rad(4)
                 color: tile.ink
             }
 
             Rectangle {
-                x: 104
+                x: bento.xa + bento.rest * 0.7 + 2
                 y: 19
-                width: 16
+                width: bento.rest * 0.3 - 2
                 height: 27
                 radius: Theme.rad(4)
                 color: tile.ink
