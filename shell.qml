@@ -52,6 +52,7 @@ ShellRoot {
         void Polkit.registered;
         void NightLight.active;
         void Sounds.choosing;
+        void WallTransitions.active;
         void ShowDesktop.active;
     }
 
