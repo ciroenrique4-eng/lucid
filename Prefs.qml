@@ -723,6 +723,15 @@ Singleton {
     property alias fontScale: s.fontScale
     property alias language: s.language
     property alias wallpaperFolder: s.wallpaperFolder
+    property alias wallpaperPickerStyle: s.wallpaperPickerStyle
+    property alias wallTransType: s.wallTransType
+    property alias wallTransDuration: s.wallTransDuration
+    property alias wallTransAngle: s.wallTransAngle
+    property alias wallTransOrigin: s.wallTransOrigin
+    property alias wallTransBezier: s.wallTransBezier
+    property alias wallTransWave: s.wallTransWave
+    property alias wallTransPreset: s.wallTransPreset
+    property alias wallTransCustomPresets: s.wallTransCustomPresets
     // bracket writes on the adapter are dropped, so this must go through the alias
     property alias themeOrder: s.themeOrder
     // how matugen builds a palette, from the wallpaper or from themeColour: its
@@ -1140,6 +1149,15 @@ Singleton {
         "fontScale": 1,
         "language": "auto",
         "wallpaperFolder": "",
+        "wallpaperPickerStyle": "strip",
+        "wallTransType": "fade",
+        "wallTransDuration": 1,
+        "wallTransAngle": 45,
+        "wallTransOrigin": "center",
+        "wallTransBezier": ".54,0,.34,.99",
+        "wallTransWave": "20,20",
+        "wallTransPreset": "suave",
+        "wallTransCustomPresets": "",
         "themeOrder": "",
         "matugenScheme": "scheme-tonal-spot",
         "matugenContrast": 0,
@@ -1781,6 +1799,15 @@ Singleton {
             property real fontScale: 1
             property string language: "auto"
             property string wallpaperFolder: ""
+            property string wallpaperPickerStyle: "strip"
+            property string wallTransType: "fade"
+            property real wallTransDuration: 1
+            property int wallTransAngle: 45
+            property string wallTransOrigin: "center"
+            property string wallTransBezier: ".54,0,.34,.99"
+            property string wallTransWave: "20,20"
+            property string wallTransPreset: "suave"
+            property string wallTransCustomPresets: ""
             property string themeOrder: ""
             property string matugenScheme: "scheme-tonal-spot"
             property real matugenContrast: 0
