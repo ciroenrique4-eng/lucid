@@ -120,11 +120,13 @@ Item {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: Math.max(0, (strip.stableHeight - strip.rowHeight) / 2)
+        anchors.topMargin: 6
         // as wide as its columns, so a few wallpapers sit in the middle instead of
         // piling up on the left, and no wider than the panel
         width: Math.min(strip.width - 24, strip.cellW * Math.ceil(view.count / strip.rows))
-        height: strip.heroH + 24
+        // the panel is cut to the grid (Dock.wallTilesChrome is what it keeps around
+        // it), so the rows get what is left and the tiles stay at their size
+        height: Math.max(strip.rows * 40, strip.stableHeight - 56)
         flow: GridView.FlowTopToBottom
         cellWidth: strip.cellW
         cellHeight: strip.tile

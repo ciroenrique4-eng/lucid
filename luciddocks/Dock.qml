@@ -517,9 +517,21 @@ PanelWindow {
     readonly property int wallBaseWidth: dockWindow.wallHeroW + 2 * (Math.round(dockWindow.wallHeroW * 0.70) + dockWindow.wallCardGap) + 2 * (Math.round(dockWindow.wallHeroW * 0.44) + dockWindow.wallCardGap)
     readonly property int wallStripWidth: dockWindow.wallHeroW + 2 * (dockWindow.wallMidW + dockWindow.wallCardGap) + 2 * (dockWindow.wallSmallW + dockWindow.wallCardGap) + (Prefs.wallpaperStripSides === 3 ? 2 * (dockWindow.wallTinyW + dockWindow.wallCardGap) : 0)
     readonly property int wallHoverRoom: 12
+    // Tiles: the panel is cut to its grid. More rows make it taller and fewer
+    // wallpapers narrower, instead of the tiles shrinking to fit a fixed panel
+    readonly property bool wallIsTiles: Prefs.wallpaperPickerStyle === "tiles"
+    readonly property int wallTilesRows: Math.max(2, Math.min(5, Math.round(Prefs.wallpaperTilesRows) || 2))
+    readonly property int wallTilesBase: Math.round(dockWindow.wallHeroH * 0.5)
+    readonly property int wallTilesCellW: Prefs.wallpaperTilesAspect === "wide" ? Math.round(dockWindow.wallTilesBase * 16 / 9) : dockWindow.wallTilesBase
+    // what the grid leaves around itself: a margin above, the caption and one below
+    readonly property int wallTilesChrome: 56
+    readonly property int wallTilesWidth: Math.ceil(wallpapersModel.count / dockWindow.wallTilesRows) * dockWindow.wallTilesCellW + 24
 
     readonly property real menuWidth: {
         if (dockWindow.mode === "wallpaper")
+            if (dockWindow.wallIsTiles)
+                return Math.min(Math.max(dockWindow.launcherWidth, dockWindow.wallTilesWidth + dockWindow.panelPadding + dockWindow.wallHoverRoom), dockWindow.maxDockWidth - 48);
+
             return Math.min((Prefs.wallpaperPickerStyle === "strip" ? dockWindow.wallStripWidth : dockWindow.wallBaseWidth) + dockWindow.panelPadding + dockWindow.wallHoverRoom, dockWindow.maxDockWidth - 48);
 
         if (dockWindow.mode === "power")
@@ -538,7 +550,7 @@ PanelWindow {
     readonly property real menuHeight: {
         var content;
         if (dockWindow.mode === "wallpaper")
-            content = dockWindow.wallHeroH + 70;
+            content = dockWindow.wallIsTiles ? Math.min(dockWindow.menuContentMax, dockWindow.wallTilesRows * dockWindow.wallTilesBase + dockWindow.wallTilesChrome) : dockWindow.wallHeroH + 70;
         else if (dockWindow.mode === "power")
             content = 140;
         // fixed, so deleting entries doesn't shrink the preview under the cursor
