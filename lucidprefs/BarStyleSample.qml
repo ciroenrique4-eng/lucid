@@ -598,60 +598,44 @@ Item {
                 anchors.margins: 8
                 spacing: 6
 
-                Rectangle {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: 50
-                    height: 50
-                    radius: 25
-                    color: Theme.bgSunken
-
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: 40
-                        height: 40
-                        radius: 20
-                        color: "transparent"
-                        border.width: 1
-                        border.color: Theme.alpha(Theme.text, 0.07)
-                    }
-
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: 26
-                        height: 26
-                        radius: 13
-                        color: Theme.accentContainer
-                        border.width: 2
-                        border.color: Theme.accent
-                    }
-
-                    // the tonearm, needle down
-                    Rectangle {
-                        x: 46
-                        y: 2
-                        width: 2
-                        height: 30
-                        radius: 1
-                        rotation: 20
-                        transformOrigin: Item.Top
-                        color: Theme.text
-                    }
-
-                    Rectangle {
-                        x: 42
-                        y: -1
-                        width: 7
-                        height: 7
-                        radius: 3.5
-                        color: Theme.bgHigh
-                        border.width: 1
-                        border.color: Theme.subtext
-                    }
-
-                }
-
-                MiniLines {
+                // the record with the track beside it, as on the turntable
+                Row {
                     width: parent.width
+                    spacing: 8
+
+                    Rectangle {
+                        width: 50
+                        height: 50
+                        radius: 25
+                        color: Theme.bgSunken
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 40
+                            height: 40
+                            radius: 20
+                            color: "transparent"
+                            border.width: 1
+                            border.color: Theme.alpha(Theme.text, 0.07)
+                        }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 26
+                            height: 26
+                            radius: 13
+                            color: Theme.accentContainer
+                            border.width: 2
+                            border.color: Theme.accent
+                        }
+
+                    }
+
+                    MiniLines {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width - 58
+                    }
+
                 }
 
                 MiniTrack {

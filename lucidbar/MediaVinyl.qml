@@ -2,11 +2,12 @@ import QtQuick
 import QtQuick.Shapes
 import qs
 
-// the Vinyl panel's turntable: a plinth with the record on the left and the
-// tonearm on the right. the record turns while the music plays and stops where
-// it is on pause; the arm lowers its needle to play and lifts it. all of it flat,
-// in the palette's tones: the record one tone with two grooves, its label the
-// cover cut to one of Material's cookies, whose lobes swell while it plays
+// the Vinyl panel's turntable: a plinth with the record on the left and, to
+// its right, room for whatever the panel puts there (the track, a small
+// visualizer). the record turns while the music plays and stops where it is on
+// pause. all of it flat, in the palette's tones: the record one tone with two
+// grooves, its label the cover cut to one of Material's cookies, whose lobes
+// swell while it plays
 Item {
     id: vinyl
 
@@ -16,18 +17,15 @@ Item {
     // the needle is down whenever the music plays
     property bool playing: false
 
-    readonly property real plinthW: Math.min(vinyl.width, vinyl.height * 1.6)
-    readonly property real plinthX: (vinyl.width - vinyl.plinthW) / 2
-    readonly property real disc: vinyl.height - 30
+    // what the panel sets beside the record
+    default property alias info: infoArea.data
+
+    readonly property real plinthW: vinyl.width
+    readonly property real plinthX: 0
+    readonly property real disc: vinyl.height - 28
     readonly property real r: vinyl.disc / 2
-    readonly property real cx: vinyl.plinthX + 15 + vinyl.r + 4
+    readonly property real cx: 14 + vinyl.r
     readonly property real cy: vinyl.height / 2
-    // the arm's pivot, up and to the right of the record
-    readonly property real px: vinyl.plinthX + vinyl.plinthW - vinyl.r * 0.42
-    readonly property real py: vinyl.cy - vinyl.r * 0.62
-    readonly property real armLength: vinyl.r * 1.62
-    // where it hangs: on the grooves to play, beside the record at rest
-    readonly property real armAngle: vinyl.playing ? 58 : 22
     // the label's lobes stand out while it plays and soften on pause
     property real cookieDepth: vinyl.playing ? 0.1 : 0.05
 
@@ -172,43 +170,14 @@ Item {
 
     }
 
-    // ── the tonearm: flat, in the palette's tones, no shadow ──
-    Arm {
-        x: vinyl.px
-        y: vinyl.py
-        rotation: vinyl.armAngle
-        r: vinyl.r
-        length: vinyl.armLength
+    // beside the record, above the speed selector
+    Item {
+        id: infoArea
 
-        Behavior on rotation {
-            NumberAnimation {
-                duration: 700
-                easing.type: Easing.InOutCubic
-            }
-
-        }
-
-    }
-
-    // the pivot: a tonal disc with a cap
-    Rectangle {
-        x: vinyl.px - width / 2
-        y: vinyl.py - height / 2
-        width: vinyl.r * 0.34
-        height: width
-        radius: width / 2
-        color: Theme.bgActive
-        border.width: 2
-        border.color: Theme.alpha(Theme.text, 0.18)
-
-        Rectangle {
-            anchors.centerIn: parent
-            width: parent.width * 0.45
-            height: width
-            radius: width / 2
-            color: Theme.subtext
-        }
-
+        x: vinyl.cx + vinyl.r + 16
+        y: 14
+        width: vinyl.width - x - 16
+        height: vinyl.height - 14 - 34
     }
 
     // a turn every four seconds, only while it plays and shows; stopped, it
@@ -284,62 +253,6 @@ Item {
 
             PathPolyline {
                 path: cookie.points
-            }
-
-        }
-
-    }
-
-    // the arm hangs from (0, 0), its pivot: a counterweight behind, the tube,
-    // a headshell turned in and the needle in the accent. flat, in the
-    // palette's tones, like the rest of the shell's controls
-    component Arm: Item {
-        id: armShape
-
-        property real r: 80
-        property real length: 120
-        readonly property real tube: Math.max(3.5, armShape.r * 0.045)
-
-        // counterweight
-        Rectangle {
-            x: -width / 2
-            y: -armShape.r * 0.36
-            width: Math.max(12, armShape.r * 0.17)
-            height: armShape.r * 0.22
-            radius: Theme.rad(4)
-            color: Theme.subtextDim
-        }
-
-        // the tube
-        Rectangle {
-            x: -width / 2
-            y: 0
-            width: armShape.tube
-            height: armShape.length - headshell.height + 3
-            radius: width / 2
-            color: Theme.subtext
-        }
-
-        // headshell and needle
-        Rectangle {
-            id: headshell
-
-            x: -width / 2 - 1
-            y: armShape.length - height
-            width: Math.max(9, armShape.r * 0.12)
-            height: Math.max(16, armShape.r * 0.21)
-            radius: Theme.rad(3)
-            rotation: 24
-            color: Theme.text
-
-            Rectangle {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.bottom
-                anchors.topMargin: -2
-                width: 2.5
-                height: 5
-                radius: 1
-                color: Theme.accent
             }
 
         }
