@@ -919,11 +919,12 @@ BarPill {
                             Row {
                                 id: vinylViz
 
-                                readonly property int count: 12
+                                readonly property int count: 8
 
                                 anchors.fill: parent
                                 anchors.margins: 10
-                                spacing: 4
+                                anchors.topMargin: 16
+                                spacing: 7
                                 opacity: root.isPlaying ? 1 : 0.6
 
                                 Repeater {
