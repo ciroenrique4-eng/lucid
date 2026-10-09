@@ -904,48 +904,60 @@ BarPill {
                         playing: root.isPlaying
                         onClicked: root.togglePlay()
 
-                        Row {
-                            id: vinylViz
-
-                            readonly property int count: 12
+                        // the visualizer on a sunken plate in the record's
+                        // tone, down to the track: on the plinth's own tone the
+                        // bars had no contrast
+                        Rectangle {
+                            id: vinylVizPlate
 
                             anchors.top: parent.top
-                            anchors.right: parent.right
-                            width: Math.min(parent.width, 120)
-                            height: 24
-                            spacing: 3
-                            opacity: root.isPlaying ? 1 : 0.75
+                            width: parent.width
+                            height: Math.max(28, parent.height - vinylText.height - 12)
+                            radius: Theme.radiusMd
+                            color: Theme.bgSunken
 
-                            Repeater {
-                                model: vinylViz.count
+                            Row {
+                                id: vinylViz
 
-                                Rectangle {
-                                    required property int index
+                                readonly property int count: 12
 
-                                    readonly property real level: root.barLevel(Math.floor(index * root.barCount / vinylViz.count))
+                                anchors.fill: parent
+                                anchors.margins: 10
+                                spacing: 4
+                                opacity: root.isPlaying ? 1 : 0.6
 
-                                    width: (vinylViz.width - (vinylViz.count - 1) * 3) / vinylViz.count
-                                    height: Math.min(vinylViz.height, Math.max(width, level * vinylViz.height))
-                                    anchors.bottom: parent.bottom
-                                    radius: Theme.radiusPill
-                                    color: root.barColor(level)
+                                Repeater {
+                                    model: vinylViz.count
 
-                                    Behavior on height {
-                                        NumberAnimation {
-                                            duration: Theme.barMs(70)
-                                            easing.type: Easing.OutCubic
+                                    Rectangle {
+                                        required property int index
+
+                                        readonly property real level: root.barLevel(Math.floor(index * root.barCount / vinylViz.count))
+
+                                        width: (vinylViz.width - (vinylViz.count - 1) * vinylViz.spacing) / vinylViz.count
+                                        height: Math.min(vinylViz.height, Math.max(width, level * vinylViz.height))
+                                        anchors.bottom: parent.bottom
+                                        radius: Theme.radiusPill
+                                        color: Theme.alpha(Theme.accent, 0.5 + 0.5 * Math.min(1, level * 1.25))
+
+                                        Behavior on height {
+                                            NumberAnimation {
+                                                duration: Theme.barMs(70)
+                                                easing.type: Easing.OutCubic
+                                            }
+
                                         }
 
                                     }
 
                                 }
 
-                            }
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: Theme.barMs(220)
+                                        easing.type: Easing.OutCubic
+                                    }
 
-                            Behavior on opacity {
-                                NumberAnimation {
-                                    duration: Theme.barMs(220)
-                                    easing.type: Easing.OutCubic
                                 }
 
                             }
@@ -953,6 +965,8 @@ BarPill {
                         }
 
                         Column {
+                            id: vinylText
+
                             anchors.bottom: parent.bottom
                             width: parent.width
                             spacing: 1
