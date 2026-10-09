@@ -1,14 +1,12 @@
 import QtQuick
 import QtQuick.Shapes
-import Quickshell.Widgets
 import qs
 
 // the Vinyl panel's turntable: a plinth with the record on the left and the
-// tonearm on the right. the record (the cover as its label) turns while the
-// music plays and stops where it is on pause; the arm lowers its needle to play
-// and lifts it. the record gets its depth from light (gradients on the vinyl
-// and the platter, a sheen that stays put while it turns under it, a shadow
-// under the label); the plinth and the arm are flat, in the palette's tones
+// tonearm on the right. the record turns while the music plays and stops where
+// it is on pause; the arm lowers its needle to play and lifts it. all of it flat,
+// in the palette's tones: the record one tone with two grooves, its label the
+// cover cut to one of Material's cookies, whose lobes swell while it plays
 Item {
     id: vinyl
 
@@ -30,6 +28,17 @@ Item {
     readonly property real armLength: vinyl.r * 1.62
     // where it hangs: on the grooves to play, beside the record at rest
     readonly property real armAngle: vinyl.playing ? 58 : 22
+    // the label's lobes stand out while it plays and soften on pause
+    property real cookieDepth: vinyl.playing ? 0.1 : 0.05
+
+    Behavior on cookieDepth {
+        NumberAnimation {
+            duration: Theme.durMedium
+            easing.type: Easing.OutBack
+            easing.overshoot: 2
+        }
+
+    }
 
     signal clicked()
 
@@ -100,73 +109,7 @@ Item {
 
     }
 
-    // ── the platter: brushed metal, a little past the record ──
-    Rectangle {
-        x: vinyl.cx - width / 2
-        y: vinyl.cy - height / 2 + 2
-        width: vinyl.disc + 12
-        height: width
-        radius: width / 2
-        color: Theme.alpha("black", 0.4)
-    }
-
-    Shape {
-        x: vinyl.cx - vinyl.r - 5
-        y: vinyl.cy - vinyl.r - 5
-        width: vinyl.disc + 10
-        height: vinyl.disc + 10
-        preferredRendererType: Shape.CurveRenderer
-
-        ShapePath {
-            strokeWidth: 1
-            strokeColor: Theme.alpha("white", 0.15)
-
-            fillGradient: ConicalGradient {
-                centerX: vinyl.r + 5
-                centerY: vinyl.r + 5
-                angle: 60
-
-                GradientStop {
-                    position: 0
-                    color: "#5b5b5b"
-                }
-
-                GradientStop {
-                    position: 0.25
-                    color: "#2b2b2b"
-                }
-
-                GradientStop {
-                    position: 0.5
-                    color: "#4d4d4d"
-                }
-
-                GradientStop {
-                    position: 0.75
-                    color: "#262626"
-                }
-
-                GradientStop {
-                    position: 1
-                    color: "#5b5b5b"
-                }
-
-            }
-
-            PathAngleArc {
-                centerX: vinyl.r + 5
-                centerY: vinyl.r + 5
-                radiusX: vinyl.r + 4.5
-                radiusY: vinyl.r + 4.5
-                startAngle: 0
-                sweepAngle: 360
-            }
-
-        }
-
-    }
-
-    // ── the record ──
+    // ── the record: one flat tone, two grooves, the cover in a cookie ──
     Item {
         id: record
 
@@ -175,271 +118,56 @@ Item {
         width: vinyl.disc
         height: vinyl.disc
 
-        // vinyl: darkest at the rim
-        Shape {
+        // round whatever the corner dial says: it turns, a squircle would
+        // wobble. the dial shows in the label's lobes instead
+        Rectangle {
             anchors.fill: parent
-            preferredRendererType: Shape.CurveRenderer
-
-            ShapePath {
-                strokeWidth: 0
-                strokeColor: "transparent"
-
-                fillGradient: RadialGradient {
-                    centerX: vinyl.r
-                    centerY: vinyl.r
-                    centerRadius: vinyl.r
-                    focalX: vinyl.r
-                    focalY: vinyl.r
-
-                    GradientStop {
-                        position: 0.3
-                        color: "#232323"
-                    }
-
-                    GradientStop {
-                        position: 0.85
-                        color: "#141414"
-                    }
-
-                    GradientStop {
-                        position: 1
-                        color: "#0a0a0a"
-                    }
-
-                }
-
-                PathAngleArc {
-                    centerX: vinyl.r
-                    centerY: vinyl.r
-                    radiusX: vinyl.r
-                    radiusY: vinyl.r
-                    startAngle: 0
-                    sweepAngle: 360
-                }
-
-            }
-
+            radius: width / 2
+            color: Theme.bgSunken
         }
 
-        // grooves: fine rings, with darker gaps between the tracks
         Repeater {
-            model: 26
+            model: [0.92, 0.76]
 
             Rectangle {
-                required property int index
-                readonly property bool gap: index === 6 || index === 13 || index === 19
+                required property real modelData
 
                 anchors.centerIn: parent
-                width: vinyl.disc * (0.95 - index * 0.0205)
+                width: vinyl.disc * modelData
                 height: width
                 radius: width / 2
                 color: "transparent"
-                border.width: gap ? 1.5 : 1
-                border.color: gap ? Theme.alpha("black", 0.6) : Theme.alpha("white", index % 2 === 0 ? 0.045 : 0.02)
+                border.width: 1
+                border.color: Theme.alpha(Theme.text, 0.07)
             }
 
         }
 
-        // the label sits up a little: its shadow, an accent rim, the cover
+        // the label: an accent cookie, the cover cut to the same shape inside
+        Cookie {
+            anchors.centerIn: parent
+            width: vinyl.disc * 0.56
+            height: width
+            depth: vinyl.cookieDepth
+            fill: Theme.accent
+        }
+
+        Cookie {
+            anchors.centerIn: parent
+            width: vinyl.disc * 0.56 - 8
+            height: width
+            depth: vinyl.cookieDepth
+            fill: Theme.accentContainer
+            cover: vinyl.source
+        }
+
+        // the spindle hole
         Rectangle {
             anchors.centerIn: parent
-            anchors.verticalCenterOffset: 1.5
-            width: vinyl.disc * 0.4 + 3
+            width: Math.max(8, vinyl.disc * 0.05)
             height: width
             radius: width / 2
-            color: Theme.alpha("black", 0.5)
-        }
-
-        Rectangle {
-            anchors.centerIn: parent
-            width: vinyl.disc * 0.4
-            height: width
-            radius: width / 2
-            color: Theme.accent
-        }
-
-        ClippingRectangle {
-            anchors.centerIn: parent
-            width: vinyl.disc * 0.36
-            height: width
-            radius: width / 2
-            color: Theme.accentContainer
-
-            Image {
-                anchors.fill: parent
-                source: vinyl.source
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: true
-                smooth: true
-                sourceSize.width: 256
-                sourceSize.height: 256
-            }
-
-        }
-
-    }
-
-    // ── light that stays put while the record turns under it ──
-    Shape {
-        x: vinyl.cx - vinyl.r
-        y: vinyl.cy - vinyl.r
-        width: vinyl.disc
-        height: vinyl.disc
-        preferredRendererType: Shape.CurveRenderer
-
-        ShapePath {
-            strokeWidth: 0
-            strokeColor: "transparent"
-
-            fillGradient: ConicalGradient {
-                centerX: vinyl.r
-                centerY: vinyl.r
-                angle: 40
-
-                GradientStop {
-                    position: 0
-                    color: Theme.alpha("white", 0)
-                }
-
-                GradientStop {
-                    position: 0.06
-                    color: Theme.alpha("white", 0.16)
-                }
-
-                GradientStop {
-                    position: 0.13
-                    color: Theme.alpha("white", 0)
-                }
-
-                GradientStop {
-                    position: 0.3
-                    color: Theme.alpha(Theme.accent, 0)
-                }
-
-                GradientStop {
-                    position: 0.36
-                    color: Theme.alpha(Theme.accent, 0.07)
-                }
-
-                GradientStop {
-                    position: 0.42
-                    color: Theme.alpha(Theme.accent, 0)
-                }
-
-                GradientStop {
-                    position: 0.5
-                    color: Theme.alpha("white", 0)
-                }
-
-                GradientStop {
-                    position: 0.56
-                    color: Theme.alpha("white", 0.12)
-                }
-
-                GradientStop {
-                    position: 0.63
-                    color: Theme.alpha("white", 0)
-                }
-
-                GradientStop {
-                    position: 1
-                    color: Theme.alpha("white", 0)
-                }
-
-            }
-
-            // a ring: from the record's edge in to the label
-            PathAngleArc {
-                centerX: vinyl.r
-                centerY: vinyl.r
-                radiusX: vinyl.r - 1
-                radiusY: vinyl.r - 1
-                startAngle: 0
-                sweepAngle: 360
-            }
-
-            PathMove {
-                x: vinyl.r + vinyl.disc * 0.2
-                y: vinyl.r
-            }
-
-            PathAngleArc {
-                centerX: vinyl.r
-                centerY: vinyl.r
-                radiusX: vinyl.disc * 0.2
-                radiusY: vinyl.disc * 0.2
-                startAngle: 0
-                sweepAngle: -360
-            }
-
-        }
-
-    }
-
-    // a gloss across the label, top left
-    Shape {
-        x: vinyl.cx - vinyl.disc * 0.18
-        y: vinyl.cy - vinyl.disc * 0.18
-        width: vinyl.disc * 0.36
-        height: width
-        preferredRendererType: Shape.CurveRenderer
-
-        ShapePath {
-            strokeWidth: 0
-            strokeColor: "transparent"
-
-            fillGradient: LinearGradient {
-                x1: 0
-                y1: 0
-                x2: vinyl.disc * 0.36
-                y2: vinyl.disc * 0.36
-
-                GradientStop {
-                    position: 0
-                    color: Theme.alpha("white", 0.22)
-                }
-
-                GradientStop {
-                    position: 0.45
-                    color: Theme.alpha("white", 0)
-                }
-
-            }
-
-            PathAngleArc {
-                centerX: vinyl.disc * 0.18
-                centerY: vinyl.disc * 0.18
-                radiusX: vinyl.disc * 0.18
-                radiusY: vinyl.disc * 0.18
-                startAngle: 0
-                sweepAngle: 360
-            }
-
-        }
-
-    }
-
-    // the spindle, polished
-    Rectangle {
-        x: vinyl.cx - width / 2
-        y: vinyl.cy - height / 2
-        width: Math.max(8, vinyl.disc * 0.05)
-        height: width
-        radius: width / 2
-        border.width: 1
-        border.color: Theme.alpha("black", 0.5)
-
-        gradient: Gradient {
-            GradientStop {
-                position: 0
-                color: "#f2f2f2"
-            }
-
-            GradientStop {
-                position: 1
-                color: "#7a7a7a"
-            }
-
+            color: Theme.bgHigh
         }
 
     }
@@ -497,6 +225,69 @@ Item {
         height: vinyl.disc
         cursorShape: Qt.PointingHandCursor
         onClicked: vinyl.clicked()
+    }
+
+    // a circle with soft lobes, as the desktop's cookies draw it; filled with a
+    // colour or, given a cover, with the cover. the shell's roundness dial
+    // scales the lobes: squared off, it is a plain circle
+    component Cookie: Shape {
+        id: cookie
+
+        property real depth: 0.08
+        property int lobes: 12
+        property color fill: "white"
+        property string cover: ""
+        readonly property real d: cookie.depth * Math.min(1.5, Math.max(0, Theme.radiusScale))
+        readonly property var points: {
+            var R = cookie.width / 2;
+            var out = [];
+            for (var i = 0; i <= 144; i++) {
+                var t = i / 144 * Math.PI * 2;
+                var r = R * (1 - cookie.d * (1 - Math.cos(cookie.lobes * t)) / 2);
+                out.push(Qt.point(R + r * Math.cos(t), R + r * Math.sin(t)));
+            }
+            return out;
+        }
+
+        preferredRendererType: Shape.CurveRenderer
+
+        Image {
+            id: coverImage
+
+            width: cookie.width
+            height: cookie.height
+            source: cookie.cover
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            smooth: true
+            sourceSize.width: 256
+            sourceSize.height: 256
+        }
+
+        // the cover as drawn, cropped to a square: the Image's own texture is
+        // the whole picture, so a wide cover would fill from its corner
+        ShaderEffectSource {
+            id: coverTexture
+
+            width: cookie.width
+            height: cookie.height
+            sourceItem: coverImage
+            hideSource: true
+            visible: false
+        }
+
+        ShapePath {
+            fillColor: cookie.fill
+            fillItem: coverImage.status === Image.Ready ? coverTexture : null
+            strokeWidth: 0
+            strokeColor: "transparent"
+
+            PathPolyline {
+                path: cookie.points
+            }
+
+        }
+
     }
 
     // the arm hangs from (0, 0), its pivot: a counterweight behind, the tube,
