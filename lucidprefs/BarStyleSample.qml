@@ -603,26 +603,26 @@ Item {
                     width: 50
                     height: 50
                     radius: 25
-                    color: "#161616"
-                    border.width: 1
-                    border.color: Theme.alpha("white", 0.08)
+                    color: Theme.bgSunken
 
                     Rectangle {
                         anchors.centerIn: parent
-                        width: 36
-                        height: 36
-                        radius: 18
+                        width: 40
+                        height: 40
+                        radius: 20
                         color: "transparent"
                         border.width: 1
-                        border.color: Theme.alpha("white", 0.06)
+                        border.color: Theme.alpha(Theme.text, 0.07)
                     }
 
                     Rectangle {
                         anchors.centerIn: parent
-                        width: 20
-                        height: 20
-                        radius: 10
+                        width: 26
+                        height: 26
+                        radius: 13
                         color: Theme.accentContainer
+                        border.width: 2
+                        border.color: Theme.accent
                     }
 
                     // the tonearm, needle down
