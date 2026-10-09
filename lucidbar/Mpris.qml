@@ -428,7 +428,7 @@ BarPill {
 
     shown: Prefs.showMedia && !(Prefs.mediaHideIdle && root.player === null)
     compactWidth: compactRow.implicitWidth + 20
-    panelWidth: Math.min(root.miniPanel ? 320 : 400, root.screenW - 34)
+    panelWidth: Math.min(root.miniPanel ? 320 : root.vinylPanel ? 440 : 400, root.screenW - 34)
     panelHeight: 28 + (root.page === "player" ? playerColumn.implicitHeight : shazamColumn.implicitHeight)
     expandedRadius: Theme.radiusXl
     compactCollapseScale: 0.94
@@ -886,15 +886,215 @@ BarPill {
                 columnSpacing: 14
                 rowSpacing: 12
 
-                // Vinyl: the cover as a record
-                MediaVinyl {
+                // Vinyl: the cover as a record, the track and a small
+                // visualizer on the turntable, the volume upright beside it
+                Row {
                     visible: root.vinylPanel
                     width: root.contentWidth
                     height: 220
-                    source: root.vinylPanel ? root.artUrl : ""
-                    spinning: Looks.spinning(root.expanded && root.vinylPanel, root.isPlaying)
-                    playing: root.isPlaying
-                    onClicked: root.togglePlay()
+                    spacing: 10
+
+                    MediaVinyl {
+                        id: vinylDeck
+
+                        width: parent.width - (vinylVolume.visible ? vinylVolume.width + parent.spacing : 0)
+                        height: parent.height
+                        source: root.vinylPanel ? root.artUrl : ""
+                        spinning: Looks.spinning(root.expanded && root.vinylPanel, root.isPlaying)
+                        playing: root.isPlaying
+                        onClicked: root.togglePlay()
+
+                        Row {
+                            id: vinylViz
+
+                            readonly property int count: 12
+
+                            anchors.top: parent.top
+                            anchors.right: parent.right
+                            width: Math.min(parent.width, 120)
+                            height: 24
+                            spacing: 3
+                            opacity: root.isPlaying ? 1 : 0.75
+
+                            Repeater {
+                                model: vinylViz.count
+
+                                Rectangle {
+                                    required property int index
+
+                                    readonly property real level: root.barLevel(Math.floor(index * root.barCount / vinylViz.count))
+
+                                    width: (vinylViz.width - (vinylViz.count - 1) * 3) / vinylViz.count
+                                    height: Math.min(vinylViz.height, Math.max(width, level * vinylViz.height))
+                                    anchors.bottom: parent.bottom
+                                    radius: Theme.radiusPill
+                                    color: root.barColor(level)
+
+                                    Behavior on height {
+                                        NumberAnimation {
+                                            duration: Theme.barMs(70)
+                                            easing.type: Easing.OutCubic
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: Theme.barMs(220)
+                                    easing.type: Easing.OutCubic
+                                }
+
+                            }
+
+                        }
+
+                        Column {
+                            anchors.bottom: parent.bottom
+                            width: parent.width
+                            spacing: 1
+
+                            Marquee {
+                                width: parent.width
+                                content: root.title
+                                scrolling: root.isPlaying
+                                bold: true
+                                pixelSize: Theme.fontHeadline
+                            }
+
+                            Marquee {
+                                width: parent.width
+                                visible: root.artist !== ""
+                                content: root.artist
+                                scrolling: root.isPlaying
+                                textColor: Theme.subtext
+                                pixelSize: Theme.fontBody
+                            }
+
+                            Text {
+                                width: parent.width
+                                visible: root.metaLine !== ""
+                                text: root.metaLine
+                                color: Theme.subtextDim
+                                font.family: Theme.fontFamily
+                                font.pixelSize: Theme.fontLabel
+                                elide: Text.ElideRight
+                            }
+
+                        }
+
+                    }
+
+                    // the volume, upright: its level on top, the speaker below
+                    Column {
+                        id: vinylVolume
+
+                        readonly property real fraction: Math.max(0, Math.min(1, root.playerVolume))
+                        readonly property int handleHeight: 4
+                        readonly property int handleGap: 6
+
+                        visible: root.volumeSupported
+                        width: 30
+                        height: parent.height
+                        spacing: 6
+
+                        Text {
+                            id: vinylVolPct
+
+                            width: parent.width
+                            horizontalAlignment: Text.AlignHCenter
+                            text: Math.round(root.playerVolume * 100) + "%"
+                            color: Theme.subtextDim
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontLabel
+                        }
+
+                        Item {
+                            id: vinylVolTrack
+
+                            readonly property real handleY: (1 - vinylVolume.fraction) * (vinylVolTrack.height - vinylVolume.handleHeight)
+
+                            width: parent.width
+                            height: parent.height - vinylVolPct.height - vinylVolIcon.height - parent.spacing * 2
+
+                            Rectangle {
+                                anchors.top: parent.top
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                width: 10
+                                height: Math.max(0, vinylVolTrack.handleY - vinylVolume.handleGap)
+                                radius: width / 2
+                                color: Theme.withBlur(Theme.bgHigh)
+                            }
+
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                width: 10
+                                height: Math.max(0, vinylVolTrack.height - vinylVolTrack.handleY - vinylVolume.handleHeight - vinylVolume.handleGap)
+                                radius: width / 2
+                                color: Theme.accent
+                            }
+
+                            Rectangle {
+                                y: vinylVolTrack.handleY
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                width: vinylVolArea.pressed ? 14 : 20
+                                height: vinylVolume.handleHeight
+                                radius: Theme.radiusPill
+                                color: Theme.accent
+
+                                Behavior on width {
+                                    NumberAnimation {
+                                        duration: Theme.barDurQuick
+                                        easing.type: Theme.easeStandard
+                                    }
+
+                                }
+
+                            }
+
+                            MouseArea {
+                                id: vinylVolArea
+
+                                function setFrom(y) {
+                                    if (root.player)
+                                        root.player.volume = Math.max(0, Math.min(1, 1 - y / vinylVolTrack.height));
+
+                                }
+
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                preventStealing: true
+                                onPressed: (mouse) => {
+                                    return setFrom(mouse.y);
+                                }
+                                onPositionChanged: (mouse) => {
+                                    if (pressed)
+                                        setFrom(mouse.y);
+
+                                }
+                                onWheel: (wheel) => {
+                                    return root.nudgeVolume(wheel.angleDelta.y > 0 ? 0.05 : -0.05);
+                                }
+                            }
+
+                        }
+
+                        SvgIcon {
+                            id: vinylVolIcon
+
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            path: root.volumeGlyphFor(root.playerVolume)
+                            tint: vinylVolArea.containsMouse ? Theme.accent : Theme.subtext
+                            glyphSize: 14
+                        }
+
+                    }
+
                 }
 
                 Item {
@@ -956,6 +1156,7 @@ BarPill {
                 }
 
                 Item {
+                    visible: !root.vinylPanel
                     width: root.trackBelow ? root.contentWidth : root.contentWidth - 96 - 14
                     height: root.trackBelow ? 78 : 96
 
@@ -1121,7 +1322,7 @@ BarPill {
             Item {
                 id: vizStrip
 
-                visible: !root.miniPanel
+                visible: !root.miniPanel && !root.vinylPanel
                 width: root.contentWidth
                 height: 28
                 opacity: root.isPlaying ? 1 : 0.75
