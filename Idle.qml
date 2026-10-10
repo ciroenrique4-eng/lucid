@@ -475,7 +475,10 @@ Singleton {
             Prefs.idleSuspend = false;
     }
 
-    // the file on disk, kept only so adoption and the backup can read it
+    // the file on disk, kept only so adoption and the backup can read it.
+    // it is only written once idle is turned on, so with it off (the default)
+    // there is none, and onLoadFailed already takes that as "nothing to adopt":
+    // not worth a warning on every start
     FileView {
         id: confFile
 
@@ -484,6 +487,7 @@ Singleton {
 
         path: root.confPath
         blockLoading: true
+        printErrors: false
         watchChanges: true
         onFileChanged: reload()
         onLoaded: {
