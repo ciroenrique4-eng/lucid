@@ -11,11 +11,16 @@ QtObject {
     readonly property var keys: outputs.map(o => o.key)
     readonly property int liveCount: outputs.length
     function output(k) { return outputs.find(o => o.key === k) || null }
-    function isOn(k) { return true }
-    function mirrorOf(k) { return "" }
+    property var offKeys: []
+    property var mirrors: ({})
+    property string pointedAt: ""
+    property var barKeys: ["A"]
+    function isOn(k) { return offKeys.indexOf(k) < 0 }
+    function mirrorOf(k) { return mirrors[k] || "" }
+    function shortLabel(k) { return k === "A" ? "Built-in" : "LG M2262D" }
     function posOf(k) { const s = setups[k]; if (s) return { "x": s.x, "y": s.y }; const o = output(k); return { "x": o.x, "y": o.y } }
     function layoutSize(k) { const o = output(k); return { "w": o.width, "h": o.height } }
     function numberFor(k) { return k === "A" ? "1" : "2" }
     function place(p) { placed = p; placeCalls++; const n = {}; for (const k in p) n[k] = p[k]; setups = n }
-    function reset() { setups = {}; placed = null; placeCalls = 0 }
+    function reset() { setups = {}; placed = null; placeCalls = 0; offKeys = []; mirrors = {}; pointedAt = "" }
 }

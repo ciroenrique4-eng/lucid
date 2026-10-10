@@ -5,10 +5,19 @@ import "../../../lucidprefs"
 
 Item {
     width: 760; height: 600
-    Item { id: other; focus: true; anchors.fill: parent }
-    MonitorMap { id: m; width: 700; onPicked: (k) => last = k; property string last: "" }
+    Item { id: other; focus: true; anchors.fill: parent; Keys.onPressed: (e) => {
+            // like Settings' own: printable keys open the search, Escape closes
+            if (e.key === Qt.Key_Escape || (e.text.length === 1 && e.text.charCodeAt(0) > 32)) {
+                typed = typed.concat([e.key]); e.accepted = true
+            }
+        } }
+    MonitorMap { id: m; width: 700; onPicked: (k) => { last = k; selected = k } property string last: "" }
 
     SignalSpy { id: picks; target: m; signalName: "picked" }
+    SignalSpy { id: opens; target: m; signalName: "opened" }
+    // what reaches the item that had the keyboard before the map took it
+    property var typed: []
+    Keys.forwardTo: []
 
     TestCase {
         name: "MonitorMap"; when: windowShown
@@ -19,7 +28,7 @@ Item {
                 if (f.children[i].modelData === k) return f.children[i];
             return null;
         }
-        function init() { Monitors.reset(); picks.clear(); other.forceActiveFocus(); mouseMove(m, 5, 5); wait(300) }
+        function init() { Monitors.reset(); picks.clear(); opens.clear(); typed = []; m.selected = ""; other.forceActiveFocus(); mouseMove(m, 5, 5); wait(300) }
 
         function test_drag_keeps_box_under_pointer_and_view_still() {
             const p = plate("B");
@@ -110,6 +119,83 @@ Item {
 
         function test_escape_without_drag_is_not_taken() {
             verify(!m.activeFocus);
+        }
+
+        function centre(k) { const p = plate(k); return [p.x + p.width / 2, p.y + p.height / 2] }
+
+        function test_double_click_opens() {
+            const c = centre("B");
+            mouseDoubleClickSequence(m, c[0], c[1]);
+            compare(opens.count, 1);
+            compare(Monitors.placeCalls, 0);
+        }
+
+        function test_click_takes_the_keys_and_passes_the_rest_on() {
+            const c = centre("B");
+            mouseClick(m, c[0], c[1]);
+            verify(m.activeFocus);
+            keyClick(Qt.Key_S);
+            compare(typed, [Qt.Key_S]);
+            keyClick(Qt.Key_Escape);                    // not moving: the window's
+            compare(typed, [Qt.Key_S, Qt.Key_Escape]);
+        }
+
+        function test_arrows_move_round_and_enter_applies() {
+            const c = centre("B");
+            mouseClick(m, c[0], c[1]);
+            keyClick(Qt.Key_Left); keyClick(Qt.Key_Left);
+            verify(m.dragging && m.byKeys);
+            compare(Monitors.placeCalls, 0);
+            compare(m.landPos, Qt.point(0, -1080));    // over the laptop
+            keyClick(Qt.Key_Left);
+            compare(m.landPos, Qt.point(-1920, 0));    // round to its left
+            keyClick(Qt.Key_Return);
+            compare(Monitors.placeCalls, 1);
+            compare(JSON.stringify(Monitors.placed), JSON.stringify({ "A": { "x": 1920, "y": 0 }, "B": { "x": 0, "y": 0 } }));
+            verify(m.activeFocus);                      // ready for another move
+            compare(typed, []);
+        }
+
+        function test_shift_arrow_slides_along_the_edge() {
+            const c = centre("B");
+            mouseClick(m, c[0], c[1]);
+            keyClick(Qt.Key_Down, Qt.ShiftModifier);
+            compare(m.landPos, Qt.point(1920, 54));
+            keyClick(Qt.Key_Escape);
+            verify(!m.dragging);
+            compare(Monitors.placeCalls, 0);
+            compare(typed, []);                         // Escape mid-move is the map's
+        }
+
+        function test_pointing_shows_the_real_display() {
+            const c = centre("B");
+            mouseMove(m, c[0], c[1]);
+            compare(Monitors.pointedAt, "");            // not straight away
+            tryCompare(Monitors, "pointedAt", "B", 1000);
+            mouseMove(m, 3, 3);
+            compare(Monitors.pointedAt, "");
+        }
+
+        function test_off_and_mirrored_are_left_out() {
+            Monitors.offKeys = ["B"];
+            wait(50);
+            verify(!plate("B").visible);
+            verify(!m.movable);
+            Monitors.offKeys = [];
+            Monitors.mirrors = { "B": "eDP-1" };
+            wait(50);
+            verify(!plate("B").visible);
+            Monitors.mirrors = {};
+            wait(50);
+            verify(plate("B").visible);
+        }
+
+        function test_names_on_the_boxes() {
+            const p = plate("A");
+            let found = false;
+            const walk = (it) => { for (let i = 0; i < it.children.length; i++) { const c = it.children[i]; if (c.text === "Built-in") found = true; walk(c); } };
+            walk(p);
+            verify(found);
         }
     }
 }

@@ -1,0 +1,4 @@
+module qs
+singleton Prefs 1.0 Prefs.qml
+singleton I18n 1.0 I18n.qml
+singleton Monitors 1.0 Monitors.qml

@@ -1,0 +1,3 @@
+module Quickshell
+singleton Quickshell 1.0 QuickshellApi.qml
+Singleton 1.0 Singleton.qml

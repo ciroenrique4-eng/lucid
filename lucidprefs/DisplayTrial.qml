@@ -3,47 +3,26 @@ import Quickshell
 import Quickshell.Wayland
 import qs
 
-// a big number in the middle of every display for a moment, the same number
-// its box carries on the Displays page. pointing at a box on the page's map
-// puts it on that one display for as long as the pointer stays
+// "keep these display settings?" in the middle of every display while a
+// change from the Displays page is on trial, so it can be answered from
+// whichever one still shows a picture. left alone, the change goes back
 Scope {
     id: root
 
-    property bool shown: false
-    // the windows only exist while the numbers are up (and fading out), so a
-    // config reload never has to carry them
+    // the windows only exist while a trial runs (and fades out)
     property bool live: false
 
     Connections {
-        function onIdentifyRequested() {
-            unloadTimer.stop();
-            root.live = true;
-            root.shown = true;
-            hideTimer.restart();
-        }
-
-        function onPointedAtChanged() {
-            if (Monitors.pointedAt !== "") {
+        function onOnTrialChanged() {
+            if (Monitors.onTrial) {
                 unloadTimer.stop();
                 root.live = true;
-            } else if (!root.shown) {
+            } else {
                 unloadTimer.restart();
             }
         }
 
         target: Monitors
-    }
-
-    Timer {
-        id: hideTimer
-
-        interval: 2600
-        onTriggered: {
-            root.shown = false;
-            if (Monitors.pointedAt === "")
-                unloadTimer.restart();
-
-        }
     }
 
     Timer {
@@ -63,15 +42,12 @@ Scope {
                 id: win
 
                 required property var modelData
-                readonly property string key: Monitors.keyForName(win.modelData.name)
-                readonly property var mon: Monitors.output(win.key)
-                readonly property bool lit: root.shown || (Monitors.pointedAt !== "" && Monitors.pointedAt === win.key)
 
                 screen: win.modelData
                 color: "transparent"
                 exclusiveZone: 0
                 WlrLayershell.layer: WlrLayer.Overlay
-                WlrLayershell.namespace: "lucid-identify"
+                WlrLayershell.namespace: "lucid-display-trial"
                 implicitWidth: card.width
                 implicitHeight: card.height
 
@@ -81,34 +57,24 @@ Scope {
                     // starts hidden, so the first frame fades in
                     property bool up: false
 
-                    width: Math.max(220, info.implicitWidth + 64)
-                    height: info.implicitHeight + 52
+                    width: Math.max(360, body.implicitWidth + 56)
+                    height: body.implicitHeight + 48
                     radius: Theme.shapeXl
                     color: Theme.bgOpaque
                     border.width: 2
                     border.color: Theme.accent
-                    opacity: card.up && win.lit ? 1 : 0
-                    scale: card.up && win.lit ? 1 : 0.9
+                    opacity: card.up && Monitors.onTrial ? 1 : 0
+                    scale: card.up && Monitors.onTrial ? 1 : 0.92
                     Component.onCompleted: card.up = true
 
                     Column {
-                        id: info
+                        id: body
 
                         anchors.centerIn: parent
-                        spacing: 2
+                        spacing: 6
 
                         Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: win.mon ? Monitors.numberFor(win.key) : "?"
-                            color: Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 96
-                            font.weight: Font.DemiBold
-                        }
-
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: win.mon ? Monitors.labelFor(win.key) : win.modelData.name
+                            text: I18n.tr("Keep these display settings?")
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontTitleLg
@@ -116,11 +82,33 @@ Scope {
                         }
 
                         Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: win.mon ? win.mon.name + " · " + win.mon.width + " × " + win.mon.height + " · " + Monitors.rateLabel(win.mon.refresh) : ""
+                            text: I18n.trn("Going back to the previous ones in %1 second.", "Going back to the previous ones in %1 seconds.", Monitors.trialLeft)
                             color: Theme.subtext
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontBodyMd
+                        }
+
+                        Item {
+                            width: 1
+                            height: 10
+                        }
+
+                        Row {
+                            anchors.right: parent.right
+                            spacing: 8
+
+                            M3Button {
+                                text: I18n.tr("Go back")
+                                variant: "text"
+                                onClicked: Monitors.revertTrial()
+                            }
+
+                            M3Button {
+                                text: I18n.tr("Keep")
+                                variant: "filled"
+                                onClicked: Monitors.keepTrial()
+                            }
+
                         }
 
                     }
@@ -141,9 +129,6 @@ Scope {
 
                     }
 
-                }
-
-                mask: Region {
                 }
 
             }
