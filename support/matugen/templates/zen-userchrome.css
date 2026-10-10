@@ -1,10 +1,14 @@
 /* Lucid: written by matugen from zen-userchrome.css on every theme change.
    edit the template in ~/.config/matugen/templates, not this file */
 
-/* the sidebar's colour: the secondary container taken down towards the
-   background, so it reads as tinted rather than bright */
+/* two colours: the tint (the secondary container taken down towards the
+   background, so it reads as tinted rather than bright) and the neutral
+   surface container. the tint frames the page and the sidebar with the tabs
+   is neutral; swap the two values to turn it around */
 :root {
-  --lucid-sidebar: color-mix(in srgb, {{colors.secondary_container.default.hex}} 60%, {{colors.surface.default.hex}} 40%);
+  --lucid-tint: color-mix(in srgb, {{colors.secondary_container.default.hex}} 60%, {{colors.surface.default.hex}} 40%);
+  --lucid-sidebar: {{colors.surface_container.default.hex}};
+  --lucid-frame: var(--lucid-tint);
 }
 
 :root {
@@ -35,7 +39,7 @@
 
 /* Zen's own UI: sidebar/background, tabs and accent */
 :root {
-  --zen-main-browser-background: {{colors.surface_container.default.hex}} !important;
+  --zen-main-browser-background: var(--lucid-frame) !important;
   --zen-main-browser-background-toolbar: var(--lucid-sidebar) !important;
   --zen-themed-toolbar-bg-transparent: var(--lucid-sidebar) !important;
   --zen-primary-color: {{colors.primary.default.hex}} !important;
@@ -58,7 +62,7 @@
 
 #zen-tabbox-wrapper,
 #browser {
-  background-color: {{colors.surface_container.default.hex}} !important;
+  background-color: var(--lucid-frame) !important;
 }
 
 /* the floating sidebar of compact mode is painted by .zen-toolbar-background,
