@@ -130,6 +130,27 @@ else
     has_block zen && KEPT+=(zen) || SKIPPED+=(zen)
 fi
 
+# Qt widget apps (Prism Launcher, qt6ct itself...) take their palette from
+# qt6ct, the platform theme modules/env.lua sets. with no palette chosen there
+# they get Qt's stock light one whatever the theme, so point qt6ct at the one
+# the template writes - unless a palette was already picked, which is the user's
+QT6CT_CFG="$HOME/.config/qt6ct/qt6ct.conf"
+QT6CT_PALETTE="$HOME/.config/qt6ct/colors/lucid.conf"
+add qt6ct "$TPL/qt6ct-colors.conf" '~/.config/qt6ct/colors/lucid.conf' "cmd:qt6ct"
+if has_block qt6ct && command -v qt6ct &>/dev/null \
+   && ! grep -qE '^(custom_palette|color_scheme_path)=' "$QT6CT_CFG" 2>/dev/null; then
+    keys="color_scheme_path=$QT6CT_PALETTE"$'\n'"custom_palette=true"
+    if [[ ! -f "$QT6CT_CFG" ]]; then
+        mkdir -p "$(dirname "$QT6CT_CFG")"
+        printf '[Appearance]\nstyle=Fusion\n%s\n' "$keys" > "$QT6CT_CFG"
+    elif grep -q '^\[Appearance\]' "$QT6CT_CFG"; then
+        awk -v k="$keys" '{ print } /^\[Appearance\]$/ { print k }' "$QT6CT_CFG" > "$QT6CT_CFG.tmp" \
+            && mv "$QT6CT_CFG.tmp" "$QT6CT_CFG"
+    else
+        printf '\n[Appearance]\n%s\n' "$keys" >> "$QT6CT_CFG"
+    fi
+fi
+
 if (( REPORT )); then
     dim=$'\e[2m'; r=$'\e[0m'
     (( ${#ADDED[@]} ))   && printf '  matugen added:   %s\n' "${ADDED[*]}"
