@@ -100,6 +100,11 @@ if (( ! AGAIN )); then
     COLOURS="$KEPT"
 fi
 
+# an app installed or first opened since the last render gets its template
+# now, so the themes install.sh could not wire yet are not skipped forever
+WIRE="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/wire-apps.sh"
+[[ -x "$WIRE" ]] && "$WIRE" || true
+
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 : > "$WORK/common"

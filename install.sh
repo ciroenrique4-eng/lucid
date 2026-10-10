@@ -104,13 +104,21 @@ command -v pacman &>/dev/null || die "pacman not found"
 command -v Hyprland &>/dev/null || command -v hyprctl &>/dev/null \
     || warn "Hyprland not found. Lucid uses Hyprland-specific APIs and will not work under another compositor."
 
+# a helper only counts when it runs. the -bin builds link against one libalpm,
+# and once pacman moves on they die at startup ("libalpm.so.15: cannot open
+# shared object file") - on a fresh install that took every aur package down
 AUR=""
+AUR_BROKEN=""
 for helper in paru yay; do
-    command -v "$helper" &>/dev/null && { AUR="$helper"; break; }
+    command -v "$helper" &>/dev/null || continue
+    if "$helper" --version &>/dev/null; then
+        AUR="$helper"; break
+    fi
+    AUR_BROKEN="${AUR_BROKEN:+$AUR_BROKEN }$helper"
 done
 
 say "  arch linux      ${grn}ok${r}"
-say "  aur helper      ${AUR:-${ylw}none${r}}"
+say "  aur helper      ${AUR:-${ylw}none${r}}${AUR_BROKEN:+ ${ylw}($AUR_BROKEN installed but broken)${r}}"
 say "  install target  $SHELL_DIR"
 say "  theming layer   $([[ $WITH_THEMING -eq 1 ]] && echo yes || echo 'no (--no-theming)')"
 say "  hyprland config $([[ $WITH_HYPR   -eq 1 ]] && echo yes || echo 'no (--no-hypr)')"
@@ -199,7 +207,44 @@ have_pkg() {
     return 1
 }
 
+# builds paru from source, which links against the libalpm pacman has now.
+# the prebuilt paru-bin is what breaks, so it is never the one fetched here
+bootstrap_paru() {
+    say "  building paru from the aur (one-time, a few minutes)"
+    sudo pacman -S --needed --noconfirm base-devel git || return 1
+    local tmp
+    tmp=$(mktemp -d)
+    if git clone --depth 1 https://aur.archlinux.org/paru.git "$tmp/paru" &>/dev/null \
+       && (cd "$tmp/paru" && makepkg -si --noconfirm); then
+        rm -rf "$tmp"
+        paru --version &>/dev/null || return 1
+        AUR=paru
+        return 0
+    fi
+    rm -rf "$tmp"
+    return 1
+}
+
+# one transaction is fastest, but it is all or nothing: a single failure (a
+# conflict, a mirror timing out, a stale database) leaves every package out.
+# a failed batch is retried after a refresh, then package by package, so one
+# bad name costs only itself
+install_repo() {
+    sudo pacman -S --needed --noconfirm "$@" && return 0
+    warn "the batch install failed — refreshing the database and retrying"
+    sudo pacman -Sy --noconfirm &>/dev/null || true
+    sudo pacman -S --needed --noconfirm "$@" && return 0
+    warn "still failing — installing one at a time to find the culprit"
+    local p rc=0
+    for p in "$@"; do
+        have_pkg "$p" && continue
+        sudo pacman -S --needed --noconfirm "$p" || { warn "could not install $p"; rc=1; }
+    done
+    return $rc
+}
+
 missing=()
+STILL_MISSING=()
 DEPS_OK=1
 
 step "Resolving dependencies"
@@ -265,11 +310,18 @@ else
 
     if ask "  install these now?"; then
         if [[ ${#from_repo[@]} -gt 0 ]]; then
-            if sudo pacman -S --needed --noconfirm "${from_repo[@]}"; then
+            if install_repo "${from_repo[@]}"; then
                 say "  repo packages installed"
             else
                 DEPS_OK=0
-                warn "some repo packages failed to install — continuing anyway"
+            fi
+        fi
+        if [[ ${#from_aur[@]} -gt 0 && -z "$AUR" ]]; then
+            if [[ -n "$AUR_BROKEN" ]]; then
+                warn "$AUR_BROKEN is installed but does not start (usually a -bin build left behind by a pacman update)"
+            fi
+            if ask "  no working aur helper. build paru from source now?"; then
+                bootstrap_paru || warn "could not build paru"
             fi
         fi
         if [[ ${#from_aur[@]} -gt 0 ]]; then
@@ -289,6 +341,30 @@ else
     else
         DEPS_OK=0
         warn "skipping. features backed by the missing packages will not work."
+    fi
+
+    # trust what is installed, not what the commands above said. this is what
+    # used to be missing: a failed batch printed one warning and the install
+    # carried on as if everything were there
+    still=()
+    for p in "${missing[@]}"; do
+        have_pkg "$p" || still+=("$p")
+    done
+    if (( ${#still[@]} )); then
+        DEPS_OK=0
+        STILL_MISSING=("${still[@]}")
+        warn "these are still not installed:"
+        printf '    %s\n' "${still[@]}" >&2
+        required_gone=()
+        for p in "${PKG_REQUIRED[@]}"; do
+            for m in "${still[@]}"; do [[ "$m" == "$p" ]] && required_gone+=("$p") && break; done
+        done
+        if (( ${#required_gone[@]} )); then
+            warn "the shell cannot start without: ${required_gone[*]}"
+            ask "  Install the shell anyway?" || die "stopped. install ${required_gone[*]} and run the installer again."
+        fi
+    else
+        say "  ${grn}every dependency is installed${r}"
     fi
 fi
 
@@ -450,7 +526,22 @@ seed_pinned() {
     fi
 }
 
+PREFS_EXISTED=0; [[ -s "$SHELL_DIR/lucidprefs/prefs.json" ]] && PREFS_EXISTED=1
 seed prefs.json            lucidprefs/prefs.json
+# the bar defaults to one display. on a first install with several plugged
+# in, people expect a bar on each, so start there; Settings > Displays undoes it
+if [[ $PREFS_EXISTED -eq 0 ]] && command -v jq &>/dev/null && command -v hyprctl &>/dev/null; then
+    n_mon=$(hyprctl monitors -j 2>/dev/null | jq 'length' 2>/dev/null || echo 0)
+    if [[ "$n_mon" =~ ^[0-9]+$ ]] && (( n_mon > 1 )); then
+        tmp_prefs=$(mktemp)
+        if jq '.monitorBarScreen = "*"' "$SHELL_DIR/lucidprefs/prefs.json" > "$tmp_prefs"; then
+            mv "$tmp_prefs" "$SHELL_DIR/lucidprefs/prefs.json"
+            say "  $n_mon displays found: a bar on each"
+        else
+            rm -f "$tmp_prefs"
+        fi
+    fi
+fi
 seed blur.json             lucidbar/blur.json
 seed clock_reminders.json  lucidbar/clock_reminders.json
 seed mpris_shazam.json     lucidbar/mpris_shazam.json
@@ -754,48 +845,32 @@ if [[ $WITH_THEMING -eq 1 ]]; then
         MG_ADDED+=("$name")
     }
 
-    STARSHIP_HOOK='for sh in fish bash zsh; do pkill -WINCH -x "$sh" 2>/dev/null; done; true'
-
     add_template quickshell     "$TPL/quickshell-colors.json"  '~/.cache/quickshell/matugen.json'
     add_template vscode-raw     "$TPL/vscode-colors"           '~/.cache/matugen/vscode-colors'
     add_template vscode-json    "$TPL/vscode-colors.json"      '~/.cache/matugen/vscode-colors.json'
-    add_template hyprland       "$TPL/hyprland-colors.lua"     '~/.config/hypr/colors.conf'    "dir:$HOME/.config/hypr"
-    add_template kitty          "$TPL/kitty.conf"              '~/.config/kitty/matugen-colors.conf' "cmd:kitty" 'killall -SIGUSR1 kitty 2>/dev/null || true'
-    add_template starship       "$TPL/starship-colors.toml"    '~/.config/starship.toml'       "cmd:starship" "$STARSHIP_HOOK"
     # no dir: guard on these two. gtk only creates ~/.config/gtk-{3,4}.0 once
     # an app writes a setting there, so on a fresh machine the guard skipped
     # both templates, matugen never wrote colors.css, and nautilus kept its
     # stock colours forever. add_template creates the directory itself.
     add_template gtk3           "$TPL/gtk-colors.css"          '~/.config/gtk-3.0/colors.css'
     add_template gtk4           "$TPL/gtk-colors.css"          '~/.config/gtk-4.0/colors.css'
-    add_template rofi           "$TPL/rofi-colors.rasi"        '~/.config/rofi/colors.rasi'    "dir:$HOME/.config/rofi"
-    add_template waybar         "$TPL/colors.css"              '~/.config/waybar/colors.css'   "dir:$HOME/.config/waybar"
-    add_template swaync         "$TPL/colors.css"              '~/.config/swaync/colors.css'   "dir:$HOME/.config/swaync"
-    add_template wlogout        "$TPL/colors.css"              '~/.config/wlogout/colors.css'  "dir:$HOME/.config/wlogout"
-    add_template ags            "$TPL/ags-colors.scss"         '~/.config/ags/style/_colors.scss' "dir:$HOME/.config/ags"
-    add_template vesktop        "$TPL/midnight-discord.css"    '~/.config/vesktop/themes/midnight-discord.css' "dir:$HOME/.config/vesktop"
-    add_template pywalfox       "$TPL/pywalfox-colors.json"    '~/.cache/wal/colors.json'      "cmd:pywalfox" 'pywalfox update'
-    add_template steam-material "$TPL/steam-material.css"      '~/.local/share/Steam/millennium/themes/Material-Theme/css/main/colors/matugen.css' \
-                                "dir:$HOME/.local/share/Steam/millennium/themes/Material-Theme"
-
-    # firefox and zen keep their chrome css inside a generated profile dir, so
-    # the path has to be discovered rather than assumed
-    FF_PROFILE=$(find "$HOME/.mozilla/firefox" -maxdepth 1 -type d -name '*.default-release' 2>/dev/null | head -1 || true)
-    ZEN_PROFILE=$(find "$HOME/.config/zen" -maxdepth 1 -type d -name '*.Default*' 2>/dev/null | head -1 || true)
-    if [[ -n "$FF_PROFILE" ]]; then
-        add_template firefox-website-colors "$TPL/firefox-colors.css" "$FF_PROFILE/chrome/colors.css"
-    else
-        MG_SKIPPED+=(firefox-website-colors)
-    fi
-    if [[ -n "$ZEN_PROFILE" ]]; then
-        add_template zen "$TPL/zen-userchrome.css" "$ZEN_PROFILE/chrome/userChrome.css"
-    else
-        MG_SKIPPED+=(zen)
-    fi
 
     (( ${#MG_ADDED[@]} ))   && say "  matugen added:   ${MG_ADDED[*]}"                                || true
     (( ${#MG_KEPT[@]} ))    && say "  ${dim}matugen kept:    ${MG_KEPT[*]}${r}"                       || true
-    (( ${#MG_SKIPPED[@]} )) && say "  ${dim}matugen skipped: ${MG_SKIPPED[*]} (not installed)${r}"    || true
+
+    # every app that needs a directory or a profile of its own goes through
+    # wire-apps.sh, which render-templates.sh also runs on each theme change:
+    # the apps installed above have never been opened, and an app skipped here
+    # used to stay skipped for good
+    install -m755 "$SRC/support/lucid/wire-apps.sh" "$LUCID_DIR/wire-apps.sh"
+
+    # zen only makes its profile on first start, and the profile is where its
+    # theme goes. a headless start makes it now, without a window
+    if command -v zen-browser &>/dev/null && [[ ! -f "$HOME/.config/zen/profiles.ini" && ! -d "$HOME/.zen" ]]; then
+        say "  creating Zen's profile so it can be themed"
+        timeout 25 zen-browser --headless --no-remote about:blank &>/dev/null || true
+    fi
+    "$LUCID_DIR/wire-apps.sh" --report
 
     # GTK apps - Nautilus included - only read colors.css if gtk.css imports it
     for gtkver in 3.0 4.0; do
@@ -1146,6 +1221,25 @@ fi
 
 step "Done"
 
+# a first wallpaper, so the desktop is not blank and every template has been
+# rendered once. until then the shell starts without colours and warns about
+# files nothing has written yet (current_wallpaper, current_mode). only from
+# inside the session: from a tty there is no wallpaper daemon to talk to
+if [[ $WITH_THEMING -eq 1 && -n "${WAYLAND_DISPLAY:-}" && ! -s "$HOME/.cache/current_wallpaper" ]]; then
+    theme_dir="$PICTURES_DIR/$(cat "$HOME/.cache/current_theme" 2>/dev/null || echo matugen)"
+    [[ -d "$theme_dir" ]] || theme_dir="$PICTURES_DIR/matugen"
+    first_wall=$(find "$theme_dir" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) 2>/dev/null | sort | head -1 || true)
+    if [[ -n "$first_wall" ]]; then
+        # setsid keeps the wallpaper daemon set-wallpaper.sh may start alive
+        # after this terminal closes
+        if setsid "$WALL_SCRIPT_DIR/set-wallpaper.sh" "$first_wall" dark </dev/null &>/dev/null; then
+            say "  first wallpaper -> $(basename "$first_wall")"
+        else
+            warn "could not set a first wallpaper — pick one with SUPER+B"
+        fi
+    fi
+fi
+
 # a running instance is still on the old files, so offer the restart that
 # actually puts the new version on screen.
 # the path alone is not enough: with nothing running, `qs list` says
@@ -1157,7 +1251,18 @@ if qs list 2>/dev/null | grep -F "Config path: $SHELL_DIR/shell.qml" >/dev/null;
     if ask "  Lucid is running on the old files. Restart it now?"; then
         qs kill -p "$SHELL_DIR" 2>/dev/null || true
         sleep 1
-        (setsid qs -d >/dev/null 2>&1 &) || true
+        # an older instance can outlive that (one started as "quickshell"
+        # rather than "qs"), and the restart would then leave two shells
+        # drawing over each other. kill whatever is left on this config by pid
+        for pid in $(qs list --all 2>/dev/null | awk -v cfg="$SHELL_DIR/shell.qml" '/Process ID/ { p = $3 } /Config path/ { if ($3 == cfg) print p }'); do
+            kill "$pid" 2>/dev/null || true
+        done
+        sleep 0.5
+        if [[ -x "$LUCID_DIR/launch-shell.sh" ]]; then
+            (setsid "$LUCID_DIR/launch-shell.sh" >/dev/null 2>&1 &) || true
+        else
+            (setsid qs -d >/dev/null 2>&1 &) || true
+        fi
         say "  restarted"
     fi
 fi
@@ -1216,4 +1321,8 @@ fi
 if [[ $DEPS_OK -eq 0 ]]; then
     warn "some dependencies are missing — the shell is installed, but the"
     warn "features they back will not work until you install them."
+    if (( ${#STILL_MISSING[@]} )); then
+        warn "missing: ${STILL_MISSING[*]}"
+        warn "re-run ./install.sh once the cause is fixed; it only installs what is missing"
+    fi
 fi
