@@ -273,10 +273,42 @@ PanelWindow {
     // surface sent to a dead display is never drawn
     readonly property var placement: Prefs.monitorShellScreen === "" && osdWindow.aimedScreen && Quickshell.screens.indexOf(osdWindow.aimedScreen) >= 0 ? osdWindow.aimedScreen : null
 
-    function trigger() {
-        if (!osdWindow.cardVisible && Prefs.monitorShellScreen === "")
-            osdWindow.aimedScreen = Monitors.focusedScreen;
+    // true while the window is being moved to another display. the surface is
+    // remade there a moment later and the card's x is worked out again then;
+    // shown straight away, the card would slide across from where it was
+    // placed before the move. so it waits, and x jumps instead of sliding
+    property bool relocating: false
+    property bool pendingTrigger: false
 
+    Timer {
+        id: relocateSettle
+
+        interval: 150
+        onTriggered: {
+            osdWindow.relocating = false;
+            if (osdWindow.pendingTrigger) {
+                osdWindow.pendingTrigger = false;
+                osdWindow.trigger();
+            }
+        }
+    }
+
+    function trigger() {
+        if (!osdWindow.cardVisible && !osdWindow.relocating && Prefs.monitorShellScreen === "") {
+            const scr = Monitors.focusedScreen;
+            const moving = scr && osdWindow.screen && scr.name !== osdWindow.screen.name;
+            osdWindow.aimedScreen = scr;
+            if (moving) {
+                osdWindow.relocating = true;
+                relocateSettle.restart();
+            }
+        }
+        // the latest values are already set by the caller; they are shown once
+        // the move has settled
+        if (osdWindow.relocating) {
+            osdWindow.pendingTrigger = true;
+            return ;
+        }
         osdWindow.setCardVisible(true);
         hideTimer.restart();
         if (osdWindow.isLevelType)
@@ -1118,7 +1150,7 @@ PanelWindow {
 
         // a hidden card just takes its place; a showing one slides there
         Behavior on x {
-            enabled: osdWindow.cardVisible
+            enabled: osdWindow.cardVisible && !osdWindow.relocating
 
             NumberAnimation {
                 duration: Theme.durLong
