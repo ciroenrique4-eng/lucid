@@ -520,27 +520,20 @@ Singleton {
         });
     }
 
-    // moving one output by hand leaves the others on "auto", which hyprland is
-    // then free to place around it, so the first drag pins them all where they
-    // already are
-    function pinAll() {
+    // a whole arrangement in one write, { key: { x, y } }. moving one output by
+    // hand and leaving the others on "auto" would let hyprland reshuffle them
+    // around it, so a drag hands every output in the layout to this
+    function place(positions) {
         const next = {};
         for (const k in root.setups) next[k] = root.setups[k];
-        let moved = false;
-        for (const o of root.outputs) {
-            if (!root.isOn(o.key) || !root.isAuto(o.key))
-                continue;
-
+        for (const key in positions) {
             const cur = {};
-            for (const f in root.setupOf(o.key)) cur[f] = root.setupOf(o.key)[f];
-            cur.x = o.x;
-            cur.y = o.y;
-            next[o.key] = cur;
-            moved = true;
+            for (const f in root.setupOf(key)) cur[f] = root.setupOf(key)[f];
+            cur.x = Math.round(positions[key].x);
+            cur.y = Math.round(positions[key].y);
+            next[key] = cur;
         }
-        if (moved)
-            Prefs.set("monitorSetups", JSON.stringify(next));
-
+        Prefs.set("monitorSetups", JSON.stringify(next));
     }
 
     function autoArrange() {
