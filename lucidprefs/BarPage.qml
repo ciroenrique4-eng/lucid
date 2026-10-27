@@ -302,7 +302,7 @@ Column {
         SettingRow {
             title: "Merge open panels"
             resetKey: "barFullMerge"
-            description: "Panels open side by side - a notification next to the system panel, say - join into one shape: the gap between them fills in and the shorter one curves into the side of the taller one."
+            description: "Panels open side by side - a notification next to the system panel, say - join into one shape: the gap between them fills in and the shorter one curves into the side of the taller one. A panel next to a screen side joins that side the same way."
             enabled: Prefs.barFull
             disabledReason: "Only applies to the full bar - set Bar style to Full bar above."
 

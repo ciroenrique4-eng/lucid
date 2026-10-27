@@ -281,7 +281,7 @@ ShellRoot {
             }
 
             // per module key, radius caps where a hanging panel meets the islands: {corners, tops, sides, fillets},
-            // plus what the full bar fills between merged open panels: {bridges, merged}
+            // plus what the full bar fills between merged open panels: {bridges, merged, edges}
             readonly property var hangPlan: bar.planHangs()
 
             function surfaceSpan(mod) {
@@ -296,7 +296,8 @@ ShellRoot {
                     "sides": ({}),
                     "fillets": [],
                     "bridges": [],
-                    "merged": ({})
+                    "merged": ({}),
+                    "edges": ({})
                 });
                 const popups = Prefs.barPopupMode;
                 if (popups && !Prefs.barPopupNotched)
@@ -345,6 +346,26 @@ ShellRoot {
                             fillet(b.x - f + bite, a.y + low - bite, f, false, false);
                         else
                             fillet(a.x + a.width - bite, a.y + low - bite, f, true, false);
+                    }
+                    // a panel this close to a screen side merges into it the same
+                    // way, the side standing in for an endlessly tall neighbour
+                    const corner = Theme.dp(Prefs.barFullCorner);
+                    const edge = (m, side, gap) => {
+                        if (m === workspacesMod || m.surfaceOpen !== true || gap < -0.5 || gap > corner)
+                            return ;
+
+                        const left = side === "left";
+                        (plan.merged[m.modId] || (plan.merged[m.modId] = ({})))[side] = true;
+                        plan.edges[side] = true;
+                        cap(m.modId, left ? "bl" : "br", 0);
+                        if (gap > 0.5 && m.height > strip)
+                            plan.bridges.push({ "x": left ? 0 : m.x + m.width, "y": m.y + strip, "w": gap, "h": m.height - strip });
+
+                        fillet(left ? -bite : bar.width - corner + bite, m.y + m.height - bite, corner, left, false);
+                    };
+                    if (row.length > 0) {
+                        edge(row[0], "left", row[0].x);
+                        edge(row[row.length - 1], "right", bar.width - row[row.length - 1].x - row[row.length - 1].width);
                     }
                 }
                 // islands: runs of joined modules as they stand
@@ -700,7 +721,7 @@ ShellRoot {
 
             // rounded corners hanging off the strip where it meets the screen sides
             BarFlare {
-                visible: fullStrip.visible && size > 0
+                visible: fullStrip.visible && size > 0 && !bar.hangPlan.edges.left
                 mirrored: true
                 size: Theme.dp(Prefs.barFullCorner)
                 x: 0
@@ -709,7 +730,7 @@ ShellRoot {
             }
 
             BarFlare {
-                visible: fullStrip.visible && size > 0
+                visible: fullStrip.visible && size > 0 && !bar.hangPlan.edges.right
                 size: Theme.dp(Prefs.barFullCorner)
                 x: bar.width - width
                 y: Theme.dp(Prefs.barHeight) + bar.hiddenOffset
