@@ -615,7 +615,7 @@ ShellRoot {
             readonly property bool heldByPointer: revealArea.containsMouse || (!bar.slidingAway && bar.modules.some((m) => {
                 return m.visible && (m.surfaceHovered === true || m.compactHovered === true);
             }))
-            readonly property bool barRevealed: !Prefs.barAutoHide || bar.barBusy || bar.heldByPointer
+            readonly property bool barRevealed: (!Prefs.barAutoHide || bar.barBusy || bar.heldByPointer) && !Prefs.barRelocating
             // how far the compact content sits above its resting y=0 while
             // hidden - past the window's own top edge, so it clips away for free
             property real hiddenOffset: bar.barRevealed ? 0 : -(Theme.dp(Prefs.barHeight) + Prefs.effectiveBarTopMargin + Theme.dp(4))
@@ -624,7 +624,8 @@ ShellRoot {
                 NumberAnimation {
                     duration: Theme.durLong
                     easing.type: Easing.Bezier
-                    easing.bezierCurve: Theme.easeEmphasizedDecel
+                    // leaving for the other edge it picks up speed, so it is seen to go
+                    easing.bezierCurve: Prefs.barRelocating ? Theme.easeEmphasizedAccel : Theme.easeEmphasizedDecel
                 }
 
             }
