@@ -314,11 +314,13 @@ ShellRoot {
                         plan.fillets.push({ "x": x, "y": y, "size": size, "mirrored": mirrored, "flipped": flipped });
 
                 };
-                // full bar: open panels side by side become one shape. the gap
-                // between them fills in, and the shorter one's shared corner turns
-                // into a fillet against the taller one's side
-                if (Prefs.barFull && !popups && Prefs.barFullMerge) {
-                    const strip = Theme.dp(Prefs.barHeight);
+                // full bar and notches: open panels side by side become one shape.
+                // the gap between them fills in, and the shorter one's shared corner
+                // turns into a fillet against the taller one's side
+                if ((Prefs.barFull || Prefs.barNotch) && !popups && Prefs.barFullMerge) {
+                    // a notch has no strip under the gap, so it fills from the top
+                    const strip = Prefs.barFull ? Theme.dp(Prefs.barHeight) : 0;
+                    const corner = Prefs.barFull ? Theme.dp(Prefs.barFullCorner) : most;
                     const row = bar.modules.filter((m) => {
                         return m.visible && m.width > 0.5;
                     }).sort((p, q) => {
@@ -327,14 +329,16 @@ ShellRoot {
                     for (let i = 0; i + 1 < row.length; i++) {
                         const a = row[i];
                         const b = row[i + 1];
+                        // pills easing to new places overlap by a pixel or so mid-move;
+                        // counting that as apart made the corner flicker
                         const gap = b.x - (a.x + a.width);
-                        if (a === workspacesMod || b === workspacesMod || a.surfaceOpen !== true || b.surfaceOpen !== true || gap < -0.5 || gap > Theme.dp(Prefs.barFullCorner))
+                        if (a === workspacesMod || b === workspacesMod || a.surfaceOpen !== true || b.surfaceOpen !== true || Math.abs(gap) > corner)
                             continue;
 
                         const low = Math.min(a.height, b.height);
                         const diff = Math.abs(a.height - b.height);
                         const shortLeft = a.height < b.height;
-                        const f = Math.floor(Math.min(Theme.dp(Prefs.barFullCorner), diff / 2));
+                        const f = Math.floor(Math.min(corner, diff / 2));
                         (plan.merged[a.modId] || (plan.merged[a.modId] = ({}))).right = true;
                         (plan.merged[b.modId] || (plan.merged[b.modId] = ({}))).left = true;
                         cap(a.modId, "br", shortLeft ? 0 : diff - f);
@@ -347,11 +351,10 @@ ShellRoot {
                         else
                             fillet(a.x + a.width - bite, a.y + low - bite, f, true, false);
                     }
-                    // a panel this close to a screen side merges into it the same
-                    // way, the side standing in for an endlessly tall neighbour
-                    const corner = Theme.dp(Prefs.barFullCorner);
+                    // on the full bar, a panel this close to a screen side merges into
+                    // it the same way, the side standing in for an endlessly tall neighbour
                     const edge = (m, side, gap) => {
-                        if (m === workspacesMod || m.surfaceOpen !== true || gap < -0.5 || gap > corner)
+                        if (m === workspacesMod || m.surfaceOpen !== true || Math.abs(gap) > corner)
                             return ;
 
                         const left = side === "left";
@@ -363,7 +366,7 @@ ShellRoot {
 
                         fillet(left ? -bite : bar.width - corner + bite, m.y + m.height - bite, corner, left, false);
                     };
-                    if (row.length > 0) {
+                    if (Prefs.barFull && row.length > 0) {
                         edge(row[0], "left", row[0].x);
                         edge(row[row.length - 1], "right", bar.width - row[row.length - 1].x - row[row.length - 1].width);
                     }
@@ -401,14 +404,16 @@ ShellRoot {
                         } else if (isle.keys.length > 1 && m !== workspacesMod && m.height - m.compactHeight > 0.5) {
                             const depth = m.height - m.compactHeight;
                             const side = ({});
-                            if (j > 0) {
+                            // a side merged into an open neighbour has no island bottom to meet
+                            const merged = plan.merged[isle.keys[j]] || ({});
+                            if (j > 0 && !merged.left) {
                                 const run = m.x - isle.l;
                                 const f = Math.floor(Math.min(most, run / 2, depth / 2));
                                 fillet(m.x - f + bite, isle.bottom - bite, f, false, false);
                                 cap(isle.keys[0], "bl", run - f);
                                 side.bl = depth - f;
                             }
-                            if (j < isle.keys.length - 1) {
+                            if (j < isle.keys.length - 1 && !merged.right) {
                                 const run = isle.r - (m.x + m.width);
                                 const f = Math.floor(Math.min(most, run / 2, depth / 2));
                                 fillet(m.x + m.width - bite, isle.bottom - bite, f, true, false);
