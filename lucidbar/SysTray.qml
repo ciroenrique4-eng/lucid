@@ -45,7 +45,11 @@ BarPill {
     }).length
     property var menuItem: null
     property real menuX: 0
-    property real menuY: 0
+    // where the menu hangs from, in the pill's own coordinates: off an icon on
+    // the bar, or the point a card was clicked. It goes away from the bar, so up
+    // from there on the bottom edge
+    property real menuFromY: 0
+    readonly property real menuY: root.overlayY(root.menuFromY, 0, menuSheet.height)
     function resolveIconSource(raw) {
         if (!raw)
             return "";
@@ -154,9 +158,12 @@ BarPill {
                                     return ;
                                 }
                                 const p = menuLayer.mapFromItem(inline, 0, inline.height + Theme.dp(6));
+                                // the icon's far side, which mapping gives as the larger y
+                                const a = root.mapFromItem(inline, 0, 0).y;
+                                const b = root.mapFromItem(inline, 0, inline.height).y;
+                                root.menuFromY = Math.max(a, b) + Theme.dp(6);
                                 root.menuItem = inline.modelData;
                                 root.menuX = p.x;
-                                root.menuY = p.y;
                                 return ;
                             }
                             root.menuItem = null;
@@ -334,9 +341,9 @@ BarPill {
                 delegate: TrayCard {
                     onRequestMenu: (it, wx, wy) => {
                         const p = menuLayer.mapFromItem(null, wx, wy);
+                        root.menuFromY = root.mapFromItem(null, wx, wy).y;
                         root.menuItem = it;
                         root.menuX = p.x;
-                        root.menuY = p.y;
                     }
                 }
 
@@ -405,7 +412,7 @@ BarPill {
                 clip: true
                 opacity: root.menuItem !== null ? 1 : 0
                 scale: root.menuItem !== null ? 1 : 0.94
-                transformOrigin: Item.TopLeft
+                transformOrigin: Prefs.barBottom ? Item.BottomLeft : Item.TopLeft
 
                 Behavior on opacity {
                     NumberAnimation {
